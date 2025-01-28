@@ -1,0 +1,233 @@
+.col-lg-4 {
+  padding: 15px;
+}
+
+.chart {
+ /*position: relative;
+  width: 95%;
+  /* Use full width of the container 
+  height: 270px;
+   Height of the chart */
+
+   position: relative;
+   width: 95%;
+}
+
+.chart-container {
+  position: relative;
+  width: 100%;
+  /* Default width, will be overridden by specific classes */
+  /*height: 100%;
+  /* Height of the chart */
+}
+
+canvas {
+  margin-top: auto;
+  margin-right: auto;
+  margin-bottom: auto;
+  margin-left: auto;
+  max-height: 380px !important;
+  max-width: 990px !important;
+  min-height: 380px !important;
+  min-width: 990px !important;
+}
+
+.margin-auto {
+  margin: auto;
+}
+
+.title-select-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.contain{
+  height: 82vh;
+  overflow-y: auto;
+}
+
+.contain::-webkit-scrollbar {
+  display: none;
+}
+
+.button-container {
+  margin-top: 5px;
+  margin-bottom: 5px;
+  display: flex;
+}
+
+.button-left,
+.button-right,
+.button-middle {
+  width: 33.3%;
+  height: 50px;
+  background-color: white;
+  border: 0.5px solid black;
+  transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s, color 0.3s;
+  outline: none;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.button-left {
+  border-radius: 10px 0px 0px 10px;
+  border-right: none;
+}
+
+.button-middle {
+  border-radius: 0px 0px 0px 0px;
+}
+
+.button-right {
+  border-radius: 0px 10px 10px 0px;
+  border-left: none;
+}
+
+.button-left:hover,
+.button-right:hover,
+.button-middle:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.active {
+  background-color: white;
+  color: black; /* Text color for active state */
+}
+
+.inactive {
+  background-color: #007bff;
+  color: white; /* Text color for inactive state */
+}
+
+/********************************************************************/
+
+
+.confusion-container {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  justify-content: center;
+}
+
+.confusion-matrix-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 20px;
+}
+
+.model1-header {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20px;
+  /* Increased margin for better separation */
+}
+
+.model-title {
+  font-weight: bold;
+  font-size: 1.2em;
+  margin-bottom: 10px;
+}
+
+.class-titles-horizontal {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  /* Added gap for spacing between class titles */
+}
+
+.class-title-horizontal,
+.class-title-vertical {
+  width: 100%;
+  padding: 5px;
+  background-color: #f0f0f0;
+  border: 1px solid #ccc;
+  text-align: center;
+}
+
+.matrix-content {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+}
+
+.model2-header {
+  /* height: 100%; */
+  /* width: 20px; */
+  display: flex;
+  flex-direction: row;
+  margin-bottom: 20px;
+  align-items: flex-end;
+}
+
+.model2-title-column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-right: 30px;
+  /* Increased margin for better spacing */
+}
+
+.model-title-vertical {
+  font-weight: bold;
+  white-space: nowrap;
+  margin-bottom: 310%;
+  font-size: 1.2em;
+  writing-mode: vertical-lr;
+  width: 50px;
+}
+
+.model2-class-column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.class-titles-vertical {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: stretch;
+  justify-content: flex-end;
+}
+
+.class-title-vertical {
+  white-space: nowrap;
+  font-size: 1em;
+  writing-mode: vertical-lr;
+  height: 300px;
+  width: 100%;
+}
+
+.confusion-matrix {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  gap: 10px;
+  justify-items: center;
+  align-items: center;
+}
+
+.matrix-row {
+  display: contents;
+}
+
+.matrix-cell {
+  width: 300px;
+  height: 300px;
+  /*background-color: #e0e0e0;
+  border: 1px solid #999;*/
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2em;
+}
+
+/********************************************************************/

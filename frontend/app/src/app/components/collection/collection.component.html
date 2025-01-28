@@ -1,0 +1,164 @@
+<div class="container" style="margin-top: 0px;" [style.max-width]="width ? '80%' : '99%'">
+
+  <div class="row mb-4">
+    <div class="Statistique">
+      <div class="Circle">{{formatted_nbr_c}}</div>
+      <div class="Content">
+          <div class="Title">Datasets</div>
+          <div class="Underline"></div>
+          <div class="Subtitle">Number of available Datasets</div>
+      </div>
+  </div>
+  <div class="Statistique">
+      <div class="Circle">{{nbr_m}}</div>
+      <div class="Content">
+          <div class="Title">Models</div>
+          <div class="Underline"></div>
+          <div class="Subtitle">Number of used models</div>
+      </div>
+  </div>
+  <div class="Statistique">
+      <div class="Circle">{{formatted_nbr_s}}</div>
+      <div class="Content">
+          <div class="Title">Specimens</div>
+          <div class="Underline"></div>
+          <div class="Subtitle">Number of specimens by Datasets</div>
+      </div>
+  </div>
+    <!-- Carré 1 - Nombre total de collections 
+    <div class="col-sm-3" style="margin-left: 0%;">
+      <div class="card back bg-primary text-white h-100 d-flex align-items-center">
+        <div class="card-body">
+          <h4 class="">Total Datasets</h4>
+          <div>
+            <p class="card-text ">
+              <img [src]="cheminTot" alt="add image" width="25%" height="25%"
+                style=" margin-bottom: 5px; margin-right: 40px;">
+              {{formatted_nbr_c}}
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>-->
+
+    <!-- Carré 2 - Nombre de modèles utilisés
+    <div class="col-sm-3">
+      <div class="card back bg-primary text-white h-100 d-flex align-items-center">
+        <div class="card-body">
+          <h4 class="">Models used</h4>
+          <p class="card-text ">
+            <img [src]="cheminMod" alt="add image" width="25%" height="25%"
+              style=" margin-bottom: 5px; margin-right: 40px;">
+            {{ nbr_m }}
+          </p>
+        </div>
+      </div>
+    </div>-->
+
+    <!-- Carré 3 - Nombre moyen de spécimens par collection 
+    <div class="col-sm-3">
+      <div class="card back bg-primary text-white h-100 d-flex align-items-center">
+        <div class="card-body">
+          <h4 class="">Specimens by Dataset</h4>
+          <p class="card-text">
+            <img [src]="cheminSpe" alt="add image" width="25%" height="25%"
+              style=" margin-bottom: 5px; margin-right: 40px;">
+            {{ formatted_nbr_s }}
+          </p>
+        </div>
+      </div>
+    </div>-->
+
+    <!-- Carré 4 - Nombre moyen d'espèces par collection -->
+    <!--<div class="col-sm-3" style="margin-right: 0;">
+      <div class="card bg-primary text-white h-100 d-flex align-items-center">
+        <div class="card-body">
+          <h4 class="card-title">Species by collection </h4>
+          <p class="card-text"><img [src]="cheminEsp" alt="add image" width="40%" height="50%" style="filter: invert(50%); margin-bottom: 5px; ">
+            {{ nbr_e }}
+          </p>
+        </div>
+      </div>
+    </div>-->
+  </div>
+
+
+  <div class="" style="margin-bottom: 15px;">
+
+    <div class="nex_div ">
+      <div class="add">
+        <div><span class="fw-bold fs-4 me-2"> Dataset </span></div>
+
+        <div class="text-center mb-4 p-4" id="mb-5">
+          <button *ngIf="bol" (click)="func_ajout_col()" class="btn btn-outline-primary btn-lg px-4"
+            style="padding: 2px;">
+            <span class="fw-bold fs-41 me-2" style="margin-right: 0rem !important; padding: 4px 20px; margin-bottom: 1px;">
+              <!--<img [src]="cheminPlus" alt="add image" width="25" height="25" style="filter: invert(100%); margin-bottom: 4px; margin-right: 5px; margin-left: 5px;">-->
+              New Dataset
+            </span>
+          </button>
+        </div>
+      </div>
+
+      <div class="fltr">
+        <div class="form-outline mt-3">
+          <input type="search" [(ngModel)]="searchtext" id="form1" class="form-control input__field" placeholder=" "
+            aria-label="search" style="margin-bottom: 0px !important;">
+          <label for="form1" class="input__label" [class.clicked]="searchtext"><i class="bi bi-search"></i> Search by
+            name</label>
+        </div>
+      </div>
+
+      <div class='sort_filter'>
+
+        <div class="sort_filter-container">
+          <div class="sort">
+            <strong>Sort By :</strong>
+            <p (click)="sortBy('name')">Dataset name<i class="bi"
+                                                             [ngClass]="currentSortField === 'name' ? (isAscending ? 'bi-caret-up' : 'bi-caret-down') : 'bi-chevron-expand'"></i>
+            </p>
+            <p (click)="sortBy('dateCreation')">Dataset creation date<i class="bi"
+                                                                         [ngClass]="currentSortField === 'dateCreation' ? (isAscending ? 'bi-caret-up' : 'bi-caret-down') : 'bi-chevron-expand'"></i>
+            </p>
+          </div>
+        </div>
+
+      </div>
+
+
+    </div>
+
+    <div class="container mt-5">
+      <div class="" style="margin-bottom: 0px;">
+        <div class="card-body"
+          *ngFor="let c of collections | filterByName: searchtext: 'name' | paginate: { itemsPerPage: 9, currentPage: p }">
+          <div class="Grp">
+            <div class="Inf">
+              <h4>{{c.name}}</h4>
+              <!--<span>  ( {{c.dateCreation | date:'dd/MM/yyyy'}})</--span>-->
+              <p [title]="c.description">
+                {{ c.description.length > 148 ? (c.description | slice:0:148) + '...' : c.description }}
+              </p>
+            </div>
+            <div class="Btns">
+              <button (click)="onFinishClicked(c)" class="btn btn-success me-2">
+                <i class="bi bi-folder2"></i>
+                Open
+              </button>
+              <button (click)="func_inf_C(c)" class="btn btn-danger">
+                <i class="bi bi-trash"></i>
+                Delete
+              </button>
+
+
+            </div>
+          </div>
+          <hr>
+        </div>
+      </div>
+
+    </div>
+  </div>
+  <pagination-controls (pageChange)="p = $event" [autoHide]="true" [previousLabel]="'Prev'"
+              [nextLabel]="'Next'" [responsive]="true"></pagination-controls>
+</div>

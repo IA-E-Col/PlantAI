@@ -1,0 +1,27 @@
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card p-4">
+        <!-- Titre "Modifier les informations de votre projet" -->
+        <h2 class="text-center mb-4">
+          <span class="border-bottom border-primary pb-1">Remove a collaborator from your project</span>
+        </h2>
+
+        <div class="mb-3 d-flex justify-content-between">
+          <button type="button" class="btn btn-success" (click)="modifer_infomation()">Modify information</button>
+          <button type="button" class="btn btn-danger" (click)="ajouterCollaborateur()">Add collaborator</button>
+        </div>
+
+        <!-- Formulaire -->
+        <form [formGroup]="projetFormGroup" (ngSubmit)="func_suppr_collab()">
+          <div class="mb-3">
+            <label for="collaborateur" class="form-label fw-bold">Collaborator identifier:</label>
+            <input type="text" class="form-control" id="collaborateur" formControlName="collaborateur">
+          </div>
+
+          <button [disabled]="projetFormGroup.invalid" type="submit" class="btn btn-primary mt-3">Delete collaborator</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

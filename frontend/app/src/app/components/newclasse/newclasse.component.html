@@ -1,0 +1,45 @@
+<h2 class="text-center mb-4" style="margin: 5px !important;">
+  <span class="border-bottom border-primary pb-1">Add a Classe</span>
+</h2>
+<div class="formbold-main-wrapper">
+  <div class="formbold-form-wrapper">
+    <form [formGroup]="classeForm" (ngSubmit)="onSubmit()">
+
+      <div class="flex flex-wrap formbold--mx-3" style="margin-bottom: 20px;">
+        <div class="w-full formbold-px-3" style="width: 70%;">
+          <div class="formbold-mb-5 w-full">
+            <label for="name" class="formbold-form-label"> Classe name </label>
+            <input
+              type="text"
+              formControlName="name"
+              id="name"
+              class="formbold-form-input"
+            />
+            <div *ngIf="classeForm.controls['name'].invalid && (classeForm.controls['name'].dirty || classeForm.controls['name'].touched)">
+              <small class="text-danger" *ngIf="classeForm.controls['name'].errors?.['required']">Name is required.</small>
+            </div>
+          </div>
+        </div>
+        <div class="w-full formbold-px-3" style="width: 30%;">
+          <div class="formbold-mb-5">
+            <label for="identifier" class="formbold-form-label"> Identifier </label>
+            <input
+              type="number"
+              formControlName="identifier"
+              id="identifier"
+              class="formbold-form-input"
+            />
+            <div *ngIf="classeForm.controls['identifier'].invalid && (classeForm.controls['identifier'].dirty || classeForm.controls['identifier'].touched)">
+              <small class="text-danger" *ngIf="classeForm.controls['identifier'].errors?.['required']">Identifier is required.</small>
+              <small class="text-danger" *ngIf="classeForm.controls['identifier'].errors?.['pattern']">Identifier must be a number.</small>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="text-align: center;">
+        <button class="formbold-btn" type="submit" [disabled]="classeForm.invalid">Submit</button>
+      </div>
+    </form>
+  </div>
+</div>

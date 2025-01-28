@@ -1,0 +1,260 @@
+/* Styles généraux */
+.col-lg-9 {
+  flex: 0 0 auto;
+  width: 90%;
+  margin-left: 5%;
+}
+
+/* Styles pour les cartes */
+.card {
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Styles pour l'en-tête de la carte */
+.card-header {
+  background-color: #f8f9fa;;
+  border-bottom: 1px solid #ccc;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+}
+
+/* Styles pour le titre dans l'en-tête de la carte */
+.card-header h3 {
+  margin-bottom: 0;
+  font-weight: bold;
+  color: rgb(0, 0, 0);
+}
+
+.mb-3 {
+  margin-bottom: 1.2rem !important;
+}
+
+/* Styles pour le corps de la carte */
+.card-body {
+  background-color: #fff;
+  animation: fade-in 0.5s ease-in-out;
+}
+
+/* Animation de fondu */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Styles pour les éléments de la liste */
+.list-group {
+  list-style: none;
+  padding-left: 0;
+}
+
+.list-group-item {
+  border: none;
+  padding: 10px 0;
+}
+
+.list-group-item:hover {
+  background-color: #f0f0f0;
+}
+
+/* Styles pour les colonnes */
+.col-lg-4 {
+  width: 20%;
+  padding-top: 0px; /* Espacement en haut des colonnes */
+}
+
+.col-lg-8 {
+  width: 80%;
+  margin-top: 1px;
+}
+
+.col-lg-81{
+  width: 65%;
+  margin-top: 1px;
+}
+
+/* Styles pour les titres des sections */
+.card-title {
+  font-size: 1.1em; /* Taille de police des titres */
+  margin-bottom: 5px; /* Espacement en bas des titres */
+}
+
+/* Styles pour les textes des sections */
+.card-text {
+  margin-bottom: 10px; /* Espacement en bas des textes */
+}
+
+/* Styles pour les listes dans les sections */
+.list-group {
+  margin-top: 0; /* Suppression de l'espacement en haut des listes */
+}
+
+.list-group-item {
+  border: none;
+  padding: 5px 0;
+  font-size: 0.9em; /* Taille de police des éléments de liste */
+}
+
+.list-group-item:hover {
+  background-color: #f8f9fa; /* Légère variation de couleur au survol */
+}
+
+h5{
+  font-weight: bold;
+}
+
+p{
+  margin-bottom: 0px !important;
+  display: inline;
+}
+
+/* Ajout de styles pour encadrer chaque élément */
+.card {
+  display: flex;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px; /* Espacement en bas de la carte */
+}
+
+/* Ajout de styles pour le tableau */
+.table-container {
+  border-radius: 5px !important; /* Add border-radius */
+  overflow: hidden; /* Ensure border-radius works correctly */
+}
+
+.table {
+  max-width: 0;
+  margin-bottom: 1rem;
+  background-color: transparent;
+  border-collapse: collapse;
+  border: 1px solid #ccc; /* Add border to the table */
+}
+
+.table th,
+.table td {
+  padding: 0.75rem;
+  vertical-align: top;
+  border-top: 2px solid #8d8b8b;
+}
+
+.table thead th {
+  vertical-align: bottom;
+  border-bottom: 2px solid #8d8b8b;
+}
+
+.table tbody + tbody {
+  border-top: 2px solid #8d8b8b;
+}
+
+/* Hover effect */
+.table tbody tr:hover {
+  background-color: #f0f0f0; /* Change background color on hover */
+}
+.row {
+  /*border: 2px solid #8d8b8b; /* Couleur et épaisseur du contour */
+  border-radius: 5px; /* Bord arrondi */
+  padding: 2px; /* Espacement à l'intérieur du contour */
+  align-items: center !important;
+}
+
+.collaborator-cell {
+  display: flex;
+  align-items: center;
+}
+.collaborator-cell img {
+  margin-right: 5px;
+}
+
+.collaborator-cell span{
+  margin-bottom: 6px;
+}
+
+.collaborateur-item {
+  border: 1px solid #ddd; /* Ajoute une bordure gris clair */
+  border-radius: 35px; /* Arrondit les coins */
+  margin-bottom: 7px; /* Ajuste selon vos besoins */
+  padding: 10px; /* Ajoute un espace intérieur */
+}
+
+/* Style pour le bouton "add collaborator" */
+.collaborateurs-liste button {
+  margin-right: 3px;
+}
+
+/* Style pour l'image du collaborateur */
+.collaborateur-item img {
+  margin-bottom: 0;
+  margin-right: 10px;
+  filter: invert(100%);
+}
+
+/* Style pour le bouton de suppression du collaborateur */
+.collaborateur-item button.btn-danger {
+  margin-left: 15px;
+  padding: 2px;
+}
+
+/* Style pour l'image du bouton de suppression */
+.collaborateur-item button.btn-danger img {
+  margin-right: 0;
+  filter: invert(100%);
+}
+
+li{
+  width: 30%;
+}
+
+/*.rotate {
+  animation: rotateAnimation 0.5s linear ;
+}
+
+@keyframes rotateAnimation {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}*/
+
+li:hover {
+  background-color: #ccc; 
+  animation: bounceAnimation 0.5s ease; 
+}
+
+@keyframes bounceAnimation {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.project-info {
+  width: 70%;
+}
+
+.project-image {
+  width: 30%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.project-image img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}

@@ -1,0 +1,457 @@
+.Gage {
+    display: flex;
+    flex-direction: column;
+}
+
+.Header {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.Statistique {
+    border: 1px solid black;
+    width: 20%;
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    border-radius: 15px;
+}
+
+.Circle {
+    width: 40px;
+    height: 40px;
+    border: 5px solid lightgrey;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 10px;
+}
+
+.Content {
+    flex: 1;
+}
+
+.Title {
+    font-size: 1.2em;
+}
+
+.Underline {
+    width: 100%;
+    height: 2px;
+    background-color: lightgrey;
+    margin: 5px 0;
+}
+
+.Subtitle {
+    font-size: 0.9em;
+    color: grey;
+}
+
+.Body {
+    height: 90%;
+    display: flex;
+}
+
+.Tables {
+    padding: 0 10px;
+    width: 75%;
+    margin-top: 0.65%;
+}
+
+.Table {
+    overflow: hidden;
+}
+
+.Sidebar {
+    margin: 10px 0;
+    width: 25%;
+}
+
+.Classes {
+    padding: 0 10px;
+}
+
+.form-outline {
+    position: relative;
+    margin-bottom: 2%;
+}
+
+.input__label {
+    position: absolute;
+    left: 0;
+    top: 15%;
+    padding: 2px;
+    margin-left: 5px;
+    white-space: nowrap;
+    transform: translate(0, 0);
+    transform-origin: 0 0;
+    background: white;
+    transition: transform 120ms ease-in;
+    line-height: 1.2;
+    border-radius: 10px;
+}
+
+.input__field:focus ~ .input__label,
+.input__field:not(:placeholder-shown) ~ .input__label,
+.input__label.clicked {
+    transform: translate(0.25rem, -75%) scale(0.8);
+    color: var(--color-accent);
+}
+
+.classe_list {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+}
+
+.fw-bold {
+    font-weight: 500 !important;
+}
+
+.fs-41 {
+    font-size: 1rem !important;
+}
+
+.px-4 {
+    padding: 0.3rem 0.5rem;
+}
+
+.table-container {
+    max-height: 400px;
+    overflow-y: auto;
+    margin-top: 10px;
+}
+
+.table-container::-webkit-scrollbar {
+    display: none;
+}
+
+table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+thead {
+    position: sticky;
+    top: 0;
+    background-color: #f8f9fa;
+    z-index: 1;
+}
+
+tr:first-child th:first-child {
+    border-top-left-radius: 10px;
+}
+
+tr:first-child th:last-child {
+    border-top-right-radius: 10px;
+}
+
+tr:last-child td:first-child {
+    border-bottom-left-radius: 5px;
+}
+
+tr:last-child td:last-child {
+    border-bottom-right-radius: 5px;
+}
+
+td, th {
+    text-align: center;
+}
+
+.card-body {
+    width: 100%;
+    padding: 0;
+}
+
+.card-header {
+    border-radius: 10px 65px / 120px;
+    width: 100%;
+    display: flex;
+    align-items: flex-start;
+    background-color: #dee2e6;
+    flex-direction: column;
+}
+
+.card-header1 {
+    border-radius: 5px 50px / 120px;
+    width: 100%;
+    background-color: #dee2e6;
+    padding: 1px;
+    margin-bottom: 5px;
+}
+
+.Add, .fltr {
+    display: flex;
+    width: 98%;
+    margin-left: 0.5%;
+    align-items: baseline;
+    justify-content: space-between;
+}
+
+.fltr {
+    margin-left: 1%;
+}
+
+.container {
+    display: contents;
+    border-radius: 20px !important;
+    margin: 5px 0 0.5% 0 !important;
+    padding: 0 !important;
+}
+
+.card {
+    border: none;
+    overflow-y: scroll;
+    overflow-x: hidden;
+}
+
+.card::-webkit-scrollbar {
+    display: none;
+}
+
+.Grp {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.Inf h4 {
+    display: inline;
+    margin-right: 10px;
+}
+
+.Inf span {
+    font-size: x-small;
+    color: #a6a6a6;
+}
+
+.Inf p {
+    font-size: 14px;
+    color: #404040;
+    margin: 4px 0;
+}
+
+.Inf {
+    margin-left: 0.5%;
+    width: 75%;
+}
+
+.Btns {
+    margin-left: 3%;
+}
+
+.Btns button {
+    margin-left: 5px;
+}
+
+hr {
+    margin: 0;
+}
+
+.pagination {
+    text-align: center;
+    display: inline;
+    margin-top: 10px;
+}
+
+.formbold-form-wrapper {
+    margin: 0 auto;
+    background: white;
+}
+
+.formbold-steps {
+    padding-bottom: 18px;
+    margin-bottom: 35px;
+    border-bottom: 1px solid #DDE3EC;
+}
+
+.formbold-steps ul {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+    display: flex;
+    gap: 40px;
+}
+
+.formbold-steps li {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 24px;
+    color: #536387;
+}
+
+.formbold-steps li span {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #DDE3EC;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    font-weight: 500;
+    font-size: 16px;
+    color: #007bff;
+}
+
+.formbold-steps li.active {
+    color: #07074D;
+}
+
+.formbold-steps li.active span {
+    background: #007bff;
+    color: #FFFFFF;
+}
+
+.formbold-input-flex {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 22px;
+}
+
+.formbold-input-flex > div {
+    width: 100%;
+}
+
+.formbold-form-input {
+    width: 100%;
+    padding: 13px 22px;
+    border-radius: 5px;
+    border: 1px solid #DDE3EC;
+    background: #FFFFFF;
+    font-weight: 500;
+    font-size: 16px;
+    color: #536387;
+    outline: none;
+    resize: none;
+}
+
+.formbold-form-input:focus {
+    border-color: #6a64f1;
+    box-shadow: 0px 3px 8px rgba(0, 0, 0, 0.05);
+}
+
+.formbold-form-label {
+    color: #07074D;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 24px;
+    display: block;
+    margin-bottom: 10px;
+}
+
+.formbold-form-confirm {
+    border-bottom: 1px solid #DDE3EC;
+    padding-bottom: 35px;
+}
+
+.formbold-form-confirm p {
+    font-size: 16px;
+    line-height: 24px;
+    color: #536387;
+    margin-bottom: 22px;
+    width: 75%;
+}
+
+.formbold-form-confirm > div {
+    display: flex;
+    gap: 15px;
+}
+
+.formbold-confirm-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #FFFFFF;
+    border: 0.5px solid #DDE3EC;
+    border-radius: 5px;
+    font-size: 16px;
+    color: #536387;
+    cursor: pointer;
+    padding: 10px 20px;
+    transition: all .3s ease-in-out;
+    box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.12);
+}
+
+.formbold-confirm-btn.active {
+    background: #6A64F1;
+    color: #FFFFFF;
+}
+
+.formbold-form-step-1,
+.formbold-form-step-2,
+.formbold-form-step-3,
+.formbold-form-step-4,
+.formbold-form-step-5 {
+    display: none;
+}
+
+.formbold-form-step-1.active,
+.formbold-form-step-2.active,
+.formbold-form-step-3.active,
+.formbold-form-step-4.active,
+.formbold-form-step-5.active {
+    display: block;
+}
+
+.formbold-form-btn-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 25px;
+    margin-top: 25px;
+}
+
+.formbold-back-btn {
+    cursor: pointer;
+    background: #FFFFFF;
+    border: none;
+    color: #07074D;
+    font-weight: 500;
+    font-size: 16px;
+    display: none;
+}
+
+.formbold-back-btn.active {
+    display: block;
+}
+
+.formbold-btn {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 16px;
+    border-radius: 5px;
+    padding: 10px 25px;
+    border: none;
+    font-weight: 500;
+    background-color: #007bff;
+    color: white;
+    cursor: pointer;
+}
+
+.formbold-btn:hover {
+    box-shadow: 0px 3px 8px rgba(0, 0, 0, 0.05);
+}
+
+.formbold-w-45 {
+    width: 45%;
+}
+
+.bck-btn {
+    background-color: white;
+    color: black;
+    box-shadow: 0px 3px 8px rgba(0, 0, 0, 0.1);
+}
+
+.text {
+    margin: 0 0 1rem 0;
+    font-size: 1.2rem;
+    font-style: italic;
+}

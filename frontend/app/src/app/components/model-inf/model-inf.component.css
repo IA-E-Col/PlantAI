@@ -1,0 +1,70 @@
+.formbold-form-wrapper {
+  overflow-y: auto;
+  width: 50%;
+  margin: auto;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  height: 82vh;
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  animation: fadeIn 1s ease-in-out;
+}
+
+.formbold-form-wrapper::-webkit-scrollbar {
+  display: none;
+}
+
+/* Title style */
+h3 {
+  font-family: Arial, sans-serif;
+  color: #333;
+}
+
+/* Text and Paragraph style */
+.text {
+  font-family: Arial, sans-serif;
+  color: #666;
+  line-height: 1.6;
+}
+
+/* Section heading style */
+h4 {
+  font-family: Arial, sans-serif;
+  color: #444;
+  margin-top: 20px;
+}
+
+/* Metrics style */
+p {
+  font-family: Arial, sans-serif;
+  color: #555;
+}
+
+/* Image style */
+img {
+  width: 100%;
+  border-radius: 8px;
+  margin-top: 10px;
+}
+
+/* Key metrics style */
+.metrics p {
+  margin: 5px 0;
+}
+
+/* Key metrics value style */
+strong {
+  color: #222;
+}
+
+/* Animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

@@ -1,0 +1,20 @@
+@import "bootstrap-icons/font/bootstrap-icons.css";
+@import "bootstrap/dist/css/bootstrap.min.css";
+
+
+
+
+.center-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh; 
+}
+
+.centered-content {
+  text-align: center;
+}
+
+html, body {
+  height:max-content; 
+}

@@ -1,0 +1,55 @@
+<div class="container-fluid" style="height: 82%;">
+  <div class="row" style="height: 100%;">
+    <!-- Sidebar -->
+    <nav class="navbar border border-dark">
+      <ul class="navbar__menu">
+        <li class="navbar__item">
+          <a class="navbar__link" [routerLink]="['datasetInf', IdCollection]"
+          [queryParams]="{id: collection.id}">
+            <i class="bi bi-file-earmark-text-fill"></i>
+            <span style="width: 107px; padding-left: 7px;">
+              Information
+            </span>
+          </a>
+        </li>
+        <li class="navbar__item">
+          <a class="navbar__link" [routerLink]="['Images',IdCollection]" >
+            <i class="bi bi-images"></i>
+            <span style="width: 74px; padding-left: 7px;">
+              Images
+            </span>
+          </a>
+        </li>
+        <li class="navbar__item">
+          <a class="navbar__link" [routerLink]="['dashboard_dataset', IdCollection]">
+            <i class="bi bi-pie-chart-fill"></i>
+            <span style="width: 100px; padding-left: 7px;">
+              Dashboard
+            </span>
+          </a>
+        </li>
+        <li class="navbar__item">
+          <a class="navbar__link" [routerLink]="['Models',IdCollection]" [queryParams]="{ IdDataset: collection.id }">
+            <i class="bi bi-diagram-3-fill"></i>
+            <span style="width: 74px; padding-left: 7px;">
+              Models
+            </span>
+          </a>
+        </li>
+        <li class="navbar__item">
+          <a class="navbar__link" [routerLink]="['gererdataset', IdCollection]"
+          [queryParams]="{ DatasetNam: collection.name , DatasetDescription: collection.description }">
+            <i class="bi bi-gear-wide-connected"></i>
+            <span style="width: 80px; padding-left: 7px;">
+              Manage
+            </span>
+          </a>
+        </li>
+      </ul>
+    </nav>
+    <!-- Collection Content -->
+    <div class="col-lg-10">
+      <router-outlet></router-outlet>
+    </div>
+  </div>
+</div>

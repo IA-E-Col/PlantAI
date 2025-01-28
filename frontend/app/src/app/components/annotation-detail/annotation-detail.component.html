@@ -1,0 +1,165 @@
+<div *ngIf="isLoad" style="height: 82vh; display: flex; justify-content: center; align-items: center;">
+  <mat-spinner></mat-spinner>
+</div>
+<div *ngIf="!isLoad" class='Grp'>
+  <div class='Img_Prd'>
+    <div class='Img'>
+      <img [src]="Specimen.image.image_url" (click)="openImageInNewWindow()">
+    </div>
+  </div>
+  <div class='Plts'>
+    <div class='Prd'>
+      <h5>{{Model.name}} <span> classification</span></h5>
+      <form>
+        <ul style="margin-bottom: 5px;">
+          <li><strong>Classes :</strong> {{Annotation.libelle}}</li>
+          <li style="display: flex;">
+            <div class="ELM"><strong>Prediction :</strong> {{Annotation.classe}}</div>
+            <div class="ELM" *ngIf="Annotation.valeurCorrecte"><strong>Correct Value :</strong> {{classeCorrect}}</div>
+          </li>
+          <li style="display: flex;">
+            <div class="ELM"><strong>State :</strong> {{isValide}}</div>
+            <div class="ELM"><strong>Method of acquisition :</strong> {{Annotation.modeAquisition}}</div>
+          </li>
+          <li>
+            <strong>Corrected value :</strong>
+            <select class="input__field" [(ngModel)]="selectedValue" [ngModelOptions]="{standalone: true}">
+              <option *ngFor="let option of classes" [value]="option.identifier">
+                {{ option.name }}
+              </option>
+            </select>
+            <button type="submit" class="custom-button" (click)="updateAnnotation()">
+              <i class="bi bi-send-check-fill"></i> Send
+            </button>
+          </li>
+          <li>
+            <div class="comment-input" style="margin-top: 5px;">
+              <strong>Comment :</strong>
+              <input style="width: 76%; height: 50px; border-radius: 5px; border: 1px solid #ccc; margin-left: 7.4%;" type="text" [(ngModel)]="newComment" [ngModelOptions]="{standalone: true}" placeholder="Add comment ..." />
+              <button type="button" class="custom-button comment-button" (click)="addComment()">
+                <i class="bi bi-chat-dots"></i> Add
+              </button>
+            </div>
+          </li>
+          <li>
+            <div *ngIf="comments.length" class='comments-section' style="margin-top: 5px; text-align: center;">
+              <button class="custom-button1" (click)="openCommentDialog(comments)">Show comments</button>
+            </div>
+          </li>
+        </ul>
+      </form>
+    </div>
+    <div class='Plt_Dsc'>
+      <div class='Plt'>
+        <img src="assets/hog_histogram.png">
+        <i class="bi bi-question-circle-fill"
+          title="The gradient histogram reveals the directions of color or brightness changes in an image, helping to understand the shapes and textures present. A uniform distribution of the histogram suggests a diversity of shapes and textures, while a concentration around certain values suggests regularity in object shapes."></i>
+      </div>
+      <div class='Dsc'>
+        <!--<h4>L'histogramme des gradients (HOG)</h4>
+          <p>L'histogramme des gradients révèle les directions des changements de couleur ou de luminosité dans
+              une image,
+              aidant à comprendre les formes et textures présentes.
+              Une répartition uniforme de l'histogramme suggère une diversité de formes et textures, tandis qu'une
+              concentration autour de certaines valeurs suggère une régularité dans les formes des objets.</p>-->
+      </div>
+    </div>
+    <div class='Plt_Dsc'>
+      <div class='Plt'>
+        <img src="assets/contrast_histogram.png">
+        <i class="bi bi-question-circle-fill"
+          title="Contrast measures the difference between the darkest and lightest pixels in an image. A wide distribution suggests a diversity of contrasts, while a narrow distribution indicates a more uniform contrast. The dotted line shows the average contrast: a high line indicates a high overall contrast, while a low line suggests a low overall contrast."></i>
+      </div>
+      <div class='Dsc'>
+        <!--<h4>L'histogramme de contraste de l'image</h4>
+          <p>Le contraste évalue l'écart entre les pixels les plus foncés et les plus clairs dans une image. Une
+              distribution étendue suggère une diversité de contrastes, tandis qu'une distribution resserrée
+              indique un
+              contraste plus uniforme. La ligne en pointillés montre la moyenne du contraste : une ligne haute
+              indique un
+              contraste global élevé, tandis qu'une ligne basse suggère un contraste global faible.</p>-->
+      </div>
+    </div>
+    <div class='Plt_Dsc'>
+      <div class='Plt'>
+        <img src="assets/brightness_histogram.png">
+        <i class="bi bi-question-circle-fill"
+          title="Average brightness reflects the overall clarity of the image. A concentration to the left in the histogram indicates a predominantly dark image, while a concentration to the right means a predominantly bright image. The dotted line shows average brightness: shifted to the left, the image is generally dark, while a shift to the right indicates increased brightness. Extreme levels of brightness can make details difficult to distinguish."></i>
+      </div>
+      <div class='Dsc'>
+        <!--<h4>L'histogramme de la luminosité moyenne de l'image</h4>
+          <p>La luminosité moyenne reflète la clarté globale de l'image. Une concentration vers la gauche dans
+              l'histogramme indique une image principalement sombre, tandis qu'une concentration vers la droite
+              signifie une
+              image principalement lumineuse. La ligne en pointillés montre la luminosité moyenne : déplacée vers
+              la gauche,
+              l'image est généralement sombre, tandis qu'un déplacement vers la droite indique une luminosité
+              accrue. Des
+              niveaux extrêmes de luminosité peuvent rendre les détails difficiles à distinguer.</p>-->
+      </div>
+    </div>
+    <div class='Plt_Dsc'>
+      <div class='Plt'>
+        <img src="assets/color_histogram.png">
+        <i class="bi bi-question-circle-fill"
+          title="The color histogram per channel of an image shows how the different intensities of red, green and blue are distributed. A narrow, high peak indicates a dominant color, while a wide distribution suggests a variety of colors. The height of the peaks reflects the number of pixels with that specific intensity, helping to understand the chromatic composition of the image."></i>
+      </div>
+      <div class='Dsc'>
+        <!--<h4>L'histogramme des couleurs</h4>
+          <p>L'histogramme des couleurs par canal d'une image montre comment les différentes intensités de rouge,
+              vert et
+              bleu sont réparties. Un pic étroit et élevé indique une couleur dominante, tandis qu'une répartition
+              large
+              suggère une variété de couleurs. La hauteur des pics reflète le nombre de pixels ayant cette
+              intensité
+              spécifique, aidant ainsi à comprendre la composition chromatique de l'image.</p>-->
+      </div>
+    </div>
+    <div class='Plt_Dsc'>
+      <div class='Plt'>
+        <img src="assets/variance_histogram.png">
+        <i class="bi bi-question-circle-fill"
+          title="Variance measures the dispersion of color intensities around the mean for each channel. High variance in a channel indicates high color variability in that component of the image. This may be due to color diversity or sharp transition zones between different hues. Low variance in a channel may indicate color uniformity in that image component, while high variance may indicate high color variability."></i>
+      </div>
+      <div class='Dsc'>
+        <!--<h4>L'histogramme des variances des couleurs</h4>
+          <p>La variance mesure la dispersion des intensités de couleur autour de la moyenne pour chaque canal.
+              Une
+              variance élevée dans un canal indique une grande variabilité des couleurs dans cette composante de
+              l'image.
+              Cela peut être dû à une diversité de couleurs ou à des zones de transition nette entre différentes
+              teintes.
+              Une faible variance dans un canal peut indiquer une uniformité des couleurs dans cette composante de
+              l'image,
+              tandis qu'une variance élevée peut indiquer une grande variabilité des couleurs.</p>-->
+      </div>
+    </div>
+    <div class='Plt_Dsc'>
+      <div class='Plt'>
+        <img src="assets/mean_histogram.png">
+        <i class="bi bi-question-circle-fill"
+          title="The average represents the mean value of color intensities for each channel (red, green and blue). A higher average in one channel indicates a predominance of that color in the image."></i>
+      </div>
+      <div class='Dsc'>
+        <!--<h4>L'histogramme des moyennes des couleurs</h4>
+          <p>La moyenne représente la valeur moyenne des intensités de couleur pour chaque canal (rouge, vert et
+              bleu).
+              Une moyenne plus élevée dans un canal indique une prédominance de cette couleur dans l'image.</p>-->
+      </div>
+    </div>
+    <!--div class='Plt_Dsc'>
+            <div class='Plt'>
+              <img src="color_standard_deviation_Url">
+              <i class="bi bi-question-circle-fill" title="L'écart-type mesure la variation des couleurs dans une image. Une valeur élevée peut signaler une grande diversité de couleurs, tandis qu'une valeur faible indique une uniformité. Comparer les écarts-types entre les canaux peut révéler des différences de variation de couleur dans l'image."></i>
+            </div>
+            <div class='Dsc'>
+              <h4>L'histogramme de l'écart-type des couleurs</h4>
+              <p>L'écart-type mesure la variation des couleurs dans une image. Une valeur élevée peut signaler une
+                  grande
+                  diversité de couleurs, tandis qu'une valeur faible indique une uniformité. Comparer les écarts-types
+                  entre les
+                  canaux peut révéler des différences de variation de couleur dans l'image.</p>
+            </div>
+          </div>-->
+  </div>
+</div>

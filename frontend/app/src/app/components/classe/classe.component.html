@@ -1,0 +1,295 @@
+<div class="Gage">
+    <div class="Header">
+        <div class="Statistique" [class.active]="currentStep === 1" (click)="goToStep(1)">
+            <div class="Circle">{{collections.length}}</div>
+            <div class="Content">
+                <div class="Title">Corpora</div>
+                <div class="Underline"></div>
+                <div class="Subtitle">Number of available Corpora</div>
+            </div>
+        </div>
+        <div class="Statistique" [class.active]="currentStep === 2" (click)="goToStep(2)">
+            <div class="Circle">{{modele.length}}</div>
+            <div class="Content">
+                <div class="Title">Models</div>
+                <div class="Underline"></div>
+                <div class="Subtitle">Number of available models</div>
+            </div>
+        </div>
+        <div class="Statistique" [class.active]="currentStep === 3" (click)="goToStep(3)">
+            <div class="Circle">{{users.length}}</div>
+            <div class="Content">
+                <div class="Title">Users</div>
+                <div class="Underline"></div>
+                <div class="Subtitle">Number of users account</div>
+            </div>
+        </div>
+        <div class="Statistique">
+            <div class="Circle">{{Classes.length}}</div>
+            <div class="Content">
+                <div class="Title">Classes</div>
+                <div class="Underline"></div>
+                <div class="Subtitle">Number of available classes</div>
+            </div>
+        </div>
+    </div>
+    <div class="Body">
+        <div class="Tables">
+            <div class="formbold-main-wrapper">
+                <!-- Author: FormBold Team -->
+                <!-- Learn More: https://formbold.com -->
+                <div class="formbold-form-wrapper">
+
+                    <div [class.active]="currentStep === 1" class="formbold-form-step-1">
+                        <div class="Table">
+                            <div class="card-header">
+                                <div class="Add">
+                                    <!--<i class="bi bi-list fs-4"></i>-->
+                                    <div class="fw-bold fs-4 me-2">Corpus List</div>
+                                    <div class="text-center mb-4" style="margin-bottom: 2px !important;">
+                                        <button (click)="func_ajout_Col()" class="btn btn-outline-primary btn-lg px-4"
+                                            style="padding: 0;">
+                                            <span class="fw-bold fs-41 me-2" style="margin-right: 0rem !important;">
+                                                <!--<img [src]="cheminPlus" alt="add image" width="25" height="25" style="filter: invert(100%); margin-bottom: 4px; margin-right: 5px; margin-left: 5px;">-->
+                                                New corpus
+                                            </span>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!--search box-->
+                                <div class="fltr">
+                                    <div class="form-outline" style="width: 100%; margin-bottom: 5px;">
+                                        <input type="search" [(ngModel)]="searchtext1" id="form1"
+                                            class="form-control input__field" placeholder=" " aria-label="search">
+                                        <label for="form1" class="input__label" [class.clicked]="searchtext1"><i
+                                                class="bi bi-search"></i>
+                                            Search by
+                                            name</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="container mt-5">
+                                <div class="card">
+                                    <div class="card-body"
+                                        *ngFor="let c of collections | filterByName: searchtext1: 'nom'| paginate: { itemsPerPage: 3, currentPage: p3 }">
+                                        <div class="Grp">
+                                            <div class="Inf">
+                                                <h4>{{c.nom}}</h4>
+                                                <span> ({{ c.dateCreation }})</span>
+                                                <p [title]="c.description">{{ c.description.length > 140 ?
+                                                    (c.description |
+                                                    slice:0:140) + '...' : c.description }}</p>
+                                            </div>
+                                            <div class="Btns">
+                                                <button (click)="ouvrirCol(c.id)" class="btn btn-success me-2">
+                                                    <i class="bi bi-folder2"></i>
+                                                    <strong> Open</strong>
+                                                </button>
+                                                <button (click)="supprimerCol(c.id)" class="btn btn-danger">
+                                                    <i class="bi bi-trash"></i>
+                                                    <strong> Delete</strong>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <hr>
+                                    </div>
+                                    <div class="pagination">
+                                        <pagination-controls (pageChange)="p3 = $event" [autoHide]="true"
+                                            [previousLabel]="'Prev'" [nextLabel]="'Next'"
+                                            [responsive]="true"></pagination-controls>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div [class.active]="currentStep === 2" class="formbold-form-step-2 active">
+                        <div class="Table">
+                            
+                            <div class="card-header">
+                                <div class="Add">
+                                    <!--<i class="bi bi-list fs-4"></i>-->
+                                    <div class="fw-bold fs-4 me-2">Models List</div>
+                                    <div class="text-center mb-4" style="margin-bottom: 2px !important;">
+                                        <button (click)="func_ajout_Model()" class="btn btn-outline-primary btn-lg px-4"
+                                            style="padding: 0;">
+                                            <span class="fw-bold fs-41 me-2" style="margin-right: 0rem !important;">
+                                                <!--<img [src]="cheminPlus" alt="add image" width="25" height="25" style="filter: invert(100%); margin-bottom: 4px; margin-right: 5px; margin-left: 5px;">-->
+                                                New Model
+                                            </span>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!--search box-->
+                                <div class="fltr">
+                                    <div class="form-outline" style="width: 100%; margin-bottom: 5px;">
+                                        <input type="search" [(ngModel)]="searchtext2" id="form1"
+                                            class="form-control input__field" placeholder=" " aria-label="search">
+                                        <label for="form1" class="input__label" [class.clicked]="searchtext2"><i
+                                                class="bi bi-search"></i>
+                                            Search by
+                                            name</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="container mt-5">
+                                <div class="card mb-3">
+                                    <div class="card-body"
+                                        *ngFor="let m of modele | filterByName: searchtext2: 'name'| paginate: { itemsPerPage: 10, currentPage: p2 }">
+                                        <div class="Grp">
+                                            <div class="Inf">
+                                                <h4>{{m.name}}</h4>
+                                                <!--span> (Version: {{ m.version }}, {{ m.dateCreation }})</span-->
+                                                <p [title]="m.description">{{ m.description.length > 140 ?
+                                                    (m.description |
+                                                    slice:0:140) + '...' : m.description }}</p>
+                                            </div>
+                                            <div class="Btns d-flex" style="margin-right: 1.5%;">
+                                                <button (click)="func_inf_m(m.id)" class="btn btn-primary me-2"
+                                                    aria-label="View Details">
+                                                    <i class="bi bi-eye"></i>
+                                                </button>
+                                                <button (click)="func_update_m(m)" class="btn btn-success me-2"
+                                                    aria-label="Update">
+                                                    <i class="bi bi-pencil"></i>
+                                                </button>
+                                                <button (click)="func_delete_m(m)" class="btn btn-danger"
+                                                    aria-label="Delete">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <hr>
+                                    </div>
+                                    <div class="pagination">
+                                        <pagination-controls (pageChange)="p2 = $event" [autoHide]="true"
+                                            [previousLabel]="'Prev'" [nextLabel]="'Next'"
+                                            [responsive]="true"></pagination-controls>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div [class.active]="currentStep === 3" class="formbold-form-step-3">
+                        <div class="Table">
+                            <div class="card-header">
+                                <div class="Add">
+                                    <!--<i class="bi bi-list fs-4"></i>-->
+                                    <div class="fw-bold fs-4 me-2">User List</div>
+                                    <div class="text-center mb-4" style="margin-bottom: 2px !important;">
+                                        <button (click)="func_ajout_User()" class="btn btn-outline-primary btn-lg px-4"
+                                            style="padding: 0;">
+                                            <span class="fw-bold fs-41 me-2" style="margin-right: 0rem !important;">
+                                                <!--<img [src]="cheminPlus" alt="add image" width="25" height="25" style="filter: invert(100%); margin-bottom: 4px; margin-right: 5px; margin-left: 5px;">-->
+                                                New user
+                                            </span>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!--search box-->
+                                <div class="fltr">
+                                    <div class="form-outline" style="width: 100%; margin-bottom: 5px;">
+                                        <input type="search" [(ngModel)]="searchtext3" id="form1"
+                                            class="form-control input__field" placeholder=" " aria-label="search">
+                                        <label for="form1" class="input__label" [class.clicked]="searchtext3"><i
+                                                class="bi bi-search"></i>
+                                            Search by
+                                            name</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="container mt-5">
+                                <div class="card mb-3">
+                                    <div class="card-body"
+                                        *ngFor="let u of users | filterByName: searchtext3: 'name'| paginate: { itemsPerPage: 13, currentPage: p1 }">
+                                        <div class="Grp">
+                                            <div class="Inf">
+                                                <h4>{{u.name}} {{u.prenom}}</h4>
+                                                <!--span> (Version: {{ m.version }}, {{ m.dateCreation }})</span-->
+                                                <p>{{u.email}}</p>
+                                            </div>
+                                            <div class="Btns d-flex" style="margin-right: 1.5%;">
+                                                <button (click)="func_inf_u(u.id)" class="btn btn-primary me-2"
+                                                    aria-label="View Details">
+                                                    <i class="bi bi-eye"></i>
+                                                </button>
+                                                <button (click)="func_update_u(u)" class="btn btn-success me-2"
+                                                    aria-label="Update">
+                                                    <i class="bi bi-pencil"></i>
+                                                </button>
+                                                <button (click)="func_delete_u(u)" class="btn btn-danger"
+                                                    aria-label="Delete">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <hr>
+                                    </div>
+                                    <div class="pagination">
+                                        <pagination-controls (pageChange)="p1 = $event" [autoHide]="true"
+                                            [previousLabel]="'Prev'" [nextLabel]="'Next'"
+                                            [responsive]="true"></pagination-controls>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="Sidebar">
+            <div class="Classes">
+                <div class="card-header1">
+                    <div class="classe_list" style="width: 95%; margin-left: 2%;">
+                        <span class="fw-bold fs-4 me-2">Classe List</span>
+                        <button (click)="func_ajout_Classe()" class="btn btn-outline-primary btn-lg px-4"
+                            style="padding: 0;">
+                            <span class="fw-bold fs-41 me-2" style="margin-right: 0rem !important;">
+                                New Classe
+                            </span>
+                        </button>
+                    </div>
+                    <!--search box-->
+                    <div class="form-outline mt-3"
+                        style="width: 96%; margin-left: 2.4%; margin-bottom: 1% !important; margin-top: 2px !important;">
+                        <input type="search" [(ngModel)]="searchtext" id="form1" class="form-control input__field"
+                            placeholder=" " aria-label="search" style="margin-bottom: 0px !important;">
+                        <label for="form1" class="input__label" [class.clicked]="searchtext">
+                            <i class="bi bi-search"></i> Search by name
+                        </label>
+                    </div>
+                </div>
+                <div class="table-container">
+                    <table class="table table-striped">
+                        <thead class="fs-5">
+                            <tr>
+                                <th scope="col" (click)="sortBy('name')">Name</th>
+                                <th scope="col">Identifier</th>
+                                <th scope="col">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="fs-5">
+                            <tr *ngFor="let C of Classes | filterByName: searchtext: 'name'">
+                                <td title="{{C.name}}">{{C.name}}</td>
+                                <td title="{{C.identifier}}">{{C.identifier}}</td>
+                                <td>
+                                    <button (click)="func_delete_c(C.id)" class="btn btn-danger">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>

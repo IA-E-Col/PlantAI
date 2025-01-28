@@ -1,0 +1,33 @@
+<div class="container mt-5">
+    <div class="row top">
+        <div class="col-md-8">
+            <div class="card p-4" style="width: 110% !important;">
+                <!-- Title "Edit Your Project Information" -->
+                <h2 class="text-center mb-4">
+                    <span class="border-bottom border-primary pb-1">Edit Your Model Information</span>
+                </h2>
+
+                <!-- Form -->
+                <form *ngIf="modelFormGroup" [formGroup]="modelFormGroup" (ngSubmit)="modifier_mdl()">
+                    <div class="mb-3">
+                        <label for="name" class="form-label fw-bold">Model Name:</label>
+                        <input type="text" class="form-control" id="name" formControlName="nomModel">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="fileUpload" class="form-label fw-bold">Upload Model File:</label>
+                        <div class="custom-file">
+                            <input type="file" class="form-control" id="customFile" formControlName="modelFile">
+                            <label class="custom-file-label" for="fileUpload"></label>
+                        </div>
+                    </div>
+
+                    <div class="d-flex wst">
+                        <button type="submit" class="btn btn-primary mt-3" style="margin-left: 48.5%;">Edit
+                            Model</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

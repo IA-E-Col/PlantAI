@@ -1,0 +1,48 @@
+<section class="section section--menu" id="Prospero">
+  <nav class="menu menu--horatio" style="margin-bottom: 0px;">
+    <!-- Logo Element -->
+    <div class="logo">
+      <img [src]="cheminLogo" alt="Application Logo" width="200" height="60">
+    </div>
+
+    <ul class="menu__list">
+      <li class="menu__item">
+        <a class="menu__link" routerLink="/admin/explorer">Corpora</a>
+      </li>
+      <li class="menu__item">
+        <a class="menu__link" routerLink="/admin/projets">Projects</a>
+      </li>
+      <li class="menu__item">
+        <a class="menu__link" routerLink="/admin/collection/total">Datasets</a>
+      </li>
+      <li class="menu__item">
+        <a class="menu__link" routerLink="/admin/models">Models</a>
+      </li>
+      <li class="menu__item">
+        <a class="menu__link" routerLink="/admin/classes">Settings</a>
+      </li>
+    </ul>
+    <div class="menu__item__right">
+      <li class="menu__itema">
+        <a class="menu__link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+          <img [src]="cheminUser" alt="Your image" width="25" height="25" style="margin-right: 3px;">
+          {{username}}
+        </a>
+        <div>
+          <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+            <li class="menu__item" style="margin: 0%;">
+              <a class="menu__link" routerLink="/admin/profile" style="padding: 4px; margin-left: 29%;">Profile</a>
+            </li>
+            <!--<li><hr class="dropdown-divider"></li>
+            <li class="menu__item"><a class="menu__link" href="#">Historic</a></li>-->
+            <li style="margin: 0%;"><hr class="dropdown-divider" style="margin: 0%;"></li>
+            <li class="menu__item" style="margin: 0%;">
+              <a class="menu__link" href="#" style="padding: 4px; margin-left: 27%;">Log out</a>
+            </li>
+          </ul>
+        </div>
+      </li>
+    </div>
+  </nav>
+</section>
+<router-outlet></router-outlet>

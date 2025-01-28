@@ -1,0 +1,45 @@
+<div class="container-fluid" style="height: 82%;">
+  <div class="row" style="height: 100%;">
+    <!-- Sidebar -->
+    <nav class="navbar border border-dark">
+      <ul class="navbar__menu">
+        <li class="navbar__item">
+          <a class="navbar__link" [routerLink]="['projetInf', projectId]">
+            <i class="bi bi-file-earmark-text-fill"></i>
+            <span style="width: 107px; padding-left: 7px;">
+              Information
+            </span>
+          </a>
+        </li>
+        <li class="navbar__item">
+          <a class="navbar__link" [routerLink]="['collection', projectId]">
+            <i class="bi bi-collection-fill"></i>
+            <span style="width: 85px; padding-left: 7px;">
+              Datasets
+            </span>
+          </a>
+        </li>
+        <li class="navbar__item">
+          <a class="navbar__link" [routerLink]="['dashboard', projectId]">
+            <i class="bi bi-pie-chart-fill"></i>
+            <span style="width: 97px; padding-left: 7px;">
+              Dashboard
+            </span>
+          </a>
+        </li>
+        <li class="navbar__item">
+          <a class="navbar__link" [routerLink]="['gererprojet', projectId]">
+            <i class="bi bi-gear-wide-connected"></i>
+            <span style="width: 80px; padding-left: 7px;">
+              Manage
+            </span>
+          </a>
+        </li>
+      </ul>
+    </nav>
+    <!-- Collection Content -->
+    <div class="col-lg-10">
+      <router-outlet></router-outlet>
+    </div>
+  </div>
+</div>

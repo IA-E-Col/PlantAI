@@ -1,0 +1,61 @@
+<div class="container">
+  <div class="row">
+    <div class="col-lg-8 mx-auto" style="max-height: 83vh;">
+      <div class="plant-list-container" style="margin-bottom: 10px;">
+        <ul class="list-group shadow" [ngClass]="{'grid-view': isGridView, 'list-view': !isGridView}">
+          <li class="list-group-item"
+            *ngFor="let plante of collectionSpecimens | paginate: { itemsPerPage: 20, currentPage: p }"
+            (click)="navigateToImageInf(plante)">
+            <div class="media align-items-lg-center flex-column flex-lg-row flex-lg-row-reverse p-3">
+              <img [src]="plante.image.image_url" alt="Plant Image" [ngClass]="{'grid-img': isGridView, 'list-img': !isGridView}" class="mr-lg-5 order-1 order-lg-1">
+              <div class="media-body order-2 order-lg-2">
+                <h5 class="mt-0 font-weight-bold mb-2" style="width: 100%; margin: 0 !important;"[innerHTML]="formatNomScientifique(plante.nomScientifique)"></h5>
+                <p *ngIf="plante.dateCreation" class="font-italic text-muted mb-0 small"
+                  style="min-height: 20px !important;">{{ plante.dateCreation }}</p>
+                <div class="d-flex align-items-center mt-1">
+                  <div class="row">
+                    <div class="col-md-6 Typ1">
+                      <ul class="list-unstyled">
+                        <li *ngIf="plante.genre"><span style="font-weight: bold;">Genus: </span>{{ plante.genre }}</li>
+                        <li *ngIf="plante.epitheteSpecifique"><span style="font-weight: bold;">Species: </span>{{
+                          plante.epitheteSpecifique }}</li>
+                        <li *ngIf="plante.famille"><span style="font-weight: bold;">Family: </span>{{ plante.famille }}
+                        </li>
+                        <li *ngIf="plante.pays"><span style="font-weight: bold;">Country: </span>{{ plante.pays }}</li>
+                      </ul>
+                    </div>
+                    <div class="col-md-6 Typ2">
+                      <ul class="list-unstyled">
+                        <li *ngIf="plante.lieu"><span style="font-weight: bold;">Location: </span>{{ plante.lieu }}</li>
+                        <li *ngIf="plante.ville"><span style="font-weight: bold;">City: </span>{{ plante.ville }}</li>
+                        <li *ngIf="plante.latitude"><span style="font-weight: bold;">Latitude: </span>{{ plante.latitude
+                          }}</li>
+                        <li *ngIf="plante.longitude"><span style="font-weight: bold;">Longitude: </span>{{
+                          plante.longitude }}</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </li>
+        </ul>
+      </div>
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <pagination-controls class="mr-auto" (pageChange)="p = $event" [autoHide]="true" [previousLabel]="'Prev'"
+              [nextLabel]="'Next'" [responsive]="true"></pagination-controls>
+      </div>
+    </div>
+    <div class="list_grid">
+      <button class="btn" (click)="setView('list')" style="margin-bottom: 15px;">
+        <i class="bi bi-list"></i>
+      </button>
+      <button class="btn" (click)="setView('grid')">
+        <i class="bi bi-grid-3x3-gap"></i>
+      </button>
+      <button class="btn" (click)="setView('grid')">
+        {{collectionSpecimens.length}}
+      </button>
+    </div>
+  </div>
+</div>

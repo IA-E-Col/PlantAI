@@ -1,0 +1,28 @@
+#exampleModal {
+  display: flex;
+  justify-content: center; /* Pour centrer horizontalement */
+  height: 100%;
+  width: 60%;
+  margin-left: 20%;
+}
+
+.container{
+  position: fixed;
+  top: 0;
+  left: 0;  
+  max-width: 100%;
+}
+
+.col-sm-3 {
+  flex: 0 0 auto;
+  width: 35%;
+}
+
+.col-sm-9 {
+  flex: 0 0 auto;
+  width: 60%;
+}
+
+h5{
+  padding-left: 0px;
+}

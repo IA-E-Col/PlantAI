@@ -1,0 +1,494 @@
+body {
+  background: #00b09b;
+  background: -webkit-linear-gradient(to right, #00b09b, #96c93d);
+  background: linear-gradient(to right, #00b09b, #96c93d);
+  min-height: 100vh;
+}
+
+.text-gray {
+  color: #aaa;
+}
+
+.media {
+  display: flex;
+  align-items: center !important;
+  flex-direction: row !important;
+}
+
+.media img {
+  margin-right: 15px;
+}
+
+.more-info {
+  font-size: 14px;
+  color: #777;
+}
+
+/* Customize list-group appearance */
+.list-group {
+  border-radius: 15px;
+}
+
+/* Style list-group-item */
+.list-group-item {
+  padding: 3px !important;
+  border: none;
+  background-color: #f8f9fa;
+  /* Light gray background */
+  margin-bottom: 10px;
+}
+
+/* Style list-group-item hover effect */
+.list-group-item:hover {
+  background-color: #e9ecef;
+  /* Lighter gray background on hover */
+}
+
+/* Style media content */
+.media {
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+/* Style media image */
+.media img {
+  border-radius: 5px;
+  max-width: 100%;
+  height: auto;
+}
+
+/* Style font-weight-bold class */
+.font-weight-bold {
+  font-weight: bold;
+}
+
+/* Style font-italic class */
+.font-italic {
+  font-style: italic;
+}
+
+/* Style list-unstyled */
+.list-unstyled {
+  list-style: none;
+  padding-left: 0;
+}
+
+/* Style additional information list */
+.list-unstyled li {
+  margin-bottom: 5px;
+}
+
+/* Style background gradient for body */
+body {
+  background: #00b09b;
+  background: -webkit-linear-gradient(to right, #00b09b, #96c93d);
+  background: linear-gradient(to right, #00b09b, #96c93d);
+  min-height: 100vh;
+  margin: 0;
+}
+
+/* Style text color for text-gray class */
+.text-gray {
+  color: #aaa;
+}
+
+/* Style flex layout for media */
+.media {
+  display: flex;
+  align-items: center !important;
+  flex-direction: row !important;
+}
+
+/* Style margin for media image */
+.media img {
+  margin-right: 15px;
+}
+
+/* Style additional information */
+.more-info {
+  font-size: 14px;
+  color: #777;
+}
+
+/* Animate list-group-item on hover */
+.list-group-item {
+  transition: background-color 0.3s ease;
+}
+
+/* Animate media content on hover */
+.media:hover {
+  transform: scale(1.02);
+  transition: transform 0.3s ease;
+}
+
+/* Animate media image on hover */
+.media:hover img {
+  transform: scale(1.0005);
+  transition: transform 0.3s ease;
+}
+
+/* Animate font-weight-bold class on hover */
+.font-weight-bold:hover {
+  color: #6c757d;
+  /* Change color on hover */
+  transition: color 0.3s ease;
+}
+
+/* Animate font-italic class on hover */
+.font-italic:hover {
+  color: #6c757d;
+  /* Change color on hover */
+  transition: color 0.3s ease;
+}
+
+/* Animate list-unstyled li on hover
+.list-unstyled li:hover {
+  color: #6c757d; /* Change color on hover
+  transition: color 0.3s ease;
+}*/
+
+ul {
+  margin-left: 25px;
+}
+
+.p-3 {
+  padding: 4px !important;
+}
+
+.py-5 {
+  padding-top: 20px !important;
+  padding-bottom: 4px !important;
+}
+
+.col-lg-8 {
+  flex: 0 0 auto;
+  width: 100% !important;
+}
+
+.media-body,
+.d-flex {
+  width: 100%;
+}
+
+.font-weight-bold {
+  font-weight: bold;
+  width: 30%;
+}
+
+.row {
+  width: 100%;
+  --bs-gutter-x: 1.5rem;
+  --bs-gutter-y: 0;
+  display: flex;
+  flex-wrap: nowrap;
+}
+
+.col-md-6 {
+  flex: 0 0 auto;
+  width: 50%;
+  padding: 0;
+}
+
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+/* Appliquer l'animation à chaque élément */
+.list-group-item {
+  animation: fadeIn 0.5s ease forwards;
+}
+
+/* Animation de défilement */
+@keyframes slideInFromLeft {
+  from {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* Appliquer l'animation à chaque élément */
+.list-group-item {
+  animation: slideInFromLeft 0.5s ease forwards;
+}
+
+/* Animation de rotation */
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Appliquer l'animation à chaque élément */
+.list-group-item {
+  animation: rotate 1s linear infinite;
+}
+
+/* Animation de zoom */
+@keyframes zoomIn {
+  from {
+    transform: scale(0);
+  }
+
+  to {
+    transform: scale(1);
+  }
+}
+
+/* Appliquer l'animation à chaque élément */
+.list-group-item {
+  animation: zoomIn 0.5s ease forwards;
+}
+
+.plant-list-container {
+  max-height: 88%;
+  /* Adjust this value as needed */
+  overflow-y: scroll;
+}
+
+.plant-list-container::-webkit-scrollbar {
+  display: none;
+}
+
+.list_grid {
+  display: flex;
+  flex-direction: column;
+  width: 5%;
+}
+
+/* app.component.css */
+ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.grid-view {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.grid-view .media-body {
+  display: none;
+}
+
+.grid-view .media img {
+  margin-right: 0;
+}
+
+.list-view {
+  display: block;
+}
+
+.list-view .media-body {
+  display: block;
+}
+
+.list-view .media img {
+  margin-right: 10px;
+  /* Ajustez selon vos besoins */
+}
+
+.grid-img {
+  width: 160px;
+}
+
+.list-img {
+  width: 100px;
+}
+
+
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f5f5f5;
+  padding: 20px;
+}
+
+h2 {
+  text-align: center;
+  color: #333;
+  margin-bottom: 1.5rem;
+}
+
+form {
+  background: white;
+  padding: 10px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  margin: 6px;
+  margin-bottom: 15px;
+}
+
+.field-container {
+  margin-bottom: 20px;
+}
+
+label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 5px;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.tag-container {
+  display: flex;
+  flex-wrap: wrap;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background: #fff;
+  min-height: 40px;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.input-field {
+  border: none;
+  outline: none;
+  flex: 1;
+  padding: 5px;
+  font-size: 17px;
+}
+
+.input-field::placeholder {
+  color: #aaa;
+}
+
+.tag {
+  background: #007bff;
+  color: white;
+  padding: 5px 10px;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  opacity: 0;
+  transform: scale(0.8);
+  animation: fadeIn 0.3s forwards;
+}
+
+@keyframes fadeIn {
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.close-btn {
+  background: #fff;
+  color: #007bff;
+  margin-left: 5px;
+  border-radius: 50%;
+  padding: 0 5px;
+  cursor: pointer;
+}
+
+.close-btn:hover {
+  background: #ddd;
+}
+
+button[type="submit"] {
+  background: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  font-size: 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+button[type="submit"]:hover {
+  background: #0056b3;
+}
+
+@keyframes fadeOut {
+  to {
+    display: none;
+    opacity: 0;
+    transform: scale(0.8);
+  }
+}
+
+.tag {
+  animation: fadeIn 0.3s;
+}
+
+.close-btn {
+  cursor: pointer;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+.form_cont {
+  margin-left: 10%;
+  width: 100%;
+  overflow-y: scroll;
+  height: 81.5vh;
+}
+
+.form_cont::-webkit-scrollbar {
+  display: none;
+}
+
+form {
+  height: 87%;
+  display: flex;
+  background: white;
+  padding: 10px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  margin: 6px;
+  margin-bottom: 15px;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: space-evenly;
+}
+
+.cont {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  margin-top: 0.5%;
+  width: 20%;
+}
+
+.img_cont {
+  width: 70%;
+  margin-top: 0.5%;
+}
+
+
+.col {
+  display: flex;
+  flex-direction: row;
+}
+
+.container {
+  width: 75%;
+  margin-top: 0.5%;
+  margin-left: 0.3%;
+}

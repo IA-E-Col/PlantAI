@@ -1,0 +1,108 @@
+<div class="row contain">
+  <div class="col-lg-10 offset-lg-1">
+    <div class="container">
+      <div class="row" [ngStyle]="{'opacity': isLoad ? '0' : '1','max-height': isLoad ? '0px' : '100%'}">
+
+        <div class="button-container">
+          <button (click)="toggleActive2()" class="button-left"
+            [ngClass]="{'active': isActive, 'inactive': !isActive}">Metadata Chart</button>
+          <button (click)="toggleActive()" class="button-middle"
+            [ngClass]="{'active': isActive2, 'inactive': !isActive2}">Annotation Chart</button>
+          <button (click)="toggleActive3()" class="button-right"
+            [ngClass]="{'active': isActive3, 'inactive': !isActive3}">Confusion Matrices</button>
+        </div>
+
+        <!-- Boucle sur chartData pour afficher les graphiques principaux -->
+        <div class="row" [ngStyle]="{'opacity': isActive ? '0' : '1', 'max-height': isActive ? '0px' : '100%'}">
+          <ng-container *ngFor="let data of chartData; let i = index">
+            <div class="">
+              <div class="col">
+                <div class="title-select-container">
+                  <h3>{{ data.chartLabel }}</h3>
+                  <select (change)="updateChartType($event, i)">
+                    <option *ngFor="let type of chartTypesOptions" [value]="type.value">{{ type.label }}</option>
+                  </select>
+                </div>
+              </div>
+              <div class="chart">
+                <div class="chart-container">
+                  <canvas [attr.id]="'chart' + (i + 1)"
+                    [ngClass]="{'margin-auto': !isBarOrLineChart(chartTypes[i])}"></canvas>
+                </div>
+              </div>
+            </div>
+          </ng-container>
+        </div>
+
+        <!-- Boucle sur additionalChartData pour afficher les graphiques des libellés -->
+        <div class="row" [ngStyle]="{'opacity': isActive2 ? '0' : '1', 'max-height': isActive2 ? '0px' : '100%'}">
+          <ng-container *ngFor="let data of additionalChartData; let j = index">
+            <div class="">
+              <div class="col">
+                <div class="title-select-container">
+                  <h3>{{ data.libelle }}</h3>
+                  <select (change)="updateAdditionalChartType($event, j)">
+                    <option *ngFor="let type of chartTypesOptions" [value]="type.value">{{ type.label }}</option>
+                  </select>
+                </div>
+              </div>
+              <div class="chart">
+                <div class="chart-container">
+                  <canvas [attr.id]="'additionalChart' + (j + 1)"
+                    [ngClass]="{'margin-auto': !isBarOrLineChart(additionalChartTypes[j])}"></canvas>
+                </div>
+              </div>
+            </div>
+          </ng-container>
+        </div>
+
+        <div class="col" [ngStyle]="{'opacity': isActive3 ? '0' : '1', 'max-height': isActive3 ? '0px' : '100%'}">
+
+
+          <div *ngFor="let confusionMatrice of confusionMatrices | keyvalue">
+            <div class='confusion-container' *ngFor="let confusion of confusionMatrice.value | keyvalue">
+              <div class='model2-header'>
+                <div class='model-title-vertical'>{{confusionMatrice.key}}</div>
+                <div class='class-titles-vertical'>
+                  <div class='class-title-vertical' *ngFor="let clas of confusion.value | keyvalue">{{clas.key}}</div>
+                </div>
+              </div>
+              <div class='confusion-matrix-container'>
+                <div class='model1-header'>
+                  <div class='model-title'>{{confusion.key}}</div>
+                  <div class='class-titles-horizontal'>
+                    <div class='class-title-horizontal'
+                      *ngFor="let clas of getKeysOfFirstDictionary(confusion.value) | keyvalue">{{clas.value}}</div>
+                  </div>
+                </div>
+                <div class='matrix-content'>
+                  <div class='confusion-matrix'>
+                    <div class='matrix-row' *ngFor="let clas of confusion.value | keyvalue">
+                      <div class='matrix-cell' *ngFor="let val of getValuesSortedByKey(clas.value)"
+                        [ngStyle]="{'background-color': getBackgroundColor(confusionMatrice.key, confusion.key, val)}">
+                        {{ val }}%
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+
+        </div>
+
+
+      </div>
+
+    </div>
+
+    <div [ngStyle]="{'opacity': isLoad ? '1' : '0','max-height': isLoad ? '100%' : '0px'}" style="height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;">
+      <mat-spinner></mat-spinner>
+    </div>
+
+  </div>
+</div>

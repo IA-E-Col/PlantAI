@@ -1,0 +1,162 @@
+.top{
+  width: 100%;
+  margin-left: 20px;
+}
+.card {
+    border-radius: 15px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    padding: 20px; /* Ajout de marge intérieure pour un meilleur espacement */
+    transition: opacity 0.3s ease; /* Transition pour l'opacité */
+  }
+  
+  .card:hover {
+    opacity: 0.9; /* Réduit légèrement l'opacité au survol */
+  }
+  
+  .btn-primary {
+    background-color: #007bff;
+    border-color: #007bff;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+  }
+  
+  .btn-primary:hover {
+    background-color: #0056b3;
+    border-color: #0056b3;
+    transform: scale(1.05); /* Effet d'agrandissement au survol */
+  }
+
+  .mb-3 {
+    margin-right: 15px !important;
+    margin-left: 15px !important;
+    margin-bottom: 1rem !important;
+  }
+  
+  /* Animations */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  
+  h2 {
+    animation: fadeIn 0.5s ease-in-out;
+  }
+  
+  label {
+    animation: fadeIn 0.5s ease-in-out;
+  }
+  
+  @keyframes slideInFromLeft {
+    from {
+      transform: translateX(-100%);
+    }
+    to {
+      transform: translateX(0);
+    }
+  }
+  
+  .slideInFromLeft {
+    animation: slideInFromLeft 0.5s ease-in-out;
+  }
+  
+  /* Ajout de style pour le formulaire */
+  .form-label {
+    margin-bottom: 0.5rem; /* Espacement entre les libellés et les champs de saisie */
+  }
+  
+  .form-control {
+    border-radius: 8px; /* Coins arrondis pour les champs de saisie */
+  }
+  
+  .form-check-label {
+    margin-left: 5px; /* Espacement entre le bouton de commutation et son libellé */
+  }
+  
+  .text-danger {
+    font-size: 0.875em; /* Réduction de la taille de la police pour les messages d'erreur */
+  }
+  
+  @keyframes pulse {
+    0% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.1);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+  
+  .btn:hover {
+    animation: pulse 0.3s ease !important;
+  }
+  
+  
+
+
+
+
+/* Style pour chaque élément de la liste de collaborateurs générés par la boucle */
+.collaborateur-item {
+    border: 1px solid #ddd; /* Ajoute une bordure gris clair */
+    border-radius: 5px; /* Arrondit les coins */
+    margin-bottom: 7px; /* Ajuste selon vos besoins */
+    padding: 10px; /* Ajoute un espace intérieur */
+  }
+  
+  /* Style pour le bouton "add collaborator" */
+  .collaborateurs-liste button {
+    margin-right: 3px;
+  }
+  
+  /* Style pour l'image du collaborateur */
+  .collaborateur-item img {
+    margin-bottom: 0;
+    margin-right: 10px;
+    filter: invert(100%);
+  }
+  
+  /* Style pour le bouton de suppression du collaborateur */
+  .collaborateur-item button.btn-danger {
+    margin-left: 15px;
+    padding: 2px;
+  }
+  
+  /* Style pour l'image du bouton de suppression */
+  .collaborateur-item button.btn-danger img {
+    margin-right: 0;
+    filter: invert(100%);
+  }
+  
+li{
+    width: 34%;
+}
+
+.add{
+  margin-top: 16px;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: baseline;
+  flex-wrap: nowrap;
+}
+
+.mt-5 {
+  margin-bottom: 2.3rem !important;
+  margin-top: 2rem !important;
+}
+
+@media (min-width: 768px) {
+  .col-md-8 {
+      flex: 0 0 auto;
+      width: 90%;
+  }
+}
+
+.wst { 
+  margin-left: 35%;
+}

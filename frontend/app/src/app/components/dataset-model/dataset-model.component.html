@@ -1,0 +1,49 @@
+<div class="Lst_Mdl" style="margin-top: 5%;">
+    <div class="card-header">
+        <div class="Add">
+            <!--<i class="bi bi-list fs-4"></i>-->
+            <div class="fw-bold fs-4 me-2">Models List</div>
+            <div class="text-center mb-4" style="margin-bottom: 2px !important;">
+            </div>
+        </div>
+
+        <!--search box-->
+        <div class="fltr">
+            <div class="form-outline" style="width: 100%; margin-bottom: 5px; margin-left: 1%;">
+                <input type="search" [(ngModel)]="searchtext" id="form1" class="form-control input__field"
+                    placeholder=" " aria-label="search">
+                <label for="form1" class="input__label" [class.clicked]="searchtext"><i class="bi bi-search"></i>
+                    Search by
+                    name</label>
+            </div>
+        </div>
+    </div>
+    <div *ngFor="let m of modeles | filterByName: searchtext: 'name' | paginate: { itemsPerPage: 4, currentPage: m }"
+        class="model-container">
+        <div class="GrpM">
+            <div class="InfM">
+                <h5>{{m.name}}</h5>
+                <span>(version: {{m.version}}, {{m.dateCreation}})</span>
+                <p [title]="m.description">{{ m.description.length > 240 ? (m.description | slice:0:240) + '...' :
+                    m.description }}</p>
+                <ul class="inline-list">
+                    <li><strong>Accuracy :</strong> {{m.accuracy}}</li>
+                    <li><strong>Loss :</strong> {{m.loss}}</li>
+                </ul>
+            </div>
+            <div class="Btns">
+                <button (click)="info_model(m.id)" class="btn me-2 info-btn">
+                    <i class="bi bi-info-circle"></i>
+                </button>
+                <button (click)="doPrediction(m.id)" class="btn play-btn">
+                    <i class="bi bi-play-circle-fill"></i>
+                </button>
+            </div>
+        </div>
+        <hr>
+    </div>
+    <div class="pagination">
+        <pagination-controls  (pageChange)="m = $event" [autoHide]="true" [previousLabel]="'Prev'"
+              [nextLabel]="'Next'" [responsive]="true"></pagination-controls>
+    </div>
+</div>

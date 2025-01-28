@@ -1,0 +1,48 @@
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card p-4">
+        <!-- Title "Add a Project" -->
+        <h2 class="text-center mb-4">
+          <span class="border-bottom border-primary pb-1">Add a Project</span>
+        </h2>
+
+        <!-- Form -->
+        <form [formGroup]="projetFormGroup" (ngSubmit)="ajout_prt()">
+          <div class="mb-3">
+            <label for="name" class="form-label fw-bold">Project Name:</label>
+            <input type="text" class="form-control" id="name" formControlName="nomProjet" placeholder="Project Name">
+            <small *ngIf="projetFormGroup.controls['nomProjet'].errors && projetFormGroup.controls['nomProjet'].touched" class="text-danger">
+              Project name is required.
+            </small>
+          </div>
+
+          <div class="mb-3">
+            <label for="description" class="form-label fw-bold">Description:</label>
+            <textarea class="form-control" id="description" formControlName="description" placeholder="Enter project description"></textarea>
+            <small *ngIf="projetFormGroup.controls['description'].errors && projetFormGroup.controls['description'].touched" class="text-danger">
+              Description is required and must be at least 3 characters long.
+            </small>
+          </div>
+
+          <div class="mb-3">
+            <label for="collection" class="form-label fw-bold">Corpus:</label>
+            <select class="form-select" id="collection" formControlName="collection">
+              <option value="" disabled selected>Select a corpus</option>
+              <ng-container *ngFor="let col of collections">
+                <option [value]="col.id">{{ col.nom }}</option>
+              </ng-container>
+            </select>
+            <small *ngIf="projetFormGroup.controls['collection'].errors && projetFormGroup.controls['collection'].touched" class="text-danger">
+              Corpus selection is required.
+            </small>
+          </div>
+
+          <div style="text-align: center;">
+            <button [disabled]="projetFormGroup.invalid" type="submit" class="btn btn-primary">Create Project</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

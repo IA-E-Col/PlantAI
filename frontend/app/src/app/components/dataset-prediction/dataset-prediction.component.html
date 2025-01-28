@@ -1,0 +1,169 @@
+<div class="col">
+
+  <div class="cont">
+    <div class="form_cont">
+      <h2>Filter By</h2>
+      <form [formGroup]="filterForm" (ngSubmit)="onSubmit()">
+        <!-- Annotation Model Filter -->
+        <div class="field-container">
+          <label style="font-size: large;">Annotation Model</label>
+          <div class="tag-container" id="annotation-model-container">
+            <select formControlName="annotationModel" class="input-field">
+              <option value="">All Label</option>
+              <option value="group1_label1">Label 1</option>
+              <option value="group1_label2">Label 2</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Validation Filter -->
+        <div class="field-container">
+          <label style="font-size: large;">Validation</label>
+          <div class="tag-container" id="validation-container">
+            <select formControlName="validation" class="input-field">
+              <option value="">All</option>
+              <option value="valid">Valid</option>
+              <option value="valid">Non Valid</option>
+              <option value="invalid">Invalid</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Accuracy Filter -->
+        <label style="margin-bottom: 5px; font-size: large;">Accuracy Range</label>
+        <div class="field-container">
+          <label>Min Accuracy</label>
+          <div class="tag-container" id="min-accuracy">
+            <select formControlName="minAccuracy" class="input-field">
+              <option value="">Select Min Accuracy</option>
+              <option value="50">50%</option>
+              <option value="60">60%</option>
+              <option value="70">70%</option>
+              <option value="80">80%</option>
+              <option value="90">90%</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field-container">
+          <label>Max Accuracy</label>
+          <div class="tag-container" id="max-accuracy">
+            <select formControlName="maxAccuracy" class="input-field">
+              <option value="">Select Max Accuracy</option>
+              <option value="60">60%</option>
+              <option value="70">70%</option>
+              <option value="80">80%</option>
+              <option value="90">90%</option>
+              <option value="100">100%</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Family Filter 
+        <div class="field-container">
+          <label>Family</label>
+          <div class="tag-container" id="family-container">
+            <select formControlName="family" class="input-field">
+              <option value="">All Familys</option>
+              <option *ngFor="let family of familyOptions" [value]="family">{{family}}</option>
+            </select>
+          </div>
+        </div>
+        -->
+
+        <!-- Genre Filter
+        <div class="field-container">
+          <label>Genre</label>
+          <div class="tag-container" id="genre-container">
+            <select formControlName="genre" class="input-field">
+              <option value="">All Genres</option>
+              <option *ngFor="let genre of genreOptions" [value]="genre">{{genre}}</option>
+            </select>
+          </div>
+        </div>
+         -->
+
+        <button type="submit">Submit</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 mx-auto" style="max-height: 83vh;">
+        <div class="plant-list-container" style="margin-bottom: 10px;">
+          <ul class="list-group shadow" [ngClass]="{'grid-view': isGridView, 'list-view': !isGridView}">
+            <li class="list-group-item"
+              *ngFor="let ann of Specimens | paginate: { itemsPerPage: 20, currentPage: p }; let i = index"
+              (click)="doPrediction(Specimens[i])">
+              <div>
+                <div class="media align-items-lg-center flex-column flex-lg-row flex-lg-row-reverse p-3">
+                  <img src='{{Specimens[i].image.image_url}}' alt="Plant Image"
+                    [ngClass]="{'grid-img': isGridView, 'list-img': !isGridView}" class="mr-lg-5 order-1 order-lg-1">
+                  <div class="media-body order-2 order-lg-2">
+                    <h5 class="mt-0 font-weight-bold mb-2" style="width: 100%; margin: 0 !important;">{{
+                      Specimens[i].nomScientifique }}</h5>
+                    <p class="font-italic text-muted mb-0 small">{{ Specimens[i].catalogueCode }}</p>
+                    <div class="d-flex align-items-center mt-1"
+                      style="margin-top: 0px !important; position: relative; top: -10px;">
+                      <h6 class="font-weight-bold my-2">Annotation</h6>
+                      <div class="row">
+                        <div class="col-md-6 Typ1">
+                          <!--
+                          <ul class="list-unstyled">
+                            <li *ngIf="ann.annotationValeur.valeurPredite==='0'"><span style="font-weight: bold;">Valeur
+                                Predicte: </span>Dente</li>
+                            <li *ngIf="ann.annotationValeur.valeurPredite==='1'"><span style="font-weight: bold;">Valeur
+                                Predicte: </span>Lisse</li>
+                            <li *ngIf="ann.annotationValeur.valeurCorrecte"><span style="font-weight: bold;">Valeur
+                                Correcte: </span>{{
+                              ann.annotationValeur.valeurPredite }}</li>
+                            <li *ngIf="!ann.annotationValeur.valide"><span style="font-weight: bold;">Validation:
+                              </span>non</li>
+                            <li *ngIf="ann.annotationValeur.valide"><span style="font-weight: bold;">Validation:
+                              </span>oui</li>
+                            <li *ngIf="ann.annotationValeur.modeAquisition"><span style="font-weight: bold;">Mode
+                                Aquisition: </span>{{ ann.annotationValeur.modeAquisition }}</li>
+                          </ul>
+                          -->
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </li>
+          </ul>
+        </div>
+        <div class="d-flex justify-content-between align-items-center mb-3" style="margin: 0 !important;">
+          <pagination-controls class="mr-auto" (pageChange)="p = $event" [autoHide]="true" [previousLabel]="'Prev'"
+            [nextLabel]="'Next'" [responsive]="true"></pagination-controls>
+          <button class="btn btn-primary" [routerLink]="['/admin/DatasetPrediction/cree']" style="margin-bottom: 15px;">
+            <i class="bi bi-plus-circle-fill"></i>
+            Create a SubDataset
+          </button>
+        </div>
+      </div>
+      <div class="list_grid">
+        <button class="btn" (click)="setView('list')" style="margin-bottom: 15px;">
+          <i class="bi bi-list"></i>
+        </button>
+        <button class="btn" (click)="setView('grid')" style="margin-bottom: 15px;">
+          <i class="bi bi-grid-3x3-gap"></i>
+        </button>
+        <button class="btn" (click)="OrderBy()">
+          <i class="bi" [ngClass]="{
+              'bi-arrow-down-up': iconState === 'default',
+              'bi-arrow-down': iconState === 'down',
+              'bi-arrow-up': iconState === 'up'
+            }"></i>
+        </button>
+      </div>
+    </div>
+    <div class="loader" *ngIf="!isCalculated"></div>
+  </div>
+</div>
+
+<div>
+  <router-outlet></router-outlet>
+</div>

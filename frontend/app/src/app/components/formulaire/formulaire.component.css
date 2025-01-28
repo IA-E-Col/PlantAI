@@ -1,0 +1,159 @@
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f5f5f5;
+  padding: 20px;
+}
+
+h2 {
+  text-align: center;
+  color: #333;
+}
+
+form {
+  background: white;
+  padding: 10px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  margin: auto;
+  width: 98%;
+  margin-bottom: 15px;
+  margin-top: 4%;
+}
+
+.field-container {
+  margin-bottom: 20px;
+}
+
+label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 5px;
+  color: #333;
+}
+
+.tag-container {
+  display: flex;
+  flex-wrap: wrap;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background: #fff;
+  min-height: 40px;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.input-field {
+  border: none;
+  outline: none;
+  flex: 1;
+  padding: 5px;
+  font-size: 14px;
+}
+
+.input-field::placeholder {
+  color: #aaa;
+}
+
+.tag {
+  background: #007bff;
+  color: white;
+  padding: 5px 10px;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  opacity: 0;
+  transform: scale(0.8);
+  animation: fadeIn 0.3s forwards;
+}
+
+@keyframes fadeIn {
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.close-btn {
+  background: #fff;
+  color: #007bff;
+  margin-left: 5px;
+  border-radius: 50%;
+  padding: 0 5px;
+  cursor: pointer;
+}
+
+.close-btn:hover {
+  background: #ddd;
+}
+
+button[type="submit"] {
+  background: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  font-size: 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.3s;
+  margin-left: 35%;
+}
+
+button[type="submit"]:hover {
+  background: #0056b3;
+}
+
+@keyframes fadeOut {
+  to {
+    display: none;
+    opacity: 0;
+    transform: scale(0.8);
+  }
+}
+
+.tag {
+  animation: fadeIn 0.3s;
+}
+
+.close-btn {
+  cursor: pointer;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+.form_cont{
+  margin-left: 2%;
+  width: 25%;
+  overflow-y: scroll;
+  height: 81.5vh;
+}
+
+.form_cont::-webkit-scrollbar {
+  display: none;
+}
+
+.cont{
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+}
+
+.img_cont{
+  width: 70%;
+  margin-top: 0.5%;
+}
+
+select{
+  min-height: 40px;
+  width: 100%;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background: #fff;
+}

@@ -1,0 +1,170 @@
+<div class="Bg_Grp">
+  <div class="zoom-controls">
+    <button (click)="zoomIn()"><i class="bi bi-zoom-in"></i></button>
+    <button (click)="zoomOut()"><i class="bi bi-zoom-out"></i></button>
+  </div>
+  <div class="Grp">
+    <div class="zoom_outer">
+      <div id="zoom" class="Img">
+        <img [src]="imageUrl" [alt]="plante.nomScientifique" (click)="openImageInNewWindow()">
+      </div>
+    </div>
+    <div class="Infs">
+
+      <div class="formbold-main-wrapper" style="margin-bottom: 15px;">
+        <div class="formbold-form-wrapper">
+          <form #form="ngForm">
+            <div class="formbold-steps">
+              <ul>
+                <li [class.active]="currentStep === 1" (click)="goto(1)">
+                  Metadata
+                </li>
+                <li [class.active]="currentStep === 2" (click)="goto(2)">
+                  Annotations
+                </li>
+              </ul>
+            </div>
+
+            <div [class.active]="currentStep === 1" class="formbold-form-step-1">
+
+              <div class="Inf_Img">
+                <div class="Inf">
+                  <div class="Blc1">
+                    <ul>
+                      <li *ngIf="plante.nomScientifique" [title]="plante.nomScientifique">
+                        <strong>Scientific Name:</strong>
+                        <span [innerHTML]="formatNomScientifique(plante.nomScientifique)"></span>
+                      </li>
+                      <li *ngIf="plante.nomScientifiqueAuteur"><strong>Scientific Name Author:</strong>
+                        {{plante.nomScientifiqueAuteur}}
+                      </li>
+                      <li *ngIf="plante.genre"><strong>Genus:</strong> <I>{{plante.genre}}</I></li>
+                      <li *ngIf="plante.famille"><strong>Family:</strong> {{plante.famille}}</li>
+                      <li *ngIf="plante.epitheteSpecifique"><strong>Specific Epithet:</strong>
+                      <I>{{plante.epitheteSpecifique}}</I>
+                      </li>
+                    </ul>
+                  </div>
+                  <div class="Blc2">
+                    <ul>
+                      <li *ngIf="plante.pays"><strong>Country:</strong> {{plante.pays}}</li>
+                      <li *ngIf="plante.departement"><strong>Department:</strong> {{plante.departement}}</li>
+                      <li *ngIf="plante.ville"><strong>City:</strong> {{plante.ville}}</li>
+                      <li *ngIf="plante.lieu"><strong>Location:</strong> {{plante.lieu}}</li>
+                      <li *ngIf="plante.latitude"><strong>Latitude:</strong> {{plante.latitude}}</li>
+                    </ul>
+                  </div>
+                  <div class="Blc3">
+                    <ul>
+                      <li *ngIf="plante.dateCreation"><strong>Collected On:</strong> {{plante.dateCreation}}</li>
+                      <li *ngIf="plante.enregistrePar"><strong>Collected By:</strong> {{plante.enregistrePar}}</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+            <div [class.active]="currentStep === 2" class="formbold-form-step-2">
+
+              <div class="formbold-main-wrapper">
+                <div class="formbold-form-wrapper">
+                  <form #form="ngForm">
+
+                    <div class="formbold-steps">
+                      <ul>
+                        <li *ngFor="let a of plante.annotations; let i = index" [class.active]="currentStep1 === i"
+                          (click)="goto1(i)">
+                          {{a.model.name}}
+                        </li>
+                      </ul>
+                    </div>
+
+                    <div *ngFor="let a1 of plante.annotations; let j = index" [class.active]="currentStep1 === j"
+                      [ngClass]="'formbold-form-step1-' + j">
+                      <div class="GrpM" style="margin: 0px; width: 96%;">
+                        <div class="InfM">
+                          <div class='Prd'>
+                            <form>
+                              <ul style="margin-bottom: 0px;">
+                                <li style="display: flex;">
+                                  <div class="ELM"><strong>Classes:</strong> {{a1.libelle}} </div>
+                                </li>
+                                <li style="display: flex;">
+                                  <div class="ELM"><strong>Prediction:</strong> {{a1.classe}} </div>
+                                </li>
+                                <li style="display: flex;">
+                                  <div class="ELM"><strong>State:</strong> {{a1.valide}}</div>
+                                </li>
+                                <li style="display: flex;">
+                                  <div class="ELM"><strong>Method of acquisition:</strong>
+                                    {{a1.modeAquisition}}</div>
+                                </li>
+                              </ul>
+                            </form>
+                          </div>
+                        </div>
+                        <div class="Btns">
+                          <button (click)="doPrediction(plante , a1.model.id)" class="btn" style="margin-top: 1.5px;">
+                            <i class="bi bi-info-circle"></i>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </form>
+                </div>
+              </div>
+
+            </div>
+
+          </form>
+        </div>
+      </div>
+      <div class="Inf_Mdl" *ngIf="modeles.length">
+        <div class="Lst_Mdl">
+          <h3 style="width: 98%;">Models</h3>
+          <div></div>
+          <div style="margin-left: 2%;"
+            *ngFor="let m of modeles | filterByName: searchtext: 'nom' | paginate: { itemsPerPage: 2, currentPage: m1 }">
+            <div class="GrpM">
+              <div class="InfM">
+                <h5>{{m.name}}</h5>
+                <span>(version: {{m.version}}, {{m.dateCreation}})</span>
+                <!--kber men 135 kmel b ...-->
+                <p [title]="m.description">{{ m.description.length > 150 ? (m.description | slice:0:150) + '...' :
+                  m.description }}</p>
+                <ul class="inline-list">
+                  <li><strong>Accuracy :</strong> {{m.accuracy}}</li>
+                  <li><strong>Loss :</strong> {{m.loss}}</li>
+                </ul>
+              </div>
+              <div class="Btns">
+                <button (click)="info_model(m.id)" class="btn me-2" style="margin-bottom: 1.5px;">
+                  <i class="bi bi-info-circle"></i>
+                </button>
+                <button (click)="doPrediction(plante , m.id)" class="btn" style="margin-top: 1.5px;">
+                  <i class="bi bi-play-circle-fill"></i>
+                </button>
+              </div>
+            </div>
+            <hr>
+          </div>
+          <div class="pagination">
+            <pagination-controls (pageChange)="m1 = $event" [autoHide]="true" [previousLabel]="'Prev'"
+              [nextLabel]="'Next'" [responsive]="true"></pagination-controls>
+          </div>
+        </div>
+        <!--<div class="Pred_Mdl">
+
+          </div>-->
+      </div>
+    </div>
+  </div>
+
+  <div class="wrapper">
+    <div class="card" *ngFor="let plante of plantes">
+      <img src='{{plante.image.image_url}}' (click)="chng_img(plante, plantes)" />
+      <!--<h2 class="card-title">Plant1</h2>-->
+    </div>
+  </div>
+</div>

@@ -1,0 +1,29 @@
+<div class="container mt-5">
+    <div class="row top">
+      <div class="col-md-8">
+        <div class="card p-4" style="width: 110% !important;">
+          <!-- Title "Edit Your Project Information" -->
+          <h2 class="text-center mb-4">
+            <span class="border-bottom border-primary pb-1">Edit Your Dataset Information</span>
+          </h2>
+  
+          <!-- Form -->
+          <form [formGroup]="datasetFormGroup" (ngSubmit)="modifier_prt()">
+            <div class="mb-3">
+              <label for="name" class="form-label fw-bold">Dataset Name:</label>
+              <input type="text" class="form-control" id="name" formControlName="nomDataset">
+            </div>
+  
+            <div class="mb-3">
+              <label for="description" class="form-label fw-bold">Description:</label>
+              <textarea class="form-control" id="description" formControlName="description"></textarea>
+            </div>
+            <div class="d-flex wst">
+              <button type="submit" class="btn btn-primary mt-3" >Edit Dataset</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  

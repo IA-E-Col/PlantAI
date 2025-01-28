@@ -1,0 +1,54 @@
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card p-4">
+                <!-- Title "Add a Model" -->
+                <h2 class="text-center mb-4">
+                    <span class="border-bottom border-primary pb-1">Add a Corpus</span>
+                </h2>
+
+                <!-- Form -->
+                <form [formGroup]="collectionFormGroup" (ngSubmit)="ajout_col()">
+                    <div class="mb-3">
+                        <label for="Collection" class="form-label fw-bold">Corpus Name:</label>
+                        <input type="text" class="form-control" id="Collection" formControlName="nomCollection"
+                            placeholder="Collection Name">
+                        <small
+                            *ngIf="collectionFormGroup.controls['nomCollection'].errors && collectionFormGroup.controls['nomCollection'].touched"
+                            class="text-danger">
+                            Corpus name is required.
+                        </small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="description" class="form-label fw-bold">Description:</label>
+                        <textarea class="form-control" id="description" formControlName="description" placeholder="Enter collection description"></textarea>
+                        <small *ngIf="collectionFormGroup.controls['description'].errors && collectionFormGroup.controls['description'].touched" class="text-danger">
+                          Description is required and must be at least 3 characters long.
+                        </small>
+                      </div>
+
+                    <div class="mb-3">
+                        <label for="fileUpload" class="form-label fw-bold">Upload Corpus File:</label>
+                        <div class="custom-file">
+                            <input type="file" class="form-control" id="customFile" formControlName="collectionFile"  (change)="onFileSelect($event)">
+                            <label class="custom-file-label" for="fileUpload"></label>
+                        </div>
+                        <small
+                            *ngIf="collectionFormGroup.controls['collectionFile'].errors && collectionFormGroup.controls['collectionFile'].touched"
+                            class="text-danger">
+                            A file is required.
+                        </small>
+                    </div>
+
+                    <div style="text-align: center;">
+                        <button [disabled]="collectionFormGroup.invalid" type="submit" class="btn btn-primary">Create
+                            Corpus</button>
+                        <button type="button" *ngIf="is_active" class="btn btn-primary" [routerLink]="['/admin/explorer']"
+                            style="margin-left: 10px;">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

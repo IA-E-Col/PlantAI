@@ -1,0 +1,119 @@
+<div class="cont">
+  <div class="form_cont">
+    <form id="tag-form">
+
+      <h3 style="text-align: center;">Filter By Metadata</h3>
+      <div class="field-container">
+        <label>Family</label>
+        <div class="tag-container" id="family-container">
+          <input list="family-suggestions" type="text" class="input-field" placeholder="Type and press Enter">
+        </div>
+        <datalist id="family-suggestions"></datalist>
+      </div>
+
+      <div class="field-container">
+        <label>Genus</label>
+        <div class="tag-container" id="genre-container">
+          <input list="genre-suggestions" type="text" class="input-field" placeholder="Type and press Enter">
+        </div>
+        <datalist id="genre-suggestions"></datalist>
+      </div>
+
+      <div class="field-container">
+        <label>Specific Epithet</label>
+        <div class="tag-container" id="specific-epithet-container">
+          <input list="specific-epithet-suggestions" type="text" class="input-field" placeholder="Type and press Enter">
+        </div>
+        <datalist id="specific-epithet-suggestions"></datalist>
+      </div>
+
+      <div class="field-container">
+        <label>Scientific Name</label>
+        <div class="tag-container" id="scientific-name-container">
+          <input list="scientific-name-suggestions" type="text" class="input-field" placeholder="Type and press Enter">
+        </div>
+        <datalist id="scientific-name-suggestions"></datalist>
+      </div>
+
+      <div class="field-container">
+        <label>Scientific Name Author</label>
+        <div class="tag-container" id="scientific-name-author-container">
+          <input list="scientific-name-author-suggestions" type="text" class="input-field"
+            placeholder="Type and press Enter">
+        </div>
+        <datalist id="scientific-name-author-suggestions"></datalist>
+      </div>
+
+      <div class="field-container">
+        <label>Country</label>
+        <div class="tag-container" id="country-container">
+          <input list="country-suggestions" type="text" class="input-field" placeholder="Type and press Enter">
+        </div>
+        <datalist id="country-suggestions"></datalist>
+      </div>
+
+      <div class="field-container">
+        <label>City</label>
+        <div class="tag-container" id="city-container">
+          <input list="city-suggestions" type="text" class="input-field" placeholder="Type and press Enter">
+        </div>
+        <datalist id="city-suggestions"></datalist>
+      </div>
+
+      <div class="field-container">
+        <label>Location</label>
+        <div class="tag-container" id="location-container">
+          <input list="location-suggestions" type="text" class="input-field" placeholder="Type and press Enter">
+        </div>
+        <datalist id="location-suggestions"></datalist>
+      </div>
+
+      <div class="field-container">
+        <label>Department</label>
+        <div class="tag-container" id="department-container">
+          <input list="department-suggestions" type="text" class="input-field" placeholder="Type and press Enter">
+        </div>
+        <datalist id="department-suggestions"></datalist>
+      </div>
+
+      <div class="field-container">
+        <label>Collected By</label>
+        <div class="tag-container" id="recorded-by-container">
+          <input list="recorded-by-suggestions" type="text" class="input-field" placeholder="Type and press Enter">
+        </div>
+        <datalist id="recorded-by-suggestions"></datalist>
+      </div>
+
+      <div class="field-container">
+        <label>Oldest Collected Date</label>
+        <div class="tag-container" id="capture-date-start-container">
+          <input type="date" class="input-field">
+        </div>
+      </div>
+
+      <div class="field-container">
+        <label>Newest Collected Date</label>
+        <div class="tag-container" id="capture-date-end-container">
+          <input type="date" class="input-field">
+        </div>
+      </div>
+      <div class="filter-section">
+        <h3 style="text-align: center;">Filter By Annotations</h3>
+
+        <div class="field-container" *ngFor="let m of ModelsForAnnotations">
+          <label>{{ m.model.name }}</label>
+          <select [(ngModel)]="m.selectedClass" name="{{m.model.id}}">
+            <option [ngValue]="null" selected>All classes</option>
+            <option *ngFor="let classe of m.classes" [ngValue]="classe.identifier">{{ classe.name }}</option>
+          </select>
+        </div>
+      </div>
+      <button type="submit">Submit</button>
+    </form>
+  </div>
+  <div class="img_cont">
+    <div>
+      <router-outlet></router-outlet>
+    </div>
+  </div>
+</div>

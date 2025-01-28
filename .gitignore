@@ -1,0 +1,9 @@
+app/node_modules
+app/.angular/
+ProjectManagementService/src/main/resources/application.properties
+ProjectManagementService/src/main/resources/application.properties
+ProjectManagementService/src/main/resources/application.properties
+ModelService/__pycache__
+ModelService/env
+.idea
+.vscode

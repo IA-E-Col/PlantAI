@@ -1,0 +1,96 @@
+<div class="formbold-main-wrapper">
+  <div class="formbold-form-wrapper">
+    <form (ngSubmit)="onSubmit()" #form="ngForm">
+      <div class="formbold-steps">
+        <ul>
+          <li [class.active]="currentStep === 1">
+            <span>1</span>
+            Detection
+          </li>
+          <li [class.active]="currentStep === 2">
+            <span>2</span>
+            Model Type
+          </li>
+          <li [class.active]="currentStep === 3">
+            <span>3</span>
+            fichier
+          </li>
+        </ul>
+      </div>
+
+      <div [class.active]="currentStep === 1" class="formbold-form-step-1">
+        <div class="formbold-input-flex">
+          <div>
+            <label for="name" class="formbold-form-label">Name</label>
+            <input type="text" name="name" placeholder="Model name" id="name" class="formbold-form-input" [(ngModel)]="modelData.name">
+          </div>
+        </div>
+        <div>
+          <label for="Description" class="formbold-form-label">Description</label>
+          <input type="text" name="Description" id="Description" placeholder="Model Description" class="formbold-form-input" [(ngModel)]="modelData.description">
+        </div>
+        <div class="formbold-form-btn-wrapper">
+          <button class="formbold-btn" type="button" (click)="nextStep()">Next Step</button>
+        </div>
+      </div>
+
+      <div [class.active]="currentStep === 2" class="formbold-form-step-2">
+        <div>
+          <label for="modelType" class="formbold-form-label">Type</label>
+          <select class="formbold-form-input" name="modelType" id="modelType" [(ngModel)]="modelData.categorie">
+            <option value="" selected>Model type</option>
+            <option value="classification">Classification</option>
+            <option value="segmentation">Segmentation</option>
+            <option value="detection">Detection</option>
+          </select>
+        </div>
+        <div class="formbold-mb-3 formbold-input-wrapp">
+          <label for="Classes" class="formbold-form-label">Classes</label>
+          <div>
+            <select class="formbold-form-input" name="class" id="class" [(ngModel)]="classesAnnotation[0]">
+              <option value="" selected>Choose a class</option>
+              <option *ngFor="let classe of classes" [value]=classe.id>{{classe.name}}</option>
+            </select>
+          </div>
+          <div *ngFor="let classSelect of additionalClassSelects; let i = index">
+            <select class="formbold-form-input" name="additionalClass{{i}}" id="additionalClass{{i}}" style="margin-top: 5px;" [(ngModel)]="classesAnnotation[i + 1]">
+              <option value="" selected>Choose a class</option>
+              <option *ngFor="let classe of classes" [value]=classe.id>{{classe.name}}</option>
+            </select>
+            <button type="button" class="formbold-btn remove-class-btn" (click)="removeClass(i)" style="margin-top: 5px;">-</button>
+          </div>
+          <button type="button" class="formbold-btn add-class-btn" (click)="addClass()" style="margin-top: 5px; padding: 8px 15px; padding-bottom: 10px;">+</button>
+        </div>
+        <div class="formbold-form-btn-wrapper">
+          <button type="button" class="formbold-btn bck-btn" (click)="prevStep()">Back</button>
+          <button class="formbold-btn" type="button" (click)="nextStep()">Next Step</button>
+        </div>
+      </div>
+
+      <div [class.active]="currentStep === 3" class="formbold-form-step-3">
+        <div>
+          <label for="urlModele" class="formbold-form-label">Model URL</label>
+          <input type="text" name="urlModele" id="urlModele" class="formbold-form-input" placeholder="Enter model URL" [(ngModel)]="modelData.urlModele"/>
+        </div>
+        <div class="formbold-form-btn-wrapper">
+          <button type="button" class="formbold-btn bck-btn" (click)="prevStep()">Back</button>
+          <button class="formbold-btn" type="submit">
+            Submit
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <g clip-path="url(#clip0_1675_1807)">
+                <path
+                  d="M10.7814 7.33312L7.20541 3.75712L8.14808 2.81445L13.3334 7.99979L8.14808 13.1851L7.20541 12.2425L10.7814 8.66645H2.66675V7.33312H10.7814Z"
+                  fill="white" />
+              </g>
+              <defs>
+                <clipPath id="clip0_1675_1807">
+                  <rect width="16" height="16" fill="white" />
+                </clipPath>
+              </defs>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
