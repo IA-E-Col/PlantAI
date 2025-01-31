@@ -113,3 +113,6 @@ The management service will be accessible at:
 The prediction service will be accessible at:
 
 [http://localhost:8000](http://localhost:8000)
+
+## Usage
+The models won't be integrated inside this repository. They will have to be added manually.
