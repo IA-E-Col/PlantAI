@@ -1,0 +1,50 @@
+.navbar {
+    background-color: #A3B18A;
+    color: #fff;
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+  }
+  .logo i {
+    margin-right: 0.5rem;
+    font-size: 1.8rem; 
+  }
+  
+  .user-icon {
+    font-size: 1.5rem;  /* Increase the icon size */
+    margin-right: 0.5rem;  /* Spacing between the icon and username */
+  }
+  
+  .username {
+    font-size: 1.5rem;  /* Increase the username size */
+    font-weight: bold;  /* Optionally, make the username bold */
+  }
+  
+  .logo {
+    font-size: 1.5rem;
+    font-weight: bold;
+  }
+  
+  .nav-links {
+    list-style: none;
+    display: flex;
+    gap: 1rem;
+    margin: 0;
+    padding: 0;
+    transition: all 0.3s ease-in-out;
+  }
+  
+  /* Links Style */
+  .nav-links li a {
+    text-decoration: none;
+    color: #fff;
+    font-size: 1rem;
+    transition: color 0.2s ease-in-out;
+  }
+  
+  .nav-links li a:hover {
+    color: #f0a500;
+  }
+  
