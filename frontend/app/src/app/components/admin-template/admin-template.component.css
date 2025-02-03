@@ -67,6 +67,7 @@ app-sidebar {
   flex: 1;
   padding: 20px;
   overflow: auto;
+  background-color: #F5F5DC;
 }
 .flex{
   display:flex;

@@ -23,7 +23,7 @@ body {
 /* 🌟 Conteneur principal */
 .form-wrapper {
   background: #FFFFFF;
-  width: 1500px; /* Ajustement de la largeur */
+  width: auto /* Ajustement de la largeur */
   border-radius: 15px;
   padding: 0px; /* Plus d'espace à l'intérieur */
   text-align: center;
@@ -34,7 +34,7 @@ body {
   margin-top: 10px; /* Éviter qu'il soit collé en haut */
   padding-top: 30px; /* Éviter qu'il soit collé en haut */
   padding-bottom: 30px; /* Éviter qu'il soit collé en haut */
-
+  border-radius: 12px;
 
 }
 
