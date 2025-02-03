@@ -1,224 +1,75 @@
+.navbar {
+  background-color: #A3B18A;
+  color: #fff;
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+}
+.logo i {
+  margin-right: 0.5rem;
+  font-size: 1.8rem; 
+}
 
-.menu[_ngcontent-ng-c1064464200] {
-  line-height: 180%;
+.user-icon {
+  font-size: 1.5rem;  /* Increase the icon size /
+  margin-right: 0.5rem;  / Spacing between the icon and username */
+}
+
+.username {
+  font-size: 1.5rem;  /* Increase the username size /
+  font-weight: bold;  / Optionally, make the username bold */
 }
 
 .logo {
-  margin: 20px; /* Push the logo to the left */
-}
-
-.section--menu {
-  background-color: #fcfbfb;
-}
-
-.menu__item {
-  margin: 0 30px; /* Add some space between menu items */
-  font-weight: bolder;
-}
-
-.menu__itema {
-  margin: 0 30px; /* Add some space between menu items */
-  font-weight: bolder;
-}
-
-.menu__item__right {
-  margin-right: 8px;
-}
-
-.menu {
-  line-height: 180%;
-  margin: 0 auto 3em;
-  display: flex;
-  justify-content: space-between; /* Align the logo horizontally */
-  margin-bottom: 1em;
-  align-items: center;
-}
-
-.menu__list {
-  position: relative;
-  display: -webkit-flex;
-  display: flex;
-  -webkit-flex-wrap: wrap;
-  flex-wrap: wrap;
-  padding: 0;
-  list-style: none;
-
-  justify-content: center; /* Center menu items horizontally */
-  flex-grow: 1; /* Allow menu items to take remaining space */
-}
-
-.menu__item {
-  display: block;
-  margin: 1em 0;
-}
-
-.menu__itema {
-  display: block;
-  margin: 1em 0;
-}
-
-.menu__link {
-  all: unset;
-  font-size: 1.2em;
+  font-size: 1.5rem;
   font-weight: bold;
-  display: block;
-  padding: 1em;
-  cursor: pointer;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-  -webkit-touch-callout: none;
-  -khtml-user-select: none;
-  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
 
-/*.menu__link:hover,
-.menu__link:focus {
-  outline: none;
-}*/
-
-.menu--horatio .menu__item {
-  margin-left: 6.5px;
-  margin-right: 6.5px;
-  color: #4e3c3e;
+.nav-links {
+  list-style: none;
+  display: flex;
+  gap: 1rem;
+  margin: 0;
+  padding: 0;
+  transition: all 0.3s ease-in-out;
 }
 
-.menu--horatio .menu__item {
-  position: relative;
-  -webkit-transition: color .25s;
-  transition: color .25s;
+/* Links Style */
+.nav-links li a {
+  text-decoration: none;
+  color: #fff;
+  font-size: 1rem;
+  transition: color 0.2s ease-in-out;
 }
 
-.menu--horatio .menu__item a {
-  position: relative;
-  color: inherit;
+.nav-links li a:hover {
+  color: #f0a500;
+}
+.layout {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
 }
 
-.menu--horatio .menu__item--current {
-  color: #b5b5b5;
+.content-container {
+  display: flex;
+  flex: 1;
+  
 }
 
-/*.menu--horatio .menu__item:hover {
-  color: #007bff;
+app-sidebar {
+  width: 250px;
+  min-width: 250px;
 }
 
-.menu--horatio .menu__item::before,
-.menu--horatio .menu__item::after,
-.menu--horatio .menu__item a::before,
-.menu--horatio .menu__item a::after {
-  position: absolute;
-  display: block;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  border: 2px solid currentColor;
+.content {
+  flex: 1;
+  padding: 20px;
+  overflow: auto;
+  background-color: #F5F5DC;
 }
-
-.menu--horatio .menu__item::before {
-  border-width: 0 0 0 2px;
-  -webkit-transform-origin: left bottom;
-  transform-origin: left bottom;
-}
-
-.menu--horatio .menu__item::after {
-  border-width: 0 2px 0 0;
-  -webkit-transform-origin: right top;
-  transform-origin: right top;
-}
-
-.menu--horatio .menu__item a::before,
-.menu--horatio .menu__item a::after {
-  z-index: 2;
-}
-
-.menu--horatio .menu__item a::before {
-  border-width: 2px 0 0;
-  -webkit-transform-origin: left top;
-  transform-origin: left top;
-}
-
-.menu--horatio .menu__item a::after {
-  border-width: 0 0 2px;
-  -webkit-transform-origin: right bottom;
-  transform-origin: right bottom;
-}
-
-.menu--horatio .menu__item--current::before,
-.menu--horatio .menu__item--current::after,
-.menu--horatio .menu__item:hover::before,
-.menu--horatio .menu__item:hover::after,
-.menu--horatio .menu__item--current a::before,
-.menu--horatio .menu__item--current a::after,
-.menu--horatio .menu__item:hover a::before,
-.menu--horatio .menu__item:hover a::after {
-  content: '';
-}
-
-.menu--horatio .menu__item:not(.menu__item--current):hover::before,
-.menu--horatio .menu__item:not(.menu__item--current):hover::after,
-.menu--horatio .menu__item:not(.menu__item--current):hover a::before,
-.menu--horatio .menu__item:not(.menu__item--current):hover a::after {
-  -webkit-animation: horatio-anim .6s ease-in-out;
-  animation: horatio-anim .6s ease-in-out;
-}
-
-.menu--horatio .menu__item:not(.menu__item--current):hover::before {
-  -webkit-animation-delay: -.45s;
-  animation-delay: -.45s;
-}
-
-.menu--horatio .menu__item:not(.menu__item--current):hover a::before {
-  -webkit-animation-delay: -.3s;
-  animation-delay: -.3s;
-}
-
-.menu--horatio .menu__item:not(.menu__item--current):hover::after {
-  -webkit-animation-delay: -.15s;
-  animation-delay: -.15s;
-}
-
-.menu--horatio .menu__item:not(.menu__item--current):hover a::after {
-  -webkit-animation-delay: 0;
-  animation-delay: 0;
-
-.menu--horatio[_ngcontent-ng-c2513079807] .menu__itema[_ngcontent-ng-c2513079807]::before, .menu--horatio[_ngcontent-ng-c2513079807] .menu__itema[_ngcontent-ng-c2513079807]::after, .menu--horatio[_ngcontent-ng-c2513079807] .menu__itema[_ngcontent-ng-c2513079807] a[_ngcontent-ng-c2513079807]::before, .menu--horatio[_ngcontent-ng-c2513079807] .menu__itema[_ngcontent-ng-c2513079807] a[_ngcontent-ng-c2513079807]::after {
-  border: 0;
-}
-}*/
-
-@-webkit-keyframes horatio-anim {
-  0%, 37% {
-    opacity: 0;
-    -webkit-transform: rotate(45deg) scale(1.5);
-    transform: rotate(45deg) scale(1.5);
-  }
-
-  100% {
-    opacity: 1;
-    -webkit-transform: none;
-    transform: none;
-  }
-}
-
-@keyframes horatio-anim {
-  0%, 37% {
-    opacity: 0;
-    -webkit-transform: rotate(45deg) scale(1.5);
-    transform: rotate(45deg) scale(1.5);
-  }
-
-  100% {
-    opacity: 1;
-    -webkit-transform: none;
-    transform: none;
-  }
-}
-
-ul.dropdown-menu {
-  top: 0px;
-  right: auto;
-  bottom: auto;
-  left: 3%;
+.flex{
+  display:flex;
 }

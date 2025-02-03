@@ -1,0 +1,11 @@
+<div class="sidebar d-flex flex-column p-3 transition-all" [ngClass]="{ 'expanded': isOpen, 'collapsed': !isOpen }">
+    <ul class="nav flex-column">
+      <li *ngFor="let item of menuItems" class="nav-item">
+        <a class="nav-link d-flex align-items-center" [ngClass]="{ 'active': active === item.name }" (click)="setActive(item.name)">
+          <fa-icon [icon]="item.icon" class="me-2"></fa-icon>
+          <span *ngIf="isOpen">{{ item.name }}</span>
+        </a>
+      </li>
+    </ul>
+  </div>
+  
