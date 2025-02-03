@@ -6,3 +6,4 @@ ProjectManagementService/src/main/resources/application.properties
 .idea
 .vscode
 ModelService
+node_modules/
