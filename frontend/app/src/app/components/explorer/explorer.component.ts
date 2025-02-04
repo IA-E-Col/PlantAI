@@ -1,17 +1,16 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { DatePipe, NgForOf, NgIf } from "@angular/common";
 import { Router } from "@angular/router";
 import { ProjetService } from "../../services/projet.service";
-import Swal from 'sweetalert2';
-import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { FilterPipe } from "../../filter.pipe";
 import { CommonModule } from '@angular/common';
 import { NgxPaginationModule } from 'ngx-pagination';
 import { catchError } from 'rxjs/operators';
 import { of } from 'rxjs';
-import {CreeCollectionComponent} from "../cree-collection/cree-collection.component";
-import {MatDialog, MatDialogRef} from "@angular/material/dialog";
+import { CreeCollectionComponent } from "../cree-collection/cree-collection.component";
+import { MatDialog } from "@angular/material/dialog";
+import { SharedServiceService } from '../../services/shared-service.service';
 
 
 @Component({
@@ -30,7 +29,6 @@ import {MatDialog, MatDialogRef} from "@angular/material/dialog";
   styleUrl: './explorer.component.css'
 })
 export class ExplorerComponent {
-
   currentSortField: string = '';
   isAscending: boolean = true;
   searchtext: any;
@@ -39,7 +37,7 @@ export class ExplorerComponent {
   p: number = 1;
   message_err!: string
 
-  constructor(private dialogRef: MatDialog,private projetService: ProjetService, private router: Router) { }
+  constructor(private dialogRef: MatDialog,private projetService: ProjetService, private router: Router,private sharedServiceService: SharedServiceService) { }
 
   ngOnInit(): void {
     this.projetService.func_get_All_collection()
@@ -121,6 +119,7 @@ export class ExplorerComponent {
     });
   }
   ouvrirCol(id: any) {
+    this.sharedServiceService.setCorpusId(id);
     this.router.navigateByUrl(`/admin/explore-details/${id}`);
   }
 

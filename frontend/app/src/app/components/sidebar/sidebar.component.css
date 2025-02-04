@@ -1,0 +1,54 @@
+.sidebar {
+  width: 250px;
+  height: 100vh;
+  background-color: #A3B18A;
+  transition: width 0.3s ease-in-out;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.collapsed {
+  width: 60px;
+}
+
+.toggle-btn {
+  cursor: pointer;
+  padding: 10px;
+  text-align: center;
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  color: white;
+  text-decoration: none;
+  display:inline-block;
+  border-top-right-radius: 15px;
+  border-bottom-right-radius: 15px;
+}
+
+.nav-link:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.nav-item {
+  list-style: none;
+}
+
+.collapsed .nav-link span {
+  display: none;
+}
+
+.collapsed .nav-link {
+  justify-content: center;
+}
+
+li{
+  font-weight:bold;
+  font-size: 1.3rem; 
+}
+.active{
+  background-color: #B8C5A1;
+  border-top-right-radius: 15px;
+  border-bottom-right-radius: 15px;
+}
