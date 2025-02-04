@@ -18,6 +18,7 @@ import { SidebarComponent } from '../sidebar/sidebar.component';
   styleUrl: './admin-template.component.css'
 })
 export class AdminTemplateComponent implements OnInit{
+  corpusId! : string;
   cheminLogo = "assets/IRD.png";
   cheminUser = "assets/user.png";
   username! : string

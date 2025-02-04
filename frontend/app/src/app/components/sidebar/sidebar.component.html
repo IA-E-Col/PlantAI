@@ -1,11 +1,25 @@
-<div class="sidebar d-flex flex-column p-3 transition-all" [ngClass]="{ 'expanded': isOpen, 'collapsed': !isOpen }">
-    <ul class="nav flex-column">
-      <li *ngFor="let item of menuItems" class="nav-item">
-        <a class="nav-link d-flex align-items-center" [ngClass]="{ 'active': active === item.name }" (click)="setActive(item.name)">
-          <fa-icon [icon]="item.icon" class="me-2"></fa-icon>
-          <span *ngIf="isOpen">{{ item.name }}</span>
-        </a>
-      </li>
-    </ul>
-  </div>
-  
+<div class="sidebar d-flex flex-column">
+  <ul class="nav flex-column">
+    <li *ngFor="let item of menuItems" class="nav-item">
+      <a class="nav-link d-flex align-items-center" [routerLink]="item.path"
+         [class.active]="active === item.name" 
+         (click)="setActive(item.name)">
+        <fa-icon [icon]="item.icon" class="me-2"></fa-icon>
+        <span *ngIf="isOpen">{{ item.name }}</span>
+      </a>
+
+      <!-- Submenu: Show only if the menu is active -->
+      <ul class="p-0" *ngIf="active === item.name && submenus[active.toLowerCase()] && itemId">
+        <li *ngFor="let sub of submenus[active.toLowerCase()]" class="nav-item">
+          <a class="nav-link d-flex align-items-center ps-5"
+          (click)="setActiveSub(sub.name)"
+          [class.active]="activeSub === sub.name" 
+          [routerLink]="sub.path">
+            <fa-icon [icon]="sub.icon" class="me-2"></fa-icon>
+            <span *ngIf="isOpen">{{ sub.name }}</span>
+          </a>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</div>

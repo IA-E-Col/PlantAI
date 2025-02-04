@@ -22,7 +22,9 @@
   align-items: center;
   color: white;
   text-decoration: none;
-  padding: 10px;
+  display:inline-block;
+  border-top-right-radius: 15px;
+  border-bottom-right-radius: 15px;
 }
 
 .nav-link:hover {
@@ -39,4 +41,14 @@
 
 .collapsed .nav-link {
   justify-content: center;
+}
+
+li{
+  font-weight:bold;
+  font-size: 1.3rem; 
+}
+.active{
+  background-color: #B8C5A1;
+  border-top-right-radius: 15px;
+  border-bottom-right-radius: 15px;
 }
