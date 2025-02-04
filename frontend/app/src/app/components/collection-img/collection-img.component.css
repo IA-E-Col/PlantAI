@@ -1,315 +1,341 @@
-body {
-    background: #00b09b;
-    background: -webkit-linear-gradient(to right, #00b09b, #96c93d);
-    background: linear-gradient(to right, #00b09b, #96c93d);
-    min-height: 100vh;
-}
-
-.text-gray {
-    color: #aaa;
-}
-
-.media {
+/* Conteneur principal */
+.container {
     display: flex;
-    align-items: center !important;
-    flex-direction: row !important;
+    background-color: #F5F5E6;
+    padding: 10px;
 }
 
-.media img {
-    margin-right: 15px;
-}
-
-.more-info {
-    font-size: 14px;
-    color: #777;
-}
-
-/* Customize list-group appearance */
-.list-group {
-    border-radius: 15px;
-}
-
-/* Style list-group-item */
-.list-group-item {
-    padding: 3px !important;
-    border: none;
-    background-color: #f8f9fa;
-    /* Light gray background */
-    margin-bottom: 10px;
-}
-
-/* Style list-group-item hover effect */
-.list-group-item:hover {
-    background-color: #e9ecef;
-    /* Lighter gray background on hover */
-}
-
-/* Style media content */
-.media {
+/* Sidebar */
+.sidebar {
+    background-color: #A3B18A;
+    color: white;
+    padding: 20px;
     border-radius: 10px;
-    overflow: hidden;
 }
 
-/* Style media image */
-.media img {
-    border-radius: 5px;
-    max-width: 100%;
-    height: auto;
+/* Section principale */
+.content {
+    flex: 1;
+    padding: 20px;
 }
 
-/* Style font-weight-bold class */
-.font-weight-bold {
-    font-weight: bold;
-}
-
-/* Style font-italic class */
-.font-italic {
-    font-style: italic;
-}
-
-/* Style list-unstyled */
-.list-unstyled {
-    list-style: none;
-    padding-left: 0;
-}
-
-/* Style additional information list */
-.list-unstyled li {
-    margin-bottom: 5px;
-}
-
-/* Style background gradient for body */
-body {
-    background: #00b09b;
-    background: -webkit-linear-gradient(to right, #00b09b, #96c93d);
-    background: linear-gradient(to right, #00b09b, #96c93d);
-    min-height: 100vh;
-    margin: 0;
-}
-
-/* Style text color for text-gray class */
-.text-gray {
-    color: #aaa;
-}
-
-/* Style flex layout for media */
-.media {
+/* Boutons d'affichage */
+.view-toggle {
     display: flex;
-    align-items: center !important;
-    flex-direction: row !important;
+    gap: 10px;
+    margin-bottom: 20px;
 }
 
-/* Style margin for media image */
-.media img {
-    margin-right: 15px;
+.view-toggle .btn {
+    padding: 10px;
+    border: none;
+    background-color: #A3B18A;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
 }
 
-/* Style additional information */
-.more-info {
-    font-size: 14px;
-    color: #777;
+.view-toggle .btn:hover {
+    background-color: #82966D;
 }
 
-/* Animate list-group-item on hover */
-.list-group-item {
+.list_grid .btn.active {
+    background-color: #007bff;
+    color: white;
+}
+
+/* Liste des plantes */
+.plant-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 30px; /* Espacement plus grand entre les cartes */
+}
+
+/* ---------------- LIST VIEW ---------------- */
+/* 2 cartes par ligne */
+.plant-list.list-view .col-md-6 {
+    flex: 0 0 50%;
+    max-width: 50%;
+}
+
+/* Cartes agrandies en List View */
+.plant-list.list-view .card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    height: 280px; /* Cartes plus grandes pour bien inclure le bouton */
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Image à gauche */
+.plant-list.list-view .card-img {
+    width: 180px;
+    height: 180px;
+    object-fit: cover;
+    margin-bottom: 15px; /* Ajout d'espacement entre l'image et le bouton */
+    border-radius: 8px;
+}
+
+/* Texte + bouton à droite */
+.plant-list.list-view .card-body {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+}
+/* Espacement entre les cartes en List View */
+.plant-list.list-view .list-card {
+    margin-bottom: 20px; /* Ajoute un espace vertical */
+}
+
+/* Espacement entre les cartes en Grid View */
+.plant-list.grid-view .grid-card {
+    margin-bottom: 20px; /* Ajoute un espace vertical */
+}
+
+/* Bouton "Voir plus" bien visible */
+.plant-list.list-view .btn-voir-plus {
+    background-color: #848441;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: auto; /* S'assure que le bouton reste visible en bas */
+}
+
+.plant-list.list-view .btn-voir-plus:hover {
+    background-color: #6d6b3c;
+}
+
+/* ---------------- GRID VIEW ---------------- */
+/* ---------------- GRID VIEW ---------------- */
+/* 3 cartes par ligne avec un espacement ajusté */
+.plant-list.grid-view .row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 30px; /* Espacement entre les cartes ajusté */
+}
+
+/* Colonne pour 3 cartes par ligne */
+.plant-list.grid-view .col-md-4 {
+    flex: 0 0 33.333%;
+    max-width: 33.333%;
+}
+
+/* Cartes en grid view */
+.plant-list.grid-view .card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    text-align: center;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    height: auto; /* Ajustement automatique de la hauteur pour une uniformité */
+}
+
+/* Image en grid view */
+.plant-list.grid-view .card-img {
+    width: 100%;
+    height: 200px; /* Ajuster la hauteur de l'image pour le grid */
+    object-fit: cover;
+    border-radius: 8px;
+    border: 2px solid #ddd;
+    padding: 5px;
+    background-color: white;
+    margin-bottom: 10px; /* Espacement entre l'image et le bouton */
+}
+
+/* Bouton "Voir plus" sous chaque image */
+.plant-list.grid-view .btn-voir-plus {
+    background-color: #848441;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    width: 100%; /* Alignement correct */
+    cursor: pointer;
+}
+
+.plant-list.grid-view .btn-voir-plus:hover {
+    background-color: #6d6b3c;
+}
+/* Grid View: 3 cartes par ligne */
+.plant-list.grid-view .grid-card {
+    flex: 0 0 33.333%;
+    max-width: 33.333%;
+}
+
+/* List View: 2 cartes par ligne */
+.plant-list.list-view .list-card {
+    flex: 0 0 50%;
+    max-width: 50%;
+}
+
+/* Styles spécifiques pour le Grid View */
+.plant-list.grid-view .card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 15px;
+    text-align: center;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 100%;
+}
+
+/* ------ GRID VIEW ------ */
+.plant-list.grid-view {
+    justify-content: space-between;
+}
+
+.plant-list.grid-view .grid-card {
+    flex: 0 0 calc(33.333% - 20px); /* 3 cartes par ligne avec espace */
+    max-width: calc(33.333% - 20px);
+}
+
+.plant-list.grid-view .card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    height: 100%;
+    padding: 15px;
+}
+
+.plant-list.grid-view .card-img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 2px solid #ddd;
+    padding: 5px;
+    background-color: white;
+}
+
+.plant-list.grid-view .card-body {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 100%;
+    flex-grow: 1;
+}
+
+/* Bouton stylisé */
+.plant-list .btn {
+    width: 100%;
+    background-color: #A3B18A;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.plant-list .btn:hover {
+    background-color: #A3B18A;
+}
+.list_grid {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.list_grid .btn {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #A3B18A; /* Vert doux */
+    color: white;
+    border-radius: 8px; /* Coins arrondis */
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.list_grid .btn:hover {
+    background-color: #82966D; /* Légèrement plus foncé au survol */
+}
+
+.list_grid .btn.active {
+    background-color: #C5D0AF; /* Bleu actif */
+}
+/* Conteneur de la pagination */
+.pagination-container {
+    margin-top: 20px; /* Espacement avec les cartes */
+    text-align: right; /* Aligne la pagination à droite */
+}
+
+/* Liste de la pagination */
+.pagination-container .ngx-pagination {
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px; /* Espacement entre les boutons */
+    padding: 0;
+    list-style: none;
+}
+
+/* Élément de la pagination (li) */
+.pagination-container .ngx-pagination li {
+    display: inline-block;
+    margin: 0 5px;
+}
+
+/* Lien de pagination (a) */
+.pagination-container .ngx-pagination li a {
+    display: block;
+    padding: 8px 12px;
+    border-radius: 5px;
+    background-color: #A3B18A; /* Couleur de fond */
+    color: white;
+    text-decoration: none;
     transition: background-color 0.3s ease;
 }
 
-/* Animate media content on hover */
-.media:hover {
-    transform: scale(1.02);
-    transition: transform 0.3s ease;
+/* Effet au survol des boutons */
+.pagination-container .ngx-pagination li a:hover {
+    background-color: #82966D; /* Légèrement plus foncé */
 }
 
-/* Animate media image on hover */
-.media:hover img {
-    transform: scale(1.0005);
-    transition: transform 0.3s ease;
-}
-
-/* Animate font-weight-bold class on hover */
-.font-weight-bold:hover {
-    color: #6c757d;
-    /* Change color on hover */
-    transition: color 0.3s ease;
-}
-
-/* Animate font-italic class on hover */
-.font-italic:hover {
-    color: #6c757d;
-    /* Change color on hover */
-    transition: color 0.3s ease;
-}
-
-/* Animate list-unstyled li on hover
-.list-unstyled li:hover {
-    color: #6c757d; /* Change color on hover
-    transition: color 0.3s ease;
-}*/
-
-ul {
-    margin-left: 25px;
-}
-
-.p-3 {
-    padding: 4px !important;
-}
-
-.py-5 {
-    padding-top: 20px !important;
-    padding-bottom: 4px !important;
-}
-
-.col-lg-8 {
-    flex: 0 0 auto;
-    width: 100% !important;
-}
-
-.media-body,
-.d-flex {
-    width: 100%;
-}
-
-.font-weight-bold {
+/* Bouton actif (page courante) */
+.pagination-container .ngx-pagination li.current a {
+    background-color: #6d6b3c; /* Couleur pour la page active */
+    color: white;
     font-weight: bold;
-    width: 30%;
 }
 
-.row {
-    width: 100%;
-    --bs-gutter-x: 1.5rem;
-    --bs-gutter-y: 0;
-    display: flex;
-    flex-wrap: nowrap;
+/* Boutons "Précédent" et "Suivant" */
+.pagination-container .ngx-pagination .pagination-previous a,
+.pagination-container .ngx-pagination .pagination-next a {
+    background-color: #A3B18A; /* Même couleur de fond */
+    padding: 8px 12px;
+    border-radius: 5px;
+    color: white;
 }
 
-.col-md-6 {
-    flex: 0 0 auto;
-    width: 50%;
-    padding: 0;
+/* Ajouter un survol aux boutons "Précédent" et "Suivant" */
+.pagination-container .ngx-pagination .pagination-previous a:hover,
+.pagination-container .ngx-pagination .pagination-next a:hover {
+    background-color: #82966D;
 }
 
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-    }
-
-    to {
-        opacity: 1;
-    }
+/* Désactiver les boutons "Précédent" et "Suivant" quand nécessaire */
+.pagination-container .ngx-pagination .pagination-previous.disabled a,
+.pagination-container .ngx-pagination .pagination-next.disabled a {
+    background-color: #ccc; /* Gris pour les boutons désactivés */
+    cursor: not-allowed;
 }
-
-/* Appliquer l'animation à chaque élément */
-.list-group-item {
-    animation: fadeIn 0.5s ease forwards;
-}
-
-/* Animation de défilement */
-@keyframes slideInFromLeft {
-    from {
-        transform: translateX(-100%);
-        opacity: 0;
-    }
-
-    to {
-        transform: translateX(0);
-        opacity: 1;
-    }
-}
-
-/* Appliquer l'animation à chaque élément */
-.list-group-item {
-    animation: slideInFromLeft 0.5s ease forwards;
-}
-
-/* Animation de rotation */
-@keyframes rotate {
-    from {
-        transform: rotate(0deg);
-    }
-
-    to {
-        transform: rotate(360deg);
-    }
-}
-
-/* Appliquer l'animation à chaque élément */
-.list-group-item {
-    animation: rotate 1s linear infinite;
-}
-
-/* Animation de zoom */
-@keyframes zoomIn {
-    from {
-        transform: scale(0);
-    }
-
-    to {
-        transform: scale(1);
-    }
-}
-
-/* Appliquer l'animation à chaque élément */
-.list-group-item {
-    animation: zoomIn 0.5s ease forwards;
-}
-
-.plant-list-container {
-    max-height: 88%;
-    /* Adjust this value as needed */
-    overflow-y: scroll;
-}
-
-.plant-list-container::-webkit-scrollbar {
-    display: none;
-}
-
-.list_grid {
-    display: flex;
-    flex-direction: column;
-    width: 5%;
-}
-
-/* app.component.css */
-ul {
-    list-style-type: none;
-    padding: 0;
-}
-
-.grid-view {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: center;
-}
-
-.grid-view .media-body {
-    display: none;
-}
-
-.grid-view .media img {
-    margin-right: 0;
-}
-
-.list-view {
-    display: block;
-}
-
-.list-view .media-body {
-    display: block;
-}
-
-.list-view .media img {
-    margin-right: 10px;
-    /* Ajustez selon vos besoins */
-}
-
-.grid-img {
-    width: 160px;
-}
-
-.list-img {
-    width: 100px;
-}
-

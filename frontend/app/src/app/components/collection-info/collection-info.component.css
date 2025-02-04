@@ -1,285 +1,341 @@
-/* Styles généraux */
-.col-lg-9 {
-    flex: 0 0 auto;
-    width: 90%;
-    margin-left: 5%;
-}
-
-/* Styles pour les cartes */
-.card {
-    border: 1px solid #ccc;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-/* Styles pour l'en-tête de la carte */
-.card-header {
-    background-color: #f8f9fa;
-    ;
-    border-bottom: 1px solid #ccc;
-    border-top-left-radius: 10px;
-    border-top-right-radius: 10px;
-}
-
-/* Styles pour le titre dans l'en-tête de la carte */
-.card-header h3 {
-    margin-bottom: 0;
-    font-weight: bold;
-    color: rgb(0, 0, 0);
-}
-
-.mb-3 {
-    margin-bottom: 1.2rem !important;
-}
-
-/* Styles pour le corps de la carte */
-.card-body {
-    background-color: #fff;
-    animation: fade-in 0.5s ease-in-out;
-}
-
-/* Animation de fondu */
-@keyframes fade-in {
-    from {
-        opacity: 0;
-        transform: translateY(-10px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/* Styles pour les éléments de la liste */
-.list-group {
-    list-style: none;
-    padding-left: 0;
-}
-
-.list-group-item {
-    border: none;
-    padding: 10px 0;
-}
-
-.list-group-item:hover {
-    background-color: #f0f0f0;
-}
-
-/* Styles pour les colonnes */
-.col-lg-4 {
-    width: 22%;
-    padding-top: 0px;
-    /* Espacement en haut des colonnes */
-}
-
-.col-lg-8 {
-    width: 78%;
-    margin-top: 1px;
-}
-
-.col-lg-81 {
-    width: 65%;
-    margin-top: 1px;
-}
-
-/* Styles pour les titres des sections */
-.card-title {
-    font-size: 1.1em;
-    /* Taille de police des titres */
-    margin-bottom: 5px;
-    /* Espacement en bas des titres */
-}
-
-/* Styles pour les textes des sections */
-.card-text {
-    margin-bottom: 10px;
-    /* Espacement en bas des textes */
-}
-
-/* Styles pour les listes dans les sections */
-.list-group {
-    margin-top: 0;
-    /* Suppression de l'espacement en haut des listes */
-}
-
-.list-group-item {
-    border: none;
-    padding: 5px 0;
-    font-size: 0.9em;
-    /* Taille de police des éléments de liste */
-}
-
-.list-group-item:hover {
-    background-color: #f8f9fa;
-    /* Légère variation de couleur au survol */
-}
-
-h5 {
-    font-weight: bold;
-}
-
-p {
-    margin-bottom: 0px !important;
-    display: inline;
-}
-
-/* Ajout de styles pour encadrer chaque élément */
-.card {
+/* Conteneur principal */
+.container {
     display: flex;
-    border: 1px solid #ccc;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    margin-bottom: 20px;
-    /* Espacement en bas de la carte */
-}
-
-/* Ajout de styles pour le tableau */
-.table-container {
-    border-radius: 5px !important;
-    /* Add border-radius */
-    overflow: hidden;
-    /* Ensure border-radius works correctly */
-}
-
-.table {
-    max-width: 0;
-    margin-bottom: 1rem;
-    background-color: transparent;
-    border-collapse: collapse;
-    border: 1px solid #ccc;
-    /* Add border to the table */
-}
-
-.table th,
-.table td {
-    padding: 0.75rem;
-    vertical-align: top;
-    border-top: 2px solid #8d8b8b;
-}
-
-.table thead th {
-    vertical-align: bottom;
-    border-bottom: 2px solid #8d8b8b;
-}
-
-.table tbody+tbody {
-    border-top: 2px solid #8d8b8b;
-}
-
-/* Hover effect */
-.table tbody tr:hover {
-    background-color: #f0f0f0;
-    /* Change background color on hover */
-}
-
-.row {
-    /*border: 2px solid #8d8b8b; /* Couleur et épaisseur du contour */
-    border-radius: 5px;
-    /* Bord arrondi */
-    padding: 2px;
-    /* Espacement à l'intérieur du contour */
-    align-items: center !important;
-}
-
-.collaborator-cell {
-    display: flex;
-    align-items: center;
-}
-
-.collaborator-cell img {
-    margin-right: 5px;
-}
-
-.collaborator-cell span {
-    margin-bottom: 6px;
-}
-
-.collaborateur-item {
-    border: 1px solid #ddd;
-    /* Ajoute une bordure gris clair */
-    border-radius: 35px;
-    /* Arrondit les coins */
-    margin-bottom: 7px;
-    /* Ajuste selon vos besoins */
+    background-color: #F5F5E6;
     padding: 10px;
-    /* Ajoute un espace intérieur */
 }
 
-/* Style pour le bouton "add collaborator" */
-.collaborateurs-liste button {
-    margin-right: 3px;
+/* Sidebar */
+.sidebar {
+    background-color: #A3B18A;
+    color: white;
+    padding: 20px;
+    border-radius: 10px;
 }
 
-/* Style pour l'image du collaborateur */
-.collaborateur-item img {
-    margin-bottom: 0;
-    margin-right: 10px;
-    filter: invert(100%);
+/* Section principale */
+.content {
+    flex: 1;
+    padding: 20px;
 }
 
-/* Style pour le bouton de suppression du collaborateur */
-.collaborateur-item button.btn-danger {
-    margin-left: 15px;
-    padding: 2px;
+/* Boutons d'affichage */
+.view-toggle {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
 }
 
-/* Style pour l'image du bouton de suppression */
-.collaborateur-item button.btn-danger img {
-    margin-right: 0;
-    filter: invert(100%);
+.view-toggle .btn {
+    padding: 10px;
+    border: none;
+    background-color: #A3B18A;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
 }
 
-li {
-    width: 30%;
+.view-toggle .btn:hover {
+    background-color: #82966D;
 }
 
-/*.rotate {
-    animation: rotateAnimation 0.5s linear ;
-  }
-  
-  @keyframes rotateAnimation {
-    from {
-      transform: rotate(0deg);
-    }
-    to {
-      transform: rotate(360deg);
-    }
-  }*/
-
-li:hover {
-    background-color: #ccc;
-    animation: bounceAnimation 0.5s ease;
+.list_grid .btn.active {
+    background-color: #007bff;
+    color: white;
 }
 
-@keyframes bounceAnimation {
-    0% {
-        transform: scale(1);
-    }
-
-    50% {
-        transform: scale(1.1);
-    }
-
-    100% {
-        transform: scale(1);
-    }
+/* Liste des plantes */
+.plant-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 30px; /* Espacement plus grand entre les cartes */
 }
 
-.project-info {
-    width: 70%;
+/* ---------------- LIST VIEW ---------------- */
+/* 2 cartes par ligne */
+.plant-list.list-view .col-md-6 {
+    flex: 0 0 50%;
+    max-width: 50%;
 }
 
-.project-image {
-    width: 30%;
+/* Cartes agrandies en List View */
+.plant-list.list-view .card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    height: 280px; /* Cartes plus grandes pour bien inclure le bouton */
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Image à gauche */
+.plant-list.list-view .card-img {
+    width: 180px;
+    height: 180px;
+    object-fit: cover;
+    margin-bottom: 15px; /* Ajout d'espacement entre l'image et le bouton */
+    border-radius: 8px;
+}
+
+/* Texte + bouton à droite */
+.plant-list.list-view .card-body {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+}
+/* Espacement entre les cartes en List View */
+.plant-list.list-view .list-card {
+    margin-bottom: 20px; /* Ajoute un espace vertical */
+}
+
+/* Espacement entre les cartes en Grid View */
+.plant-list.grid-view .grid-card {
+    margin-bottom: 20px; /* Ajoute un espace vertical */
+}
+
+/* Bouton "Voir plus" bien visible */
+.plant-list.list-view .btn-voir-plus {
+    background-color: #848441;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: auto; /* S'assure que le bouton reste visible en bas */
+}
+
+.plant-list.list-view .btn-voir-plus:hover {
+    background-color: #6d6b3c;
+}
+
+/* ---------------- GRID VIEW ---------------- */
+/* ---------------- GRID VIEW ---------------- */
+/* 3 cartes par ligne avec un espacement ajusté */
+.plant-list.grid-view .row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 30px; /* Espacement entre les cartes ajusté */
+}
+
+/* Colonne pour 3 cartes par ligne */
+.plant-list.grid-view .col-md-4 {
+    flex: 0 0 33.333%;
+    max-width: 33.333%;
+}
+
+/* Cartes en grid view */
+.plant-list.grid-view .card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    text-align: center;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    height: auto; /* Ajustement automatique de la hauteur pour une uniformité */
+}
+
+/* Image en grid view */
+.plant-list.grid-view .card-img {
+    width: 100%;
+    height: 200px; /* Ajuster la hauteur de l'image pour le grid */
+    object-fit: cover;
+    border-radius: 8px;
+    border: 2px solid #ddd;
+    padding: 5px;
+    background-color: white;
+    margin-bottom: 10px; /* Espacement entre l'image et le bouton */
+}
+
+/* Bouton "Voir plus" sous chaque image */
+.plant-list.grid-view .btn-voir-plus {
+    background-color: #848441;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    width: 100%; /* Alignement correct */
+    cursor: pointer;
+}
+
+.plant-list.grid-view .btn-voir-plus:hover {
+    background-color: #6d6b3c;
+}
+/* Grid View: 3 cartes par ligne */
+.plant-list.grid-view .grid-card {
+    flex: 0 0 33.333%;
+    max-width: 33.333%;
+}
+
+/* List View: 2 cartes par ligne */
+.plant-list.list-view .list-card {
+    flex: 0 0 50%;
+    max-width: 50%;
+}
+
+/* Styles spécifiques pour le Grid View */
+.plant-list.grid-view .card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 15px;
+    text-align: center;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 100%;
+}
+
+/* ------ GRID VIEW ------ */
+.plant-list.grid-view {
+    justify-content: space-between;
+}
+
+.plant-list.grid-view .grid-card {
+    flex: 0 0 calc(33.333% - 20px); /* 3 cartes par ligne avec espace */
+    max-width: calc(33.333% - 20px);
+}
+
+.plant-list.grid-view .card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    height: 100%;
+    padding: 15px;
+}
+
+.plant-list.grid-view .card-img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 2px solid #ddd;
+    padding: 5px;
+    background-color: white;
+}
+
+.plant-list.grid-view .card-body {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 100%;
+    flex-grow: 1;
+}
+
+/* Bouton stylisé */
+.plant-list .btn {
+    width: 100%;
+    background-color: #A3B18A;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.plant-list .btn:hover {
+    background-color: #A3B18A;
+}
+.list_grid {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.list_grid .btn {
+    width: 40px;
+    height: 40px;
     display: flex;
     align-items: center;
     justify-content: center;
+    background-color: #A3B18A; /* Vert doux */
+    color: white;
+    border-radius: 8px; /* Coins arrondis */
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
+    transition: all 0.3s ease;
 }
 
-.project-image img {
-    max-width: 100%;
-    height: auto;
+.list_grid .btn:hover {
+    background-color: #82966D; /* Légèrement plus foncé au survol */
+}
+
+.list_grid .btn.active {
+    background-color: #C5D0AF; /* Bleu actif */
+}
+/* Conteneur de la pagination */
+.pagination-container {
+    margin-top: 20px; /* Espacement avec les cartes */
+    text-align: right; /* Aligne la pagination à droite */
+}
+
+/* Liste de la pagination */
+.pagination-container .ngx-pagination {
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px; /* Espacement entre les boutons */
+    padding: 0;
+    list-style: none;
+}
+
+/* Élément de la pagination (li) */
+.pagination-container .ngx-pagination li {
+    display: inline-block;
+    margin: 0 5px;
+}
+
+/* Lien de pagination (a) */
+.pagination-container .ngx-pagination li a {
     display: block;
+    padding: 8px 12px;
+    border-radius: 5px;
+    background-color: #A3B18A; /* Couleur de fond */
+    color: white;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
 }
 
+/* Effet au survol des boutons */
+.pagination-container .ngx-pagination li a:hover {
+    background-color: #82966D; /* Légèrement plus foncé */
+}
+
+/* Bouton actif (page courante) */
+.pagination-container .ngx-pagination li.current a {
+    background-color: #6d6b3c; /* Couleur pour la page active */
+    color: white;
+    font-weight: bold;
+}
+
+/* Boutons "Précédent" et "Suivant" */
+.pagination-container .ngx-pagination .pagination-previous a,
+.pagination-container .ngx-pagination .pagination-next a {
+    background-color: #A3B18A; /* Même couleur de fond */
+    padding: 8px 12px;
+    border-radius: 5px;
+    color: white;
+}
+
+/* Ajouter un survol aux boutons "Précédent" et "Suivant" */
+.pagination-container .ngx-pagination .pagination-previous a:hover,
+.pagination-container .ngx-pagination .pagination-next a:hover {
+    background-color: #82966D;
+}
+
+/* Désactiver les boutons "Précédent" et "Suivant" quand nécessaire */
+.pagination-container .ngx-pagination .pagination-previous.disabled a,
+.pagination-container .ngx-pagination .pagination-next.disabled a {
+    background-color: #ccc; /* Gris pour les boutons désactivés */
+    cursor: not-allowed;
+}
