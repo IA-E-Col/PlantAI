@@ -39,7 +39,7 @@
 
 .collapsed .nav-link {
   justify-content: center;
-<<<<<<< HEAD
+
 }
 
 li{
@@ -50,6 +50,5 @@ li{
   background-color: #B8C5A1;
   border-top-right-radius: 15px;
   border-bottom-right-radius: 15px;
-=======
->>>>>>> 810d5e6 (navbar et sidebar intégrés et css interface ajout_collab bien fait)
+
 }
