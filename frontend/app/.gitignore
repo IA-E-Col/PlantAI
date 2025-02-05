@@ -12,6 +12,7 @@ npm-debug.log
 yarn-error.log
 
 # IDEs and editors
+frontend/node_modules
 .idea/
 .project
 .classpath

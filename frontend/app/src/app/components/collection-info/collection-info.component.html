@@ -1,35 +1,75 @@
-<div class="inner-container">
-  <div class="custom-card">
-    <div class="custom-header">
-      <h3>Corpus details</h3>
-    </div>
-    <hr class="separator">
-    <div class="card-body d-flex align-items-center">
-      <div class="project-image">
-        <img [src]="cheminDtl" alt="Project Image" class="img-fluid">
+<div class="container">
+  <div class="row">
+    <div class="col-lg-10 content">
+      <!-- Liste/Grid Toggle -->
+      <div class="list_grid">
+        <button class="btn" (click)="setView('list')" [class.active]="!isGridView" style="margin-bottom: 15px;">
+          <i class="bi bi-list"></i>
+        </button>
+        <button class="btn" (click)="setView('grid')" [class.active]="isGridView">
+          <i class="bi bi-grid-3x3-gap"></i>
+        </button>
+        <button class="btn">{{ collectionSpecimens.length }}</button>
       </div>
-      <div class="project-info">
-        <div class="info-item">
-          <strong class="label">Name of corpus:</strong>
-          <span>{{ collection?.nom }}</span>
+
+      <!-- Grille des cartes -->
+     <!-- Conteneur des cartes + pagination -->
+<!-- Conteneur des cartes + pagination -->
+<div class="plant-list d-flex flex-column" [ngClass]="{'grid-view': isGridView, 'list-view': !isGridView}">
+  <div class="row">
+      <div class="col-md-6 col-lg-4"
+          *ngFor="let plante of collectionSpecimens | paginate: { itemsPerPage: 10, currentPage: p }"
+          [ngClass]="{'grid-card': isGridView, 'list-card': !isGridView}">
+          
+          <!-- LIST VIEW -->
+          <div class="card d-flex flex-row" *ngIf="!isGridView">
+            <img [src]="plante.image.image_url" alt="Plant Image" class="card-img">
+            <div class="card-body d-flex flex-column">
+                <h5 class="card-title" [innerHTML]="formatNomScientifique(plante.nomScientifique)"></h5>
+                
+                <p class="card-text" *ngIf="plante.dateCreation" class="custom-icon">
+                    {{ plante.dateCreation }}
+                </p>
+        
+                <p class="card-text" *ngIf="plante.genre" class="custom-icon">
+                    Genus: {{ plante.genre }}
+                </p>
+        
+                <p class="card-text" *ngIf="plante.famille" class="custom-icon">
+                    Family: {{ plante.famille }}
+                </p>
+        
+                <div class="mt-auto text-center">
+                    <button class="btn btn-primary" (click)="navigateToImageInf(plante)">Voir plus</button>
+                </div>
+            </div>
         </div>
-        <div class="info-item">
-          <strong class="label">Description:</strong>
-          <span>{{ collection?.description }}</span>
-        </div>
-        <div class="info-item">
-          <strong class="label">Date of creation:</strong>
-          <span>{{ collection?.dateCreation | date: 'dd/MM/yyyy' }}</span>
-        </div>
-        <div class="info-item">
-          <strong class="label">Number of images:</strong>
-          <span>{{ NbSpecimens }} <a href="#">Images</a></span>
-        </div>
+        
+
+          <!-- GRID VIEW -->
+          <div class="card text-center" *ngIf="isGridView">
+              <img [src]="plante.image.image_url" alt="Plant Image" class="card-img">
+              <div class="card-body">
+                  <h5 class="card-title">{{ plante.nomScientifique }}</h5>
+                  <button class="btn btn-primary" (click)="navigateToImageInf(plante)">Voir plus</button>
+              </div>
+          </div>
       </div>
-    </div>
-    <div class="card-footer text-end">
-      <span class="created-by">Created by <strong class="creator-name">Yassine QACAMI</strong></span>
-    </div>
+  </div>
+
+  <!-- Pagination bien alignée -->
+  <div class="pagination-container d-flex justify-content-end">
+      <pagination-controls 
+          (pageChange)="p = $event" 
+          [autoHide]="true" 
+          [previousLabel]="'<' " 
+          [nextLabel]="'>'"
+          [responsive]="true">
+      </pagination-controls>
   </div>
 </div>
 
+    
+    </div>
+  </div>
+</div>
