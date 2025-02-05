@@ -1,79 +1,47 @@
-<div class="card-header">
-
-  <div class="Add">
-    <!--<i class="bi bi-list fs-4"></i>-->
-    <span class="fw-bold fs-4 me-2">Models List</span>
-
-    <div class="text-center mb-4" style="margin-bottom: 0;">
-      <button (click)="func_ajout_Model()" class="btn btn-outline-primary btn-lg px-4" style="padding: 0;">
-        <span class="fw-bold fs-41 me-2" style="margin-right: 0rem !important;">
-          <!--<img [src]="cheminPlus" alt="add image" width="25" height="25" style="filter: invert(100%); margin-bottom: 4px; margin-right: 5px; margin-left: 5px;">-->
-          New Model
-        </span>
-      </button>
-    </div>
+<div class="model-list-container">
+  <div class="header">
+    <h2>List of models</h2>
+    <button class="create-btn" (click)="func_ajout_Model()">Create</button>
   </div>
-
-  <!--search box-->
-  <div class="form-outline mt-3">
-    <input type="search" [(ngModel)]="searchtext" id="form1" class="form-control input__field" placeholder=" "
-      aria-label="search">
-    <label for="form1" class="input__label" [class.clicked]="searchtext"><i class="bi bi-search"></i> Search by
-      name</label>
+  <div class="search-container">
+    <input type="text" placeholder="Search by Name" class="search-bar" [(ngModel)]="searchtext" />
+    <i class="bi bi-search search-icon"></i>
   </div>
+  
 
-  <div class='sort_filter'>
-    
-    <div class="sort_filter-container">
-      <div class="sort">
-        <strong>Sort By :</strong>
-        <p (click)="sortBy('nom')">Model Name<i class="bi"
-            [ngClass]="currentSortField === 'nom' ? (isAscending ? 'bi-caret-up' : 'bi-caret-down') : 'bi-chevron-expand'"></i>
-        </p>
-        <p (click)="sortBy('dateCreation')">Model Creation Date <i class="bi"
-            [ngClass]="currentSortField === 'dateCreation' ? (isAscending ? 'bi-caret-up' : 'bi-caret-down') : 'bi-chevron-expand'"></i>
-        </p>
-      </div>
-      <div class="filter">
-        <strong>Filter By :</strong>
-        <select [(ngModel)]="selectedOption">
-          <option value="all">All types</option>
-          <option value="classification">Classification</option>
-          <option value="segmentation">Segmentation</option>
-          <option value="detection">Detection</option>
-        </select>
-        <button class="filter-button apply" (click)="applyFilter()">Apply</button>
-      </div>
-    </div>
+  <table class="model-table">
+    <thead>
+      <tr>
+        <th (click)="sortBy('nom')">Name <span class="sort-icon">⇅</span></th>
+        <th>Classification</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let m of modele | filterByName: searchtext: 'nom' | paginate: { itemsPerPage: 5, currentPage: p }">
+        <td>{{ m.name }}</td>
+        <td><strong>{{ m.categorie }}</strong></td>
+        <td>
+          <button class="info-btn" (click)="func_inf_m(m.id)">i</button>
+          <button class="play-btn" (click)="func_update_m(m)">▶</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="pagination">
+    <pagination-controls (pageChange)="p = $event"  [previousLabel]="'Prev'" [nextLabel]="'Next'" [responsive]="true" class="custom-pagination"></pagination-controls>
   </div>
 </div>
 
-<div class="container mt-5">
-  <div class="card mb-3">
-    <div class="card-body"
-      *ngFor="let m of modele | filterByName: searchtext: 'nom' | paginate: { itemsPerPage: 5, currentPage: p }">
-      <div class="Grp">
-        <div class="Inf">
-          <h4>{{m.name}}</h4>
-          <!--span> (Version: {{ m.version }}, {{ m.dateCreation }})</span-->
-          <p>{{ m.description }}</p>
-        </div>
-        <div class="Btns d-flex">
-          <button (click)="func_inf_m(m.id)" class="btn btn-primary me-2" aria-label="View Details">
-            <i class="bi bi-eye"></i>
-          </button>
-          <button (click)="func_update_m(m)" class="btn btn-success me-2" aria-label="Update">
-            <i class="bi bi-pencil"></i>
-          </button>
-          <button (click)="func_delete_m(m)" class="btn btn-danger" aria-label="Delete">
-            <i class="bi bi-trash"></i>
-          </button>
-        </div>
-      </div>
-      <hr>
-    </div>
-  </div>
-  <pagination-controls (pageChange)="p = $event" [autoHide]="true" [previousLabel]="'Prev'"
-              [nextLabel]="'Next'" [responsive]="true"></pagination-controls>
-          
-</div>
+<style>
+  .custom-pagination ::ng-deep .ngx-pagination .current {
+    background-color: #A3B18A !important;
+    border-color: #A3B18A !important;
+    color: white !important;
+  }
+
+  .custom-pagination ::ng-deep .ngx-pagination a {
+    color: #A3B18A !important;
+  }
+</style>

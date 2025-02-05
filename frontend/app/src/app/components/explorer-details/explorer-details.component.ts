@@ -18,7 +18,7 @@ export class ExplorerDetailsComponent {
   constructor(private route: ActivatedRoute, private router: Router) { }
 
   ngOnInit() {
-    this.route.params.subscribe(params => {
+      this.route.params.subscribe(params => {
       this.collectionId = params['id'];
     });
   }
