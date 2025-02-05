@@ -58,18 +58,18 @@ h2 {
 }
 
 ul li {
-  font-size: 16px; /* Augmente la taille du texte des éléments de la liste */
+  font-size: 22px; /* Augmente la taille du texte des éléments de la liste */
   margin-bottom: 10px;
 }
 
 strong {
-  font-size: 16px; /* Augmente la taille du texte des éléments en gras */
+  font-size: 24px; /* Augmente la taille du texte des éléments en gras */
   color: #333;
 }
 
 /* Réduire l'espace entre l'image et les cartes */
 .Img {
-  margin-right: 10px; /* Réduit l'espace entre l'image et les cartes */
+  margin-right: 2px; /* Réduit l'espace entre l'image et les cartes */
 }
 
 .card {
@@ -168,62 +168,7 @@ strong {
   margin-top: 10px;
 }
 
-/* Scroll arrows adjustments */
-.scroll-arrow {
-  position: absolute;
-  bottom: -30px; /* Position en dessous du carrousel */
-  left: 50%;
-  transform: translateX(-50%);
-  background: rgba(255, 255, 255, 0.8);
-  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
-  border-radius: 50%;
-  padding: 10px;
-  cursor: pointer;
-  transition: 0.3s;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
 
-.scroll-arrow:hover {
-  background: rgba(255, 255, 255, 1);
-  transform: translateX(-50%) scale(1.1);
-}
-
-.scroll-arrow i {
-  font-size: 24px;
-  color: #99a500;
-}
-
-.scroll-arrow.left {
-  left: 10px;
-}
-
-.scroll-arrows {
-  position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  margin-bottom: -10px;
-}
-
-/* Style des flèches */
-.scroll-arrow {
-  position: absolute;
-  top: -20px;
-  background: white;
-  border: 2px solid #99a500;
-  border-radius: 50%;
-  width: 40px;
-  height: 40px;
-  cursor: pointer;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  transition: 0.3s ease-in-out;
-  box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.15);
-}
 
 .scroll-arrow i {
   font-size: 22px;
@@ -300,13 +245,144 @@ strong {
   color: white;
 }
 
+.scroll-arrow.left {
+  left: 10px;
+}
+
+.scroll-arrow.right {
+  right: 10px;
+}
+.carousel-container {
+  position: relative;
+  width: 100%;
+  max-width: 600px; /* Ajuste selon tes besoins */
+  margin: auto;
+  overflow: hidden;
+}
+
+.carousel {
+  display: flex;
+  transition: transform 0.5s ease-in-out;
+}
+
+.carousel-item {
+  min-width: 100%;
+  transition: opacity 0.5s ease-in-out;
+}
+
+.arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: rgba(0, 0, 0, 0.5);
+  color: white;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+  font-size: 24px;
+  z-index: 10;
+  border-radius: 50%;
+}
+
+.arrow-left {
+  left: 10px;
+}
+
+.arrow-right {
+  right: 10px;
+}
+
+.arrow:hover {
+  background-color: rgba(0, 0, 0, 0.8);
+}
+.scroll-arrow {
+  position: absolute;
+  top: -40px; /* Place les flèches au-dessus du carrousel */
+  background: transparent;
+  border: 2px solid #99a500; /* Vert élégant */
+  border-radius: 50%;
+  padding: 5px;
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: 0.3s;
+}
+
+.scroll-arrow i {
+  font-size: 20px;
+  color: #99a500; /* Vert fin */
+}
+
+.scroll-arrow:hover {
+  background: #99a500;
+  border-color: #99a500;
+}
+
+.scroll-arrow:hover i {
+  color: white;
+}
+
+/* Positionner les flèches */
+.scroll-arrow.left {
+  left: 10px;
+}
+
+.scroll-arrow.right {
+  right: 10px;
+}
+/* Conteneur pour bien centrer les flèches */
+.scroll-arrows {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%; /* Largeur complète */
+  height: 0; /* Évite que ça prenne trop d’espace */
+}
+
+/* Style des flèches */
+.scroll-arrow {
+  position: absolute;
+  top: -35px; /* Place les flèches juste au-dessus du carrousel */
+  background: white;
+  border: 2px solid #99a500; /* Bordure verte élégante */
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: 0.3s ease-in-out;
+  box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Icône des flèches */
+.scroll-arrow i {
+  font-size: 22px;
+  color: #99a500; /* Vert élégant */
+}
+
+/* Effet au survol */
+.scroll-arrow:hover {
+  background: #99a500;
+  border-color: #99a500;
+}
+
+.scroll-arrow:hover i {
+  color: white;
+}
+
 /* Position des flèches */
 .scroll-arrow.left {
   left: 50%;
-  transform: translateX(-70px); /* Ajuste la position à gauche */
+  transform: translateX(-60px); /* Décale légèrement à gauche */
 }
 
 .scroll-arrow.right {
   left: 50%;
-  transform: translateX(30px); /* Ajuste la position à droite */
-} 
+  transform: translateX(20px); /* Décale légèrement à droite */
+}

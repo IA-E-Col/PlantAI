@@ -1,61 +1,83 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
 
-<div class="Bg_Grp">
-  <div class="zoom-controls">
-    <button (click)="zoomIn()"><i class="bi bi-zoom-in"></i></button>
-    <button (click)="zoomOut()"><i class="bi bi-zoom-out"></i></button>
-  </div>
-  <div class="Grp">
-    <div class="zoom_outer">
-      <div id="zoom" class="Img">
-        <img [src]="imageUrl" [alt]="plante.nomScientifique" (click)="openModal()">
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+ 
+</nav>
+
+<div class="container-fluid">
+  <div class="row">
+    <!-- Sidebar -->
+    <div class="col-lg-2 bg-light sidebar p-3 vh-100">
+      
+    </div>
+
+    <!-- Contenu principal -->
+    <div class="col-lg-10">
+      <div class="Bg_Grp">
+        <!-- Zoom Controls -->
+        <div class="zoom-controls">
+          <button (click)="zoomIn()"><i class="bi bi-zoom-in"></i></button>
+          <button (click)="zoomOut()"><i class="bi bi-zoom-out"></i></button>
+        </div>
+
+        <div class="Grp">
+          <div class="zoom_outer">
+            <div id="zoom" class="Img">
+              <img [src]="imageUrl" [alt]="plante.nomScientifique" (click)="openImageInNewWindow()">
+            </div>
+          </div>
+
+          <!-- Info Cards -->
+          <div class="info">
+            <div class="cards">
+              <h2>Metadata:</h2>
+              <ul>
+                <li *ngIf="plante.nomScientifique"><strong>Scientific Name:</strong> {{plante.nomScientifique}}</li>
+                <li *ngIf="plante.nomScientifiqueAuteur"><strong>Scientific Name Author:</strong> {{plante.nomScientifiqueAuteur}}</li>
+                <li *ngIf="plante.genre"><strong>Genus:</strong> {{plante.genre}}</li>
+                <li *ngIf="plante.famille"><strong>Family:</strong> {{plante.famille}}</li>
+                <li *ngIf="plante.epitheteSpecifique"><strong>Specific Epithet:</strong> {{plante.epitheteSpecifique}}</li>
+                <li *ngIf="plante.pays"><strong>Country:</strong> {{plante.pays}}</li>
+                <li *ngIf="plante.departement"><strong>Department:</strong> {{plante.departement}}</li>
+                <li *ngIf="plante.ville"><strong>City:</strong> {{plante.ville}}</li>
+                <li *ngIf="plante.lieu"><strong>Location:</strong> {{plante.lieu}}</li>
+                <li *ngIf="plante.latitude"><strong>Latitude:</strong> {{plante.latitude}}</li>
+                <li *ngIf="plante.dateCreation"><strong>Collected On:</strong> {{plante.dateCreation}}</li>
+                <li *ngIf="plante.enregistrePar"><strong>Collected By:</strong> {{plante.enregistrePar}}</li>
+              </ul>
+            </div>
+
+            <div class="cards">
+              <h2>Models:</h2>
+              <ul *ngFor="let m of modeles">
+                <li><strong>{{m.name}} (version: {{m.version}})</strong></li>
+                <li><strong>Accuracy:</strong> {{m.accuracy}}</li>
+                <li><strong>Loss:</strong> {{m.loss}}</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Scroll Arrows -->
+      <div class="scroll-arrows">
+        <div class="scroll-arrow left" (click)="scrollLeft()">
+          <i class="bi bi-chevron-left"></i>
+        </div>
+        <div class="scroll-arrow right" (click)="scrollRight()">
+          <i class="bi bi-chevron-right"></i>
+        </div>
+      </div>
+
+      <!-- Cards Grid -->
+      <div class="wrapper">
+        <div class="card" *ngFor="let plante of plantes">
+          <img [src]="plante.image.image_url" (click)="chng_img(plante, plantes)" />
+          <h2 class="card-title">{{plante.nomScientifique}}</h2>
+        </div>
       </div>
     </div>
-  </div>
-</div>
-
-
-
-<div class="info">
-  <div class="cards">
-    <h2>Metadata:</h2>
-    <ul>
-      <li *ngIf="plante.nomScientifique"><strong>Scientific Name:</strong> {{plante.nomScientifique}}</li>
-      <li *ngIf="plante.nomScientifiqueAuteur"><strong>Scientific Name Author:</strong> {{plante.nomScientifiqueAuteur}}</li>
-      <li *ngIf="plante.genre"><strong>Genus:</strong> {{plante.genre}}</li>
-      <li *ngIf="plante.famille"><strong>Family:</strong> {{plante.famille}}</li>
-      <li *ngIf="plante.epitheteSpecifique"><strong>Specific Epithet:</strong> {{plante.epitheteSpecifique}}</li>
-      <li *ngIf="plante.pays"><strong>Country:</strong> {{plante.pays}}</li>
-      <li *ngIf="plante.departement"><strong>Department:</strong> {{plante.departement}}</li>
-      <li *ngIf="plante.ville"><strong>City:</strong> {{plante.ville}}</li>
-      <li *ngIf="plante.lieu"><strong>Location:</strong> {{plante.lieu}}</li>
-      <li *ngIf="plante.latitude"><strong>Latitude:</strong> {{plante.latitude}}</li>
-      <li *ngIf="plante.dateCreation"><strong>Collected On:</strong> {{plante.dateCreation}}</li>
-      <li *ngIf="plante.enregistrePar"><strong>Collected By:</strong> {{plante.enregistrePar}}</li>
-    </ul>
-  </div>
-
-  <div class="cards">
-    <h2>Models:</h2>
-    <ul *ngFor="let m of modeles">
-      <li><strong>{{m.name}} (version: {{m.version}})</strong></li>
-      <li><strong>Accuracy:</strong> {{m.accuracy}}</li>
-      <li><strong>Loss:</strong> {{m.loss}}</li>
-    </ul>
-  </div>
-</div>
-
-<div class="wrapper">
-  <div class="scroll-arrows">
-    <div class="scroll-arrow left" (click)="scrollLeft()">
-      <i class="bi bi-chevron-left"></i>
-    </div>
-    <div class="scroll-arrow right" (click)="scrollRight()">
-      <i class="bi bi-chevron-right"></i>
-    </div>
-  </div>
-  <div class="card" *ngFor="let plante of plantes">
-    <img [src]="plante.image.image_url" (click)="chng_img(plante, plantes)" />
-    <h2 class="card-title">{{plante.nomScientifique}}</h2>
   </div>
 </div>
