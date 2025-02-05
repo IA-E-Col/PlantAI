@@ -339,3 +339,18 @@
     background-color: #ccc; /* Gris pour les boutons désactivés */
     cursor: not-allowed;
 }
+.custom-icon {
+    position: relative;
+    padding-left: 20px; /* Espace pour le point */
+  }
+  
+  .custom-icon::before {
+    content: "•";  /* Point Unicode */
+    font-size: 18px;
+    color: #007bff; /* Couleur bleue */
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+  
