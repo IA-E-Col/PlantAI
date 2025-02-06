@@ -22,7 +22,7 @@
         <td>{{ m.name }}</td>
         <td><strong>{{ m.categorie }}</strong></td>
         <td>
-          <button class="info-btn" (click)="func_inf_m(m.id)">i</button>
+          <button class="info-btn text-white" (click)="func_inf_m(m.id)"><fa-icon [icon]="faCircleInfo"></fa-icon></button>
           <button class="play-btn" (click)="func_update_m(m)">▶</button>
         </td>
       </tr>

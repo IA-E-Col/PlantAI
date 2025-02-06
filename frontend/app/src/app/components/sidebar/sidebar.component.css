@@ -1,5 +1,5 @@
 .sidebar {
-  width: 250px;
+
   height: 100vh;
   background-color: #A3B18A;
   transition: width 0.3s ease-in-out;
@@ -22,7 +22,9 @@
   align-items: center;
   color: white;
   text-decoration: none;
-  padding: 10px;
+  display:inline-block;
+  border-top-right-radius: 15px;
+  border-bottom-right-radius: 15px;
 }
 
 .nav-link:hover {
@@ -39,7 +41,6 @@
 
 .collapsed .nav-link {
   justify-content: center;
-
 }
 
 li{
@@ -50,5 +51,4 @@ li{
   background-color: #B8C5A1;
   border-top-right-radius: 15px;
   border-bottom-right-radius: 15px;
-
 }
