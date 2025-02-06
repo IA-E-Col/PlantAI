@@ -12,16 +12,19 @@
   .card:hover {
     opacity: 0.9; /* Réduit légèrement l'opacité au survol */
   }
+  .border-green{
+    border-color: #86A786 !important;
+  }
   
   .btn-primary {
-    background-color: #007bff;
-    border-color: #007bff;
+    background-color: #86A786;
+    border-color: #86A786;
     transition: background-color 0.3s ease, border-color 0.3s ease;
   }
   
   .btn-primary:hover {
-    background-color: #0056b3;
-    border-color: #0056b3;
+    background-color: #597059;
+    border-color: #597059;
     transform: scale(1.05); /* Effet d'agrandissement au survol */
   }
 
