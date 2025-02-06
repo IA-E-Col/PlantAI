@@ -49,7 +49,7 @@ export class SidebarComponent implements OnDestroy, OnInit{
           models :  [
             { name: 'Validation History', icon: faHistory, path :"#" },
             { name: 'Model Library', icon: faBook, path: `/admin/model_inf/${this.itemId}`},
-            { name: 'Collaborative Validation', icon: faBrain, path: "#" },
+            { name: 'Collaborative Validation', icon: faBrain, path: "/admin/annotation_validation" },
           ],
           
         }

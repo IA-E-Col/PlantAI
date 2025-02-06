@@ -39,6 +39,7 @@ import { GererDatasetComponent } from "./components/gerer-dataset/gerer-dataset.
 import { DatasetPredictionComponent } from "./components/dataset-prediction/dataset-prediction.component";
 import { CreeModeleComponent } from "./components/cree-modele/cree-modele.component";
 import { CreeCollectionComponent } from "./components/cree-collection/cree-collection.component";
+import { AnnotationValidationComponent } from './components/annotation-validation/annotation-validation.component';
 export const routes: Routes = [
 
   { path: 'login', component: LoginComponent },
@@ -122,7 +123,8 @@ export const routes: Routes = [
           { path: 'gererdataset/:id', component: GererDatasetComponent },
         ]
       },
-      { path: 'model_inf/:id', component: ModelInfComponent }
+      { path: 'model_inf/:id', component: ModelInfComponent },
+      { path: 'annotation_validation', component: AnnotationValidationComponent }
     ]
   },
 
