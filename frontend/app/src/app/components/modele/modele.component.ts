@@ -10,6 +10,8 @@ import Swal from "sweetalert2";
 import {CreeModeleComponent} from "../cree-modele/cree-modele.component";
 import {catchError, of} from "rxjs";
 import {MatDialog} from "@angular/material/dialog";
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { faCircleInfo } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-modele',
@@ -21,7 +23,8 @@ import {MatDialog} from "@angular/material/dialog";
     NgForOf,
     RouterLink,
     RouterOutlet,
-    FormsModule
+    FormsModule,
+    FontAwesomeModule
   ],
   templateUrl: './modele.component.html',
   styleUrl: './modele.component.css'
@@ -34,7 +37,7 @@ export class ModeleComponent implements OnInit{
   searchtext:any;
   selectedOption: string = "all";
   private errorMessage!: string;
-
+  faCircleInfo = faCircleInfo;
   constructor(private dialogRef: MatDialog,private route: ActivatedRoute , private router : Router ,private projetService : ProjetService ) { }
 
   ngOnInit() {
