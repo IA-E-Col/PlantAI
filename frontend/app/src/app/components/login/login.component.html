@@ -1,45 +1,31 @@
-<div class="container mt-5" id="container">
-  <div class="form-container sign-up-container">
-    <img [src]="cheminPlante" alt="Plante logo" width="130" height="120" class="centered-image">
-    <form [formGroup]="inscrFormGroup" (ngSubmit)="inscr()" class="form-create">
-      <h1>Create Account</h1>
-      <div class="name-container">
-        <input type="text" placeholder="First Name"  formControlName="prenom"/>
-        <input type="text" placeholder="Last Name" formControlName="nom"/>
-      </div>
-      <input type="email" placeholder="Email"  formControlName="email"/>
-      <input type="text" placeholder="Establishment" formControlName="departement"/>
-      <div class="name-container">
-        <input type="password" placeholder="Password" formControlName="password"/>
-        <input type="password" placeholder="Confirm Password" formControlName="password1"/>
-      </div>
-      <button [disabled]="inscrFormGroup.invalid">Sign Up</button>
-    </form>
-  </div>
-  <div class="form-container sign-in-container">
-    <img [src]="cheminPlante" alt="Plante logo" width="130" height="120" class="centered-image">
-    <form [formGroup]="loginFormGroup" (ngSubmit)="login()" class="form-login">
-      <h1>Sign in</h1>
-      <input type="email" placeholder="Email" formControlName="email" />
-      <input type="password" placeholder="Password" formControlName="password" />
-      <a href="#">Forgot your password?</a>
-      <button [disabled]="loginFormGroup.invalid">Sign In</button>
-    </form>
-  </div>
-  <div class="overlay-container">
-    <div class="overlay">
-      <div class="overlay-panel overlay-left">
-        <h1>Welcome Back</h1>
-        <p>To keep connected with us please login with your personal info</p>
-        <button class="ghost" id="signIn">Sign In</button>
-      </div>
-      <div class="overlay-panel overlay-right">
-        <h1>Hello</h1>
-        <p>Enter your personal details and discover with us the plant of plants</p>
-        <button  class="ghost" id="signUp">Sign Up</button>
+<div class="login-page">
+  <div class="login-container">
+    <!-- Left Section -->
+    <div class="left-section">
+      <img src="assets/plant2.jpeg" alt="PlantAI Logo" class="logo" />
+      <h1>Welcome to PlantAI</h1>
+      <p>Your solution for managing herbaria</p>
+    </div>
+
+    <!-- Right Section -->
+    <div class="right-section">
+      <div class="form-login">
+        <img src="assets/logo_IRD.png" alt="IRD Logo" class="ird-logo" />
+        <h2 class="login-title">Login</h2>
+        <form [formGroup]="loginFormGroup" (ngSubmit)="login()" class="login-form">
+          <label for="email" class="input-label light">E-mail address</label>
+          <input id="email" type="email" placeholder="E-mail address" formControlName="email" />
+
+          <label for="password" class="input-label light">Password</label>
+          <input id="password" type="password" placeholder="Password" formControlName="password" />
+
+          <a href="#" class="forgot-password">Forgot your password?</a>
+          <button [disabled]="loginFormGroup.invalid" class="btn-login">Login</button>
+          <p class="signup-prompt">
+            No account yet? <a href="#" class="signup-link">Sign up</a>
+          </p>
+        </form>
       </div>
     </div>
   </div>
 </div>
-
-
