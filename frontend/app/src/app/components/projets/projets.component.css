@@ -11,10 +11,11 @@ body {
 .card {
   border: none;
   background-color: #fff;
-  border-radius: 10px;
+  border-radius: 15px; /* Coins arrondis */
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   margin: 20px auto;
   width: 95%;
+  padding: 0; 
 }
 
 .card-header {
@@ -24,7 +25,7 @@ body {
 }
 textarea, select {
   padding: 8px;
-  border-radius: 5px;
+  border-radius: 15px;
   border: 1px solid #ccc;
 }
 .Add {
@@ -85,7 +86,7 @@ textarea, select {
   color: #617465;
   border: none;
   padding: 8px 16px;
-  border-radius: 4px;
+  border-radius: 15px;
   transition: background-color 0.3s ease;
 }
 .custom-folder-icon {
@@ -136,7 +137,7 @@ textarea, select {
   width: 100%;
   padding: 8px;
   border: 1px solid #ddd;
-  border-radius: 4px;
+  border-radius: 15px;
   font-size: 14px;
 }
 
@@ -188,7 +189,7 @@ textarea, select {
 .sort p {
   border: 1px solid #ddd;
   padding: 5px 10px;
-  border-radius: 4px;
+  border-radius: 15px;
   background-color: #fff;
   transition: all 0.3s ease;
 }
@@ -201,7 +202,7 @@ textarea, select {
 .filter select {
   border: 1px solid #ddd;
   padding: 5px;
-  border-radius: 4px;
+  border-radius: 15px;
   background-color: #fff;
   width: 200px;
   font-size: 14px;
@@ -220,7 +221,7 @@ textarea, select {
   padding: 6px 12px;
   cursor: pointer;
   font-size: 14px;
-  border-radius: 4px;
+  border-radius: 15px;
   transition: background-color 0.3s ease;
 }
 
@@ -230,24 +231,17 @@ textarea, select {
 
 /* Table Styles */
 .validation-table {
-  width: 100%;
-  border-collapse: collapse; /* Fusionner les bordures */
+  width: 100%; /* La table occupe toute la largeur disponible */
+  border-collapse: collapse;
+  overflow: hidden; /* Pour éviter que les coins internes ne dépassent */
 }
 
-.validation-table th{
-  padding: 12px; /* Espacement intérieur */
-  text-align: left; /* Alignement du texte */
-  border-bottom: 1px solid #f8f9fa; /* Bordure horizontale grise */
-}
+.validation-table th,
 .validation-table td {
-  padding: 12px; /* Espacement intérieur */
-  text-align: left; /* Alignement du texte */
-  border-bottom: 1px solid #ddd; /* Bordure horizontale grise */
-}
-
-.validation-table th {
-  font-weight: bold; /* Texte en gras pour l'en-tête */
-  background-color: #f8f9fa; /* Fond léger pour l'en-tête */
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+  background-color: #fff;
 }
 
 /* Supprimer la bordure du dernier élément */
