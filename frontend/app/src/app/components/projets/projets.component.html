@@ -1,43 +1,46 @@
-<div class="card-header">
-  <div class="header d-flex justify-content-between align-items-center">
-    <div class="fw-bold fs-4 me-2">List of Projects</div>
-    <button (click)="func_ajout_Prj()" class="btn btn-outline-primary btn-lg px-4" style="padding: 0;">
-      <span class="fw-bold fs-4 me-2">Create</span>
-    </button>
-  </div>
+<div class="card">
+  <div class="card-header">
+    <div class="header d-flex justify-content-between align-items-center">
+      <div class="fw-bold fs-4 me-2">List of Projects</div>
+      <button (click)="func_ajout_Prj()" class="btn btn-outline-primary btn-lg px-4" style="padding: 0;">
+        <span class="fw-bold fs-4 me-2">Create</span>
+      </button>
+    </div>
 
-  <!-- Search Box -->
-  <div class="filters mt-3">
-    <div class="form-outline" style="width: 100%;">
-      <input type="search" [(ngModel)]="searchtext" id="form1" class="form-control input__field" placeholder=" "
-        aria-label="search">
-      <label for="form1" class="input__label" [class.clicked]="searchtext"><i class="bi bi-search"></i> Search by corpus name</label>
+    <!-- Search Box -->
+    <div class="filters mt-3">
+      <div class="form-outline" style="width: 100%;">
+        <input type="search" [(ngModel)]="searchtext" id="form1" class="form-control input__field" placeholder=" "
+          aria-label="search">
+        <label for="form1" class="input__label" [class.clicked]="searchtext"><i class="bi bi-search"></i> Search by corpus name</label>
+      </div>
+    </div>
+
+    <div class="sort_filter mt-3">
+      <div class="sort_filter-container d-flex justify-content-between align-items-center">
+        <div class="sort d-flex align-items-center gap-3">
+          <p (click)="sortBy('nomProjet')">Name<i class="bi" [ngClass]="currentSortField === 'nomProjet' ? (isAscending ? 'bi-caret-up' : 'bi-caret-down') : 'bi-chevron-expand'"></i></p>
+          <p (click)="sortBy('dateCreation')">Date of creation<i class="bi" [ngClass]="currentSortField === 'dateCreation' ? (isAscending ? 'bi-caret-up' : 'bi-caret-down') : 'bi-chevron-expand'"></i></p>
+          <p (click)="sortBy('creator')">Creator<i class="bi" [ngClass]="currentSortField === 'creator' ? (isAscending ? 'bi-caret-up' : 'bi-caret-down') : 'bi-chevron-expand'"></i></p>
+        </div>
+        <div class="filter d-flex align-items-center gap-3">
+          <strong>Filter By :</strong>
+          <select [(ngModel)]="selectedOption">
+            <option value="all">All projects</option>
+            <option value="my">My projects</option>
+            <option value="collaborator">Collaborator projects</option>
+          </select>
+        </div>
+      </div>
     </div>
   </div>
 
-  <div class="sort_filter mt-3">
-    <div class="sort_filter-container d-flex justify-content-between align-items-center">
-      <div class="sort d-flex align-items-center gap-3">
-        <p (click)="sortBy('nomProjet')">Name<i class="bi" [ngClass]="currentSortField === 'nomProjet' ? (isAscending ? 'bi-caret-up' : 'bi-caret-down') : 'bi-chevron-expand'"></i></p>
-        <p (click)="sortBy('dateCreation')">Date of creation<i class="bi" [ngClass]="currentSortField === 'dateCreation' ? (isAscending ? 'bi-caret-up' : 'bi-caret-down') : 'bi-chevron-expand'"></i></p>
-        <p (click)="sortBy('creator')">Creator<i class="bi" [ngClass]="currentSortField === 'creator' ? (isAscending ? 'bi-caret-up' : 'bi-caret-down') : 'bi-chevron-expand'"></i></p>
-      </div>
-      <div class="filter d-flex align-items-center gap-3">
-        <strong>Filter By :</strong>
-        <select [(ngModel)]="selectedOption">
-          <option value="all">All projects</option>
-          <option value="my">My projects</option>
-          <option value="collaborator">Collaborator projects</option>
-        </select>
-      </div>
-    </div>
-  </div>
-
-  <div class="container mt-5">
+  <!-- Déplacer la table dans .card-body -->
+  <div class="card-body">
     <table class="validation-table table">
       <thead>
         <tr>
-          <th (click)="sortBy('nomProjet')">Name <span class="sort-icons">⬆⬇</span></th>
+          <th (click)="sortBy('nomProjet')">Project name <span class="sort-icons">⬆⬇</span></th>
           <th (click)="sortBy('dateCreation')">Date of creation <span class="sort-icons">⬆⬇</span></th>
           <th (click)="sortBy('creator')">Creator <span class="sort-icons">⬆⬇</span></th>
           <th>Action</th>
@@ -59,7 +62,11 @@
         </tr>
       </tbody>
     </table>
+    <pagination-controls (pageChange)="p = $event" [autoHide]="true" [previousLabel]="'Prev'"
+      [nextLabel]="'Next'" [responsive]="true"></pagination-controls>
   </div>
+</div>
+
 <ng-template #errors>
   <div class="container text-center mt-3">
     <div class="alert alert-danger fs-5" role="alert">
