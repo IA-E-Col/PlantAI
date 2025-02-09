@@ -1,85 +1,65 @@
 <div class="card-header">
-
-  <div class="Add">
-    <!--<i class="bi bi-list fs-4"></i>-->
-    <div class="fw-bold fs-4 me-2">Project List</div>
-
-    <div class="text-center mb-4" style="margin-bottom: 0;">
-      <button (click)="func_ajout_Prj()" class="btn btn-outline-primary btn-lg px-4" style="padding: 0;">
-        <span class="fw-bold fs-41 me-2" style="margin-right: 0rem !important;">
-          <!--<img [src]="cheminPlus" alt="add image" width="25" height="25" style="filter: invert(100%); margin-bottom: 4px; margin-right: 5px; margin-left: 5px;">-->
-          New project
-        </span>
-      </button>
-    </div>
+  <div class="header d-flex justify-content-between align-items-center">
+    <div class="fw-bold fs-4 me-2">List of Projects</div>
+    <button (click)="func_ajout_Prj()" class="btn btn-outline-primary btn-lg px-4" style="padding: 0;">
+      <span class="fw-bold fs-4 me-2">Create</span>
+    </button>
   </div>
 
-  <!--search box-->
-  <div class="fltr">
-    <div class="form-outline mt-3" style="width: 100%;">
+  <!-- Search Box -->
+  <div class="filters mt-3">
+    <div class="form-outline" style="width: 100%;">
       <input type="search" [(ngModel)]="searchtext" id="form1" class="form-control input__field" placeholder=" "
         aria-label="search">
-      <label for="form1" class="input__label" [class.clicked]="searchtext"><i class="bi bi-search"></i> Search by
-        name</label>
+      <label for="form1" class="input__label" [class.clicked]="searchtext"><i class="bi bi-search"></i> Search by corpus name</label>
     </div>
   </div>
 
-  <div class='sort_filter'>
-
-    <div class="sort_filter-container">
-      <div class="sort">
-        <strong>Sort By :</strong>
-        <p (click)="sortBy('nomProjet')">Name Project<i class="bi"
-                                                         [ngClass]="currentSortField === 'nomProjet' ? (isAscending ? 'bi-caret-up' : 'bi-caret-down') : 'bi-chevron-expand'"></i>
-        </p>
-        <p (click)="sortBy('dateCreation')">Project Creation Date<i class="bi"
-                                                                     [ngClass]="currentSortField === 'dateCreation' ? (isAscending ? 'bi-caret-up' : 'bi-caret-down') : 'bi-chevron-expand'"></i>
-        </p>
+  <div class="sort_filter mt-3">
+    <div class="sort_filter-container d-flex justify-content-between align-items-center">
+      <div class="sort d-flex align-items-center gap-3">
+        <p (click)="sortBy('nomProjet')">Name<i class="bi" [ngClass]="currentSortField === 'nomProjet' ? (isAscending ? 'bi-caret-up' : 'bi-caret-down') : 'bi-chevron-expand'"></i></p>
+        <p (click)="sortBy('dateCreation')">Date of creation<i class="bi" [ngClass]="currentSortField === 'dateCreation' ? (isAscending ? 'bi-caret-up' : 'bi-caret-down') : 'bi-chevron-expand'"></i></p>
+        <p (click)="sortBy('creator')">Creator<i class="bi" [ngClass]="currentSortField === 'creator' ? (isAscending ? 'bi-caret-up' : 'bi-caret-down') : 'bi-chevron-expand'"></i></p>
       </div>
-      <div class="filter">
+      <div class="filter d-flex align-items-center gap-3">
         <strong>Filter By :</strong>
         <select [(ngModel)]="selectedOption">
           <option value="all">All projects</option>
           <option value="my">My projects</option>
           <option value="collaborator">Collaborator projects</option>
         </select>
-        <button class="filter-button apply" (click)="applyFilter()">Apply</button>
       </div>
     </div>
-
   </div>
 
-
-</div>
-
-<div class="container mt-5">
-  <div class="card" style="margin-bottom: 15px;">
-    <div class="card-body"
-      *ngFor="let p of projets | filterByName: searchtext: 'nomProjet' | paginate: { itemsPerPage: 11, currentPage: p }">
-      <div class="Grp">
-        <div class="Inf">
-          <h4>{{p.nomProjet}}</h4>
-          <span> ({{ p.createur.username }}, {{ p.dateCreation | date: 'dd/MM/yyyy' }})</span>
-          <p>{{ p.description }}</p>
-        </div>
-        <div class="Btns">
-          <button (click)="ouvrirProjet(p.id)" class="btn btn-success me-2">
-            <i class="bi bi-folder2"></i>
-            <strong> Open</strong>
-          </button>
-          <button (click)="supprimerProjet(p.id)" class="btn btn-danger">
-            <i class="bi bi-trash"></i>
-            <strong> Delete</strong>
-          </button>
-        </div>
-      </div>
-      <hr>
-    </div>
+  <div class="container mt-5">
+    <table class="validation-table table">
+      <thead>
+        <tr>
+          <th (click)="sortBy('nomProjet')">Name <span class="sort-icons">⬆⬇</span></th>
+          <th (click)="sortBy('dateCreation')">Date of creation <span class="sort-icons">⬆⬇</span></th>
+          <th (click)="sortBy('creator')">Creator <span class="sort-icons">⬆⬇</span></th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let p of projets | filterByName: searchtext: 'nomProjet' | paginate: { itemsPerPage: 10, currentPage: p }">
+          <td>{{ p.nomProjet }}</td>
+          <td>{{ p.dateCreation | date: 'dd/MM/yyyy' }}</td>
+          <td>{{ p.creator }}</td>
+          <td class="actions">
+            <button (click)="ouvrirProjet(p.id)" class="btn btn-success me-2">
+              <i class="bi bi-folder2 custom-folder-icon"></i>
+            </button>
+            <button (click)="supprimerProjet(p.id)" class="btn btn-danger">
+              <i class="bi bi-trash custom-trash-icon"></i>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
   </div>
-  <pagination-controls  (pageChange)="p = $event" [autoHide]="true" [previousLabel]="'Prev'"
-              [nextLabel]="'Next'" [responsive]="true"></pagination-controls>
-</div>
-
 <ng-template #errors>
   <div class="container text-center mt-3">
     <div class="alert alert-danger fs-5" role="alert">
