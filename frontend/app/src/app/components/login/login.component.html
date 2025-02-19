@@ -1,42 +1,45 @@
-<div class="container mt-5" id="container">
-  <div class="form-container sign-up-container">
-    <img [src]="cheminPlante" alt="Plante logo" width="130" height="120" class="centered-image">
-    <form [formGroup]="inscrFormGroup" (ngSubmit)="inscr()" class="form-create">
-      <h1>Create Account</h1>
-      <div class="name-container">
-        <input type="text" placeholder="First Name"  formControlName="prenom"/>
-        <input type="text" placeholder="Last Name" formControlName="nom"/>
+<div class="height-90" id="container">
+
+  <div class="h-100">
+    <div class="d-flex justify-content-center align-items-center h-100">
+      <div class="col-md-6 d-md-block d-none col-12 bg-grad h-100">
+        <div class="d-flex h-100 flex-column h-100 align-items-center justify-content-center">
+          <div class="text-center">
+            <h1 class="text-white display-5">Welcome to PlantAI</h1>
+          </div>
+          <div class="mt-2 text-center">
+            <p class="text-light fs-4 font-light">Your solution to managing herbaria</p>
+          </div>
+            <img src="assets/plant.svg" class="w-75 h-75 opacity-50">
+        </div>
       </div>
-      <input type="email" placeholder="Email"  formControlName="email"/>
-      <input type="text" placeholder="Establishment" formControlName="departement"/>
-      <div class="name-container">
-        <input type="password" placeholder="Password" formControlName="password"/>
-        <input type="password" placeholder="Confirm Password" formControlName="password1"/>
-      </div>
-      <button [disabled]="inscrFormGroup.invalid">Sign Up</button>
-    </form>
-  </div>
-  <div class="form-container sign-in-container">
-    <img [src]="cheminPlante" alt="Plante logo" width="130" height="120" class="centered-image">
-    <form [formGroup]="loginFormGroup" (ngSubmit)="login()" class="form-login">
-      <h1>Sign in</h1>
-      <input type="email" placeholder="Email" formControlName="email" />
-      <input type="password" placeholder="Password" formControlName="password" />
-      <a href="#">Forgot your password?</a>
-      <button [disabled]="loginFormGroup.invalid">Sign In</button>
-    </form>
-  </div>
-  <div class="overlay-container">
-    <div class="overlay">
-      <div class="overlay-panel overlay-left">
-        <h1>Welcome Back</h1>
-        <p>To keep connected with us please login with your personal info</p>
-        <button class="ghost" id="signIn">Sign In</button>
-      </div>
-      <div class="overlay-panel overlay-right">
-        <h1>Hello</h1>
-        <p>Enter your personal details and discover with us the plant of plants</p>
-        <button  class="ghost" id="signUp">Sign Up</button>
+      <div class="col-md-6 d-md-flex flex-column justify-content-center align-items-center justify-content-center h-100">
+        <div class="mt-5 mb-5 d-flex justify-content-center align-items-center p-3">
+          <img src="assets/IRD.png" class="w-75">
+        </div>
+        <form [formGroup]="loginFormGroup" (ngSubmit)="login()" class="form-login p-2 d-flex col-12 col-sm-12 col-md-6">
+          <div class="d-md-none d-flex justify-content-center align-items-center mb-3">
+            <div class="rounded-circle bg-green d-inline-block p-2">
+              <img src="assets/plant.svg" width="50" height="50">
+            </div>
+            <p class="fs-4 font-light p-0 mb-0 mt-0 ms-4">Welcome to <span class="text-green fs-4 font-light">plantAI</span></p>
+          </div>
+          <div class="mb-5">
+            <h1 class="underlined text-green">Login</h1>
+          </div>
+          <div class="d-flex align-items-start flex-column mb-4 w-100">
+            <label for="email">Email</label>
+            <input name="email" id="email" type="email" placeholder="Email" class="form-control w-100" formControlName="email" />
+          </div>
+          <div class="d-flex align-items-start flex-column w-100">
+            <label for="password">Password</label>
+            <input type="password" placeholder="Password" class="form-control" formControlName="password" />
+          </div>
+          <div class="d-flex justify-content-end">
+            <p class="fs-5 font-light text-black">No account yet ? <span><a class="text-green fs-5 underlined font-light" [routerLink]="['/signup']">Sign Up</a></span></p> 
+          </div>
+          <button class="btn btn-green p-2" [disabled]="loginFormGroup.invalid">Login</button>
+        </form>
       </div>
     </div>
   </div>

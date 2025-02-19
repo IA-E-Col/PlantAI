@@ -11,7 +11,8 @@ import { of } from 'rxjs';
 import { CreeCollectionComponent } from "../cree-collection/cree-collection.component";
 import { MatDialog } from "@angular/material/dialog";
 import { SharedServiceService } from '../../services/shared-service.service';
-
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { faEdit, faSearch, faTrash } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-explorer',
@@ -23,7 +24,8 @@ import { SharedServiceService } from '../../services/shared-service.service';
     NgForOf,
     NgIf,
     DatePipe,
-    FormsModule
+    FormsModule,
+    FontAwesomeModule
   ],
   templateUrl: './explorer.component.html',
   styleUrl: './explorer.component.css'
@@ -36,7 +38,10 @@ export class ExplorerComponent {
   errorMessage!: string;
   p: number = 1;
   message_err!: string
-
+  faSearch = faSearch;
+  faTrash = faTrash;
+  faEdit = faEdit;
+  
   constructor(private dialogRef: MatDialog,private projetService: ProjetService, private router: Router,private sharedServiceService: SharedServiceService) { }
 
   ngOnInit(): void {

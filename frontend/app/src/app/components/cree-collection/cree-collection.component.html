@@ -4,7 +4,7 @@
             <div class="card p-4">
                 <!-- Title "Add a Model" -->
                 <h2 class="text-center mb-4">
-                    <span class="border-bottom border-primary pb-1">Add a Corpus</span>
+                    <span class="border-bottom-green pb-1">Add a Corpus</span>
                 </h2>
 
                 <!-- Form -->
@@ -42,9 +42,9 @@
                     </div>
 
                     <div style="text-align: center;">
-                        <button [disabled]="collectionFormGroup.invalid" type="submit" class="btn btn-primary">Create
+                        <button [disabled]="collectionFormGroup.invalid" type="submit" class="btn btn-green">Create
                             Corpus</button>
-                        <button type="button" *ngIf="is_active" class="btn btn-primary" [routerLink]="['/admin/explorer']"
+                        <button type="button" *ngIf="is_active" class="btn btn-green" [routerLink]="['/admin/explorer']"
                             style="margin-left: 10px;">Cancel</button>
                     </div>
                 </form>

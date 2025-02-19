@@ -5,17 +5,15 @@
 
 .Header {
     display: flex;
-    justify-content: space-around;
     align-items: center;
+    gap:5px;
 }
 
 .Statistique {
-    border: 1px solid black;
-    width: 20%;
     display: flex;
     align-items: center;
-    padding: 10px;
     border-radius: 15px;
+    background-color: white;
 }
 
 .Circle {
@@ -56,17 +54,16 @@
 
 .Tables {
     padding: 0 10px;
-    width: 75%;
-    margin-top: 0.65%;
 }
 
 .Table {
     overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 15px;
 }
 
 .Sidebar {
     margin: 10px 0;
-    width: 25%;
 }
 
 .Classes {
@@ -88,6 +85,7 @@
     transform: translate(0, 0);
     transform-origin: 0 0;
     background: white;
+    color: #888;
     transition: transform 120ms ease-in;
     line-height: 1.2;
     border-radius: 10px;
@@ -97,14 +95,9 @@
 .input__field:not(:placeholder-shown) ~ .input__label,
 .input__label.clicked {
     transform: translate(0.25rem, -75%) scale(0.8);
-    color: var(--color-accent);
+    color: #4a9277;
 }
 
-.classe_list {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-}
 
 .fw-bold {
     font-weight: 500 !important;
@@ -121,7 +114,7 @@
 .table-container {
     max-height: 400px;
     overflow-y: auto;
-    margin-top: 10px;
+    border-radius: 0;
 }
 
 .table-container::-webkit-scrollbar {
@@ -141,19 +134,11 @@ thead {
     z-index: 1;
 }
 
-tr:first-child th:first-child {
-    border-top-left-radius: 10px;
-}
-
-tr:first-child th:last-child {
-    border-top-right-radius: 10px;
-}
-
-tr:last-child td:first-child {
+td:first-child {
     border-bottom-left-radius: 5px;
 }
 
-tr:last-child td:last-child {
+td:last-child {
     border-bottom-right-radius: 5px;
 }
 
@@ -167,22 +152,25 @@ td, th {
 }
 
 .card-header {
-    border-radius: 10px 65px / 120px;
-    width: 100%;
+    border-radius: 15px;
     display: flex;
     align-items: flex-start;
-    background-color: #dee2e6;
+    background-color: white;
     flex-direction: column;
 }
-
-.card-header1 {
-    border-radius: 5px 50px / 120px;
-    width: 100%;
-    background-color: #dee2e6;
-    padding: 1px;
-    margin-bottom: 5px;
+.rounded-md{
+    border-radius: 15px;
 }
-
+.card-header1 {
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+    width: 100%;
+    background-color: white;
+}
+.btn-green{
+    background-color: #86A786;
+    color: white;
+  }
 .Add, .fltr {
     display: flex;
     width: 98%;

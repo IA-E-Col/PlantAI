@@ -40,8 +40,9 @@ import { DatasetPredictionComponent } from "./components/dataset-prediction/data
 import { CreeModeleComponent } from "./components/cree-modele/cree-modele.component";
 import { CreeCollectionComponent } from "./components/cree-collection/cree-collection.component";
 import { AnnotationValidationComponent } from './components/annotation-validation/annotation-validation.component';
+import { SignUpComponent } from './components/sign-up/sign-up.component';
 export const routes: Routes = [
-
+  {path : 'signup', component: SignUpComponent},
   { path: 'login', component: LoginComponent },
   { path: '', component: LoginComponent },
   {
