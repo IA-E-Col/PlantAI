@@ -1,0 +1,57 @@
+<div class="height-90" id="container">
+
+    <div class="h-100">
+      <div class="d-flex justify-content-center align-items-center h-100">
+        <div class="col-md-6 d-md-block d-none col-12 bg-grad h-100">
+          <div class="d-flex h-100 flex-column h-100 align-items-center justify-content-center">
+            <div class="text-center">
+              <h1 class="text-white display-5">Welcome to PlantAI</h1>
+            </div>
+            <div class="mt-2 text-center">
+              <p class="text-light fs-4 font-light">Your solution to managing herbaria</p>
+            </div>
+              <img src="assets/plant.svg" class="w-75 h-75 opacity-50">
+          </div>
+        </div>
+        <div class="col-md-6 d-md-flex flex-column justify-content-center align-items-center justify-content-center h-100">
+          <div class="mt-5 mb-5  d-flex justify-content-center align-items-center p-3">
+            <img src="assets/IRD.png" class="w-75">
+          </div>
+          <div class="mb-3 text-center mt-3">
+            <h1 class="text-green underlined">Sign Up</h1>
+          </div>
+          <form [formGroup]="inscrFormGroup" (ngSubmit)="inscr()" class="form-login p-2 d-flex col-12 col-sm-12 col-md-6">
+            <h1>Create Account</h1>
+            <div class="d-flex align-items-start flex-column mb-4 w-100">
+              <label for="firstname">First Name</label>
+              <input id="firstname" type="text" placeholder="First Name" class="form-control w-100"  formControlName="prenom"/>
+            </div>
+            <div class="d-flex align-items-start flex-column mb-4 w-100">
+              <label for="lastname">Last Name</label>
+              <input id="lastname" type="text" placeholder="Last Name" class="form-control w-100" formControlName="nom"/>
+            </div>
+            <div class="d-flex align-items-start flex-column mb-4 w-100">
+              <label for="email">Email</label>
+              <input id="email" type="text" placeholder="Email" class="form-control w-100" formControlName="email"/>
+            </div>
+            <div class="d-flex align-items-start flex-column mb-4 w-100">
+              <label for="department">Department</label>
+              <input id="department" type="text" placeholder="Department" class="form-control w-100" formControlName="departement"/>
+            </div> 
+            <div class="d-flex align-items-start flex-column mb-4 w-100">
+              <label for="password">Password</label>
+              <input id="password" type="password" placeholder="Password" class="form-control w-100" formControlName="password"/>
+            </div> 
+            <div class="d-flex align-items-start flex-column mb-4 w-100">
+              <label for="confirm-password">Confirm Password</label>
+              <input id="confirm-password" type="password" placeholder="Confirm Password" class="form-control w-100" formControlName="password1"/>
+            </div> 
+            <button  class="btn btn-green p-2 w-100" [disabled]="inscrFormGroup.invalid">Sign Up</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  
+  

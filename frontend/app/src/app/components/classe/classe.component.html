@@ -1,44 +1,52 @@
 <div class="Gage">
-    <div class="Header">
-        <div class="Statistique" [class.active]="currentStep === 1" (click)="goToStep(1)">
-            <div class="Circle">{{collections.length}}</div>
-            <div class="Content">
-                <div class="Title">Corpora</div>
-                <div class="Underline"></div>
-                <div class="Subtitle">Number of available Corpora</div>
+    <div class="row">
+        <div class="p-3 col-lg-3 col-6">
+            <div class="Statistique p-3" [class.active]="currentStep === 1" (click)="goToStep(1)">
+                <div class="Circle">{{collections.length}}</div>
+                <div class="Content">
+                    <div class="Title">Corpora</div>
+                    <div class="Underline"></div>
+                    <div class="Subtitle">Number of available Corpora</div>
+                </div>
             </div>
         </div>
-        <div class="Statistique" [class.active]="currentStep === 2" (click)="goToStep(2)">
-            <div class="Circle">{{modele.length}}</div>
-            <div class="Content">
-                <div class="Title">Models</div>
-                <div class="Underline"></div>
-                <div class="Subtitle">Number of available models</div>
+        <div class=" p-3 col-lg-3 col-6">
+            <div class="Statistique p-3" [class.active]="currentStep === 2" (click)="goToStep(2)">
+                <div class="Circle">{{modele.length}}</div>
+                <div class="Content">
+                    <div class="Title">Models</div>
+                    <div class="Underline"></div>
+                    <div class="Subtitle">Number of available models</div>
+                </div>
             </div>
         </div>
-        <div class="Statistique" [class.active]="currentStep === 3" (click)="goToStep(3)">
-            <div class="Circle">{{users.length}}</div>
-            <div class="Content">
-                <div class="Title">Users</div>
-                <div class="Underline"></div>
-                <div class="Subtitle">Number of users account</div>
+        <div class="p-3 col-lg-3 col-6">
+            <div class="Statistique p-3" [class.active]="currentStep === 3" (click)="goToStep(3)">
+                <div class="Circle">{{users.length}}</div>
+                <div class="Content">
+                    <div class="Title">Users</div>
+                    <div class="Underline"></div>
+                    <div class="Subtitle">Number of users account</div>
+                </div>
             </div>
         </div>
-        <div class="Statistique">
-            <div class="Circle">{{Classes.length}}</div>
-            <div class="Content">
-                <div class="Title">Classes</div>
-                <div class="Underline"></div>
-                <div class="Subtitle">Number of available classes</div>
+        <div class="p-3 col-lg-3 col-6">
+            <div class="Statistique p-3">
+                <div class="Circle">{{Classes.length}}</div>
+                <div class="Content">
+                    <div class="Title">Classes</div>
+                    <div class="Underline"></div>
+                    <div class="Subtitle">Number of available classes</div>
+                </div>
             </div>
         </div>
     </div>
-    <div class="Body">
-        <div class="Tables">
+    <div class="Body row">
+        <div class="Tables col-8">
             <div class="formbold-main-wrapper">
                 <!-- Author: FormBold Team -->
                 <!-- Learn More: https://formbold.com -->
-                <div class="formbold-form-wrapper">
+                <div class="formbold-form-wrapper rounded-md">
 
                     <div [class.active]="currentStep === 1" class="formbold-form-step-1">
                         <div class="Table">
@@ -47,7 +55,7 @@
                                     <!--<i class="bi bi-list fs-4"></i>-->
                                     <div class="fw-bold fs-4 me-2">Corpus List</div>
                                     <div class="text-center mb-4" style="margin-bottom: 2px !important;">
-                                        <button (click)="func_ajout_Col()" class="btn btn-outline-primary btn-lg px-4"
+                                        <button (click)="func_ajout_Col()" class="btn btn-green pt-1 pb-1 ps-3 pe-3"
                                             style="padding: 0;">
                                             <span class="fw-bold fs-41 me-2" style="margin-right: 0rem !important;">
                                                 <!--<img [src]="cheminPlus" alt="add image" width="25" height="25" style="filter: invert(100%); margin-bottom: 4px; margin-right: 5px; margin-left: 5px;">-->
@@ -108,17 +116,13 @@
                     <div [class.active]="currentStep === 2" class="formbold-form-step-2 active">
                         <div class="Table">
                             
-                            <div class="card-header">
+                            <div class="card-header p-3">
                                 <div class="Add">
                                     <!--<i class="bi bi-list fs-4"></i>-->
                                     <div class="fw-bold fs-4 me-2">Models List</div>
-                                    <div class="text-center mb-4" style="margin-bottom: 2px !important;">
-                                        <button (click)="func_ajout_Model()" class="btn btn-outline-primary btn-lg px-4"
-                                            style="padding: 0;">
-                                            <span class="fw-bold fs-41 me-2" style="margin-right: 0rem !important;">
-                                                <!--<img [src]="cheminPlus" alt="add image" width="25" height="25" style="filter: invert(100%); margin-bottom: 4px; margin-right: 5px; margin-left: 5px;">-->
-                                                New Model
-                                            </span>
+                                    <div class="text-center mb-3">
+                                        <button (click)="func_ajout_Model()" class="btn btn-green pt-1 pb-1 ps-3 pe-3">
+                                                Create 
                                         </button>
                                     </div>
                                 </div>
@@ -137,7 +141,7 @@
                             </div>
 
                             <div class="container mt-5">
-                                <div class="card mb-3">
+                                <div class="card mb-3 p-3">
                                     <div class="card-body"
                                         *ngFor="let m of modele | filterByName: searchtext2: 'name'| paginate: { itemsPerPage: 10, currentPage: p2 }">
                                         <div class="Grp">
@@ -149,17 +153,17 @@
                                                     slice:0:140) + '...' : m.description }}</p>
                                             </div>
                                             <div class="Btns d-flex" style="margin-right: 1.5%;">
-                                                <button (click)="func_inf_m(m.id)" class="btn btn-primary me-2"
+                                                <button (click)="func_inf_m(m.id)" class="btn btn-green me-2"
                                                     aria-label="View Details">
-                                                    <i class="bi bi-eye"></i>
+                                                    <fa-icon [icon]="faEye"></fa-icon>
                                                 </button>
-                                                <button (click)="func_update_m(m)" class="btn btn-success me-2"
+                                                <button (click)="func_update_m(m)" class="btn btn-green me-2"
                                                     aria-label="Update">
-                                                    <i class="bi bi-pencil"></i>
+                                                    <fa-icon [icon]="faEdit"></fa-icon>
                                                 </button>
-                                                <button (click)="func_delete_m(m)" class="btn btn-danger"
+                                                <button (click)="func_delete_m(m)" class="btn btn-green"
                                                     aria-label="Delete">
-                                                    <i class="bi bi-trash"></i>
+                                                    <fa-icon [icon]="faTrash"></fa-icon>
                                                 </button>
                                             </div>
                                         </div>
@@ -244,25 +248,22 @@
             </div>
         </div>
         
-        <div class="Sidebar">
-            <div class="Classes">
-                <div class="card-header1">
-                    <div class="classe_list" style="width: 95%; margin-left: 2%;">
-                        <span class="fw-bold fs-4 me-2">Classe List</span>
-                        <button (click)="func_ajout_Classe()" class="btn btn-outline-primary btn-lg px-4"
-                            style="padding: 0;">
-                            <span class="fw-bold fs-41 me-2" style="margin-right: 0rem !important;">
-                                New Classe
-                            </span>
-                        </button>
+        <div class="Sidebar col-4">
+            <div class="Classes col-12">
+                <div class="card-header1 p-3">
+                    <div class="w-100 me-2 mb-2">
+                        <div class="w-100 align-items-center flex-lg-row flex-column d-flex d-block justify-content-lg-between justify-content-center">
+                            <span class="fw-bold fs-4">Classe List</span>
+                            <button (click)="func_ajout_Classe()" class="btn btn-green pt-1 pb-1 ps-3 pe-3">
+                                Create
+                            </button>
+                        </div>
                     </div>
-                    <!--search box-->
-                    <div class="form-outline mt-3"
-                        style="width: 96%; margin-left: 2.4%; margin-bottom: 1% !important; margin-top: 2px !important;">
+                    <div class="form-outline mt-3">
                         <input type="search" [(ngModel)]="searchtext" id="form1" class="form-control input__field"
                             placeholder=" " aria-label="search" style="margin-bottom: 0px !important;">
                         <label for="form1" class="input__label" [class.clicked]="searchtext">
-                            <i class="bi bi-search"></i> Search by name
+                            <fa-icon [icon]="faSearch"></fa-icon> Search by name
                         </label>
                     </div>
                 </div>
@@ -280,8 +281,8 @@
                                 <td title="{{C.name}}">{{C.name}}</td>
                                 <td title="{{C.identifier}}">{{C.identifier}}</td>
                                 <td>
-                                    <button (click)="func_delete_c(C.id)" class="btn btn-danger">
-                                        <i class="bi bi-trash"></i>
+                                    <button (click)="func_delete_c(C.id)" class="btn btn-green">
+                                        <fa-icon [icon]="faTrash"></fa-icon>
                                     </button>
                                 </td>
                             </tr>

@@ -13,6 +13,8 @@ import { catchError } from 'rxjs/operators';
 import { of } from 'rxjs';
 import { CreeCollectionComponent } from '../cree-collection/cree-collection.component';
 import { CreeModeleComponent } from '../cree-modele/cree-modele.component';
+import { faEdit, faEye, faSearch, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 @Component({
   selector: 'app-classe',
@@ -25,7 +27,8 @@ import { CreeModeleComponent } from '../cree-modele/cree-modele.component';
     RouterLink,
     RouterOutlet,
     FormsModule,
-    MatDialogModule
+    MatDialogModule,
+    FontAwesomeModule
   ],
   templateUrl: './classe.component.html',
   styleUrls: ['./classe.component.css']
@@ -47,7 +50,10 @@ export class ClasseComponent implements OnInit {
   users: any[] = [];
   errorMessage!: string
   currentStep: number = 2;
-
+  faEdit = faEdit;
+  faTrash = faTrash;
+  faEye = faEye;
+  faSearch = faSearch;
   constructor(private dialogRef: MatDialog,private projetService: ProjetService, private router: Router) { }
 
   ngOnInit(): void {

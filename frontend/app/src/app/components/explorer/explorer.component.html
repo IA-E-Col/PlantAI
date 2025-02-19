@@ -2,8 +2,8 @@
   <div class="card-header">
     <div class="header d-flex justify-content-between align-items-center">
       <div class="fw-bold fs-4 me-2">List of corpora</div>
-      <button (click)="func_ajout_Col()" class="btn btn-outline-primary btn-lg px-4" style="padding: 0;">
-        <span class="fw-bold fs-4 me-2">New Corpus</span>
+      <button (click)="func_ajout_Col()" class="btn btn-green pt-1 pb-1 ps-3 pe-3">
+        Create
       </button>
     </div>
 
@@ -12,15 +12,15 @@
       <div class="form-outline" style="width: 100%;">
         <input type="search" [(ngModel)]="searchtext" id="form1" class="form-control input__field" placeholder=" "
           aria-label="search">
-        <label for="form1" class="input__label" [class.clicked]="searchtext"><i class="bi bi-search"></i> Search by name</label>
+        <label for="form1" class="input__label" [class.clicked]="searchtext"><fa-icon [icon]="faSearch"></fa-icon> Search by name</label>
       </div>
     </div>
 
     <div class="sort_filter mt-3">
       <div class="sort_filter-container d-flex justify-content-between align-items-center">
         <div class="sort d-flex align-items-center gap-3">
-          <p (click)="sortBy('nom')">Corpus Name<i class="bi" [ngClass]="currentSortField === 'nom' ? (isAscending ? 'bi-caret-up' : 'bi-caret-down') : 'bi-chevron-expand'"></i></p>
-          <p (click)="sortBy('dateCreation')">Creation date corpus<i class="bi" [ngClass]="currentSortField === 'dateCreation' ? (isAscending ? 'bi-caret-up' : 'bi-caret-down') : 'bi-chevron-expand'"></i></p>
+          <button class="p-1 bg-white border-rounded border-gray" (click)="sortBy('nom')">Corpus Name<i class="bi" [ngClass]="currentSortField === 'nom' ? (isAscending ? 'bi-caret-up' : 'bi-caret-down') : 'bi-chevron-expand'"></i></button>
+          <button class="p-1 bg-white border-rounded border-gray" (click)="sortBy('dateCreation')">Creation date corpus<i class="bi" [ngClass]="currentSortField === 'dateCreation' ? (isAscending ? 'bi-caret-up' : 'bi-caret-down') : 'bi-chevron-expand'"></i></button>
         </div>
       </div>
     </div>
@@ -31,8 +31,8 @@
     <table class="validation-table table">
       <thead>
         <tr>
-          <th (click)="sortBy('nom')">Corpus Name <span class="sort-icons">⬆⬇</span></th>
-          <th (click)="sortBy('dateCreation')">Creation date <span class="sort-icons">⬆⬇</span></th>
+          <th (click)="sortBy('nom')">Corpus name</th>
+          <th (click)="sortBy('dateCreation')">Creation date</th>
           <th>Description</th>
           <th>Action</th>
         </tr>
@@ -43,11 +43,11 @@
           <td>{{ c.dateCreation | date: 'dd/MM/yyyy' }}</td>
           <td [title]="c.description">{{ c.description.length > 240 ? (c.description | slice:0:240) + '...' : c.description }}</td>
           <td class="actions">
-            <button (click)="ouvrirCol(c.id)" class="btn btn-success me-2">
-              <i class="bi bi-folder2 custom-folder-icon"></i>
+            <button (click)="ouvrirCol(c.id)" class="btn btn-green me-2">
+              <fa-icon [icon]="faEdit"></fa-icon>
             </button>
-            <button (click)="supprimerCol(c.id)" class="btn btn-danger">
-              <i class="bi bi-trash custom-trash-icon"></i>
+            <button (click)="supprimerCol(c.id)" class="btn btn-green">
+              <fa-icon [icon]="faTrash"></fa-icon>
             </button>
           </td>
         </tr>

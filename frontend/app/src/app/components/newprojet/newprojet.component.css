@@ -20,6 +20,13 @@
   border-color: #0056b3;
   transform: scale(1.05); /* Effet d'agrandissement au survol */
 }
+.btn-green{
+  background-color: #86A786;
+  color: white;
+}
+.border-bottom-green{
+  border-bottom: 1px solid #86A786;
+}
 
 /* Animations */
 @keyframes fadeIn {

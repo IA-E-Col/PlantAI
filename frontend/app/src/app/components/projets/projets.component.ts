@@ -11,6 +11,8 @@ import {NgxPaginationModule} from 'ngx-pagination';
 import {NewprojetComponent} from "../newprojet/newprojet.component";
 import {catchError, of} from "rxjs";
 import {MatDialog} from "@angular/material/dialog";
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
 
 
 @Component({
@@ -22,6 +24,7 @@ import {MatDialog} from "@angular/material/dialog";
     NgxPaginationModule,
     NgForOf,
     NgIf,
+    FontAwesomeModule,
     DatePipe,
     FormsModule
   ],
@@ -32,6 +35,8 @@ export class ProjetsComponent implements OnInit {
   filterMenuActive: boolean = false;
   sortMenuActive: boolean = false;
   selectedOption: string = "all";
+  faTrash = faTrash;
+  faEdit =  faEdit;
 
   p: number = 1;
   currentSortField: string = '';
@@ -39,8 +44,7 @@ export class ProjetsComponent implements OnInit {
   searchtext:any;
   projets! : Array<any>
   message_err! : string
-  nonPrj! : string
-  cheminPlus = "assets/plus.png";
+  nonPrj! : string;
   username = this.projetService.func_get_username();
 
   errorMessage!: string;

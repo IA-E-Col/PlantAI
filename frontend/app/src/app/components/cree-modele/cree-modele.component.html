@@ -30,7 +30,7 @@
           <input type="text" name="Description" id="Description" placeholder="Model Description" class="formbold-form-input" [(ngModel)]="modelData.description">
         </div>
         <div class="formbold-form-btn-wrapper">
-          <button class="formbold-btn" type="button" (click)="nextStep()">Next Step</button>
+          <button class="btn btn-green" type="button" (click)="nextStep()">Next Step</button>
         </div>
       </div>
 
@@ -57,13 +57,13 @@
               <option value="" selected>Choose a class</option>
               <option *ngFor="let classe of classes" [value]=classe.id>{{classe.name}}</option>
             </select>
-            <button type="button" class="formbold-btn remove-class-btn" (click)="removeClass(i)" style="margin-top: 5px;">-</button>
+            <button type="button" class="btn btn-green" (click)="removeClass(i)" style="margin-top: 5px;">-</button>
           </div>
-          <button type="button" class="formbold-btn add-class-btn" (click)="addClass()" style="margin-top: 5px; padding: 8px 15px; padding-bottom: 10px;">+</button>
+          <button type="button" class="btn btn-green" (click)="addClass()" style="margin-top: 5px; padding: 8px 15px; padding-bottom: 10px;">+</button>
         </div>
         <div class="formbold-form-btn-wrapper">
-          <button type="button" class="formbold-btn bck-btn" (click)="prevStep()">Back</button>
-          <button class="formbold-btn" type="button" (click)="nextStep()">Next Step</button>
+          <button type="button" class="btn btn-secondary text-white" (click)="prevStep()">Back</button>
+          <button class="btn btn-green" type="button" (click)="nextStep()">Next Step</button>
         </div>
       </div>
 
@@ -73,8 +73,8 @@
           <input type="text" name="urlModele" id="urlModele" class="formbold-form-input" placeholder="Enter model URL" [(ngModel)]="modelData.urlModele"/>
         </div>
         <div class="formbold-form-btn-wrapper">
-          <button type="button" class="formbold-btn bck-btn" (click)="prevStep()">Back</button>
-          <button class="formbold-btn" type="submit">
+          <button type="btn btn-secondary text-white" class="btn btn-secondary text-white" (click)="prevStep()">Back</button>
+          <button class="btn btn-green" type="submit">
             Submit
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
               <g clip-path="url(#clip0_1675_1807)">

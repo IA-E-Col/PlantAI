@@ -1,18 +1,22 @@
 <div class="model-list-container">
   <div class="header">
-    <h2>List of models</h2>
+    <div _ngcontent-ng-c2565222890="" class="fw-bold fs-4 me-2">List of Models</div>
     <button class="create-btn" (click)="func_ajout_Model()">Create</button>
   </div>
-  <div class="search-container">
-    <input type="text" placeholder="Search by Name" class="search-bar" [(ngModel)]="searchtext" />
-    <i class="bi bi-search search-icon"></i>
-  </div>
-  
-
+  <div class="fltr">
+    <div class="form-outline" style="width: 100%; margin-bottom: 5px;">
+        <input type="search" [(ngModel)]="searchtext" id="form1"
+            class="form-control input__field" placeholder=" " aria-label="search">
+        <label for="form1" class="input__label" [class.clicked]="searchtext"><i
+                class="bi bi-search"></i>
+            Search by
+            name</label>
+    </div>
+</div>
   <table class="model-table">
     <thead>
       <tr>
-        <th (click)="sortBy('nom')">Name <span class="sort-icon">⇅</span></th>
+        <th (click)="sortBy('nom')">Name</th>
         <th>Classification</th>
         <th>Actions</th>
       </tr>
@@ -23,7 +27,7 @@
         <td><strong>{{ m.categorie }}</strong></td>
         <td>
           <button class="info-btn text-white" (click)="func_inf_m(m.id)"><fa-icon [icon]="faCircleInfo"></fa-icon></button>
-          <button class="play-btn" (click)="func_update_m(m)">▶</button>
+          <button class="play-btn" (click)="func_update_m(m)"><fa-icon [icon]="faPlay"></fa-icon></button>
         </td>
       </tr>
     </tbody>

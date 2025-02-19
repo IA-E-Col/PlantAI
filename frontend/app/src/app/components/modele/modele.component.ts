@@ -11,7 +11,7 @@ import {CreeModeleComponent} from "../cree-modele/cree-modele.component";
 import {catchError, of} from "rxjs";
 import {MatDialog} from "@angular/material/dialog";
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faCircleInfo } from '@fortawesome/free-solid-svg-icons';
+import { faCircleInfo, faPlay, faSearch } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-modele',
@@ -38,6 +38,8 @@ export class ModeleComponent implements OnInit{
   selectedOption: string = "all";
   private errorMessage!: string;
   faCircleInfo = faCircleInfo;
+  faSearch = faSearch;
+  faPlay = faPlay;
   constructor(private dialogRef: MatDialog,private route: ActivatedRoute , private router : Router ,private projetService : ProjetService ) { }
 
   ngOnInit() {
