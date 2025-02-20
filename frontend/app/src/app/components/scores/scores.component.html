@@ -1,0 +1,38 @@
+<div class="card">
+  <div class="card-header d-flex justify-content-between align-items-center">
+    <h5 class="fw-bold">Validation of the Annotation Sol</h5>
+    <button class="btn btn-success" (click)="addUser()">Add a user</button>
+  </div>
+
+  <!-- Filters -->
+  <div class="filters d-flex gap-2 p-3">
+    <input type="date" [(ngModel)]="selectedDate" class="form-control" placeholder="JJ-MM-AAAA">
+    <select [(ngModel)]="selectedScore" class="form-select">
+      <option value="">Score</option>
+      <option *ngFor="let s of [1,2,3]" [value]="s">{{s}}</option>
+    </select>
+    <input type="text" [(ngModel)]="searchText" class="form-control" placeholder="Search by user name">
+  </div>
+
+  <!-- Table -->
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th (click)="sortBy('fullName')" class="sortable">Full Name ⬆⬇</th>
+        <th (click)="sortBy('dateSubmission')" class="sortable">Date of Submission ⬆⬇</th>
+        <th (click)="sortBy('score')" class="sortable">Score ⬆⬇</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let user of filteredUsers | paginate: { itemsPerPage: 5, currentPage: p }">
+        <td><img [src]="user.avatar" alt="Avatar" class="rounded-circle me-2" width="30"> {{ user.fullName }}</td>
+        <td>{{ user.dateSubmission }}</td>
+        <td>{{ user.score }}</td>
+        <td>
+          <button class="btn btn-outline-danger btn-sm" (click)="deleteUser(user.id)"><i class="bi bi-trash"></i></button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
