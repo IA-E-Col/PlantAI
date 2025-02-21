@@ -1,0 +1,162 @@
+.validation-history-container {
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    margin: auto;
+}
+
+/* Header avec titre et bouton */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.title {
+    font-size: 22px;
+    font-weight: bold;
+    color: #6C7542;
+}
+
+.add-user-btn {
+    background: #A3B18A;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 5px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.add-user-btn:hover {
+    background: #6C7542;
+}
+
+/* Barre de recherche */
+.filters {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.filters input,
+.filters select {
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    font-size: 14px;
+    width: 100%;
+}
+
+/* Table style */
+.validation-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.validation-table th,
+.validation-table td {
+    padding: 12px;
+    border-bottom: 1px solid #ddd;
+    text-align: left;
+}
+
+.validation-table th {
+    background: #EAE7DC;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.validation-table tr:nth-child(even) {
+    background: #F5F5F5;
+}
+
+.validation-table tr:hover {
+    background: #EDEDED;
+}
+
+/* Styles pour les badges Validé / Rejeté */
+.validated {
+    background: #A3B18A;
+    color: white;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-weight: bold;
+    text-align: center;
+    display: inline-block;
+}
+
+.declined {
+    background: #8B7D61;
+    color: white;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-weight: bold;
+    text-align: center;
+    display: inline-block;
+}
+
+/* Boutons Actions */
+.actions {
+    display: flex;
+    gap: 5px;
+}
+
+.edit-btn,
+.delete-btn {
+    border: none;
+    padding: 6px;
+    cursor: pointer;
+    background: transparent;
+    font-size: 16px;
+    transition: transform 0.2s;
+}
+
+.edit-btn:hover {
+    color: #8d8731;
+    transform: scale(1.1);
+}
+
+.delete-btn:hover {
+    color: #dc3545;
+    transform: scale(1.1);
+}
+
+/* Pagination */
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 15px;
+    gap: 10px;
+}
+
+.page-btn {
+    background: #A3B18A;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 5px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.page-btn:hover {
+    background: #6C7542;
+}
+
+/* Changement de couleur des flèches de tri */
+.sort-arrows {
+    color: #6C7542 !important;
+    font-size: 14px;
+    padding-left: 5px;
+    cursor: pointer;
+}

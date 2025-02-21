@@ -1,30 +1,19 @@
-<div class="container mt-5">
-  <div class="row justify-content-center">
-    <div class="col-md-8">
-      <div class="card p-4">
-        <!-- Titre "Modifier les informations de votre projet" -->
-        <h2 class="text-center mb-4">
-          <span class="border-bottom border-primary pb-1">Add a collaborator to your project</span>
-        </h2>
-
-        <!-- Formulaire -->
-        <form [formGroup]="projetFormGroup" (ngSubmit)="ajouter_collab()">
-          <div class="mb-3">
-            <label for="collaborateur" class="form-label fw-bold">Collaborator :</label>
-            <select class="form-select" id="collaborateur" formControlName="collaborateur">
-                <option *ngFor="let user of users" [value]="user.username">{{user.username}}</option>
-            </select>
-          </div>
-
-          <!-- <div class="mb-3">
-            <label for="role" class="form-label fw-bold">Rôle :</label>
-            <input type="text" class="form-control" id="role" formControlName="role">
-          </div> -->
-
-          <button [disabled]="projetFormGroup.invalid" type="submit" class="btn btn-success">Add Collaborator</button>
-          <button type="button" class="btn btn-primary" style="margin-left: 15px;" (click)="modifer_infomation()">Back</button>
-        </form>
+<div class="form-wrapper">
+  <h2 class="form-title">Add a collaborator to your project.</h2>
+  
+  <div class="form-container">
+    <form [formGroup]="projetFormGroup" (ngSubmit)="ajouter_collab()">
+      <div class="form-group">
+        <label for="collaborateur">Name of collaborator :</label>
+        <select id="collaborateur" formControlName="collaborateur">
+          <option *ngFor="let user of users" [value]="user.username">{{user.username}}</option>
+        </select>
       </div>
-    </div>
+
+      <div class="button-group">
+        <button [disabled]="projetFormGroup.invalid" type="submit" class="btn-add">Add Collaborator</button>
+        <button type="button" class="btn-back" (click)="modifer_infomation()">Back</button>
+      </div>
+    </form>
   </div>
 </div>

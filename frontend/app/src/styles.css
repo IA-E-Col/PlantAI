@@ -1,3 +1,29 @@
 /* You can add global styles to this file, and also import other style files */
 @import "../node_modules/bootstrap-icons/font/bootstrap-icons.css";
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+@font-face {
+    font-family: 'Spartan';
+    src: url('assets/fonts/Spartan-Regular.ttf') format('truetype');
+    font-weight: 400; 
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Spartan';
+    src: url('assets/fonts/Spartan-SemiBold.ttf') format('truetype');
+    font-weight: 600; 
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'SpartanBold';
+    src: url('assets/fonts/Spartan-Bold.ttf') format('truetype');
+}
+@font-face {
+    font-family: 'SpartanLight';
+    src: url('assets/fonts/Spartan-Thin.ttf') format('truetype');
+}
+* { margin: 0; font-family: Spartan !important; font-weight: 600 !important;}
+.btn-green{
+    background-color: #86A786;
+    color: white;
+  }

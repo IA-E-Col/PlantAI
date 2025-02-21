@@ -1,56 +1,41 @@
-<div class="Page">
-  <div class="formbold-form-wrapper">
-    <!-- Step 1: Description -->
-    <div class="formbold-input-flex">
-      <div>
-        <h3><strong>{{ model.name }}</strong><span style="font-size: small;">({{model.categorie}}<i style="margin-left: 5px;" class="bi bi-question-circle-fill"
-              [attr.title]="getCategoryDescription()"></i>)</span></h3>
-        <p class="text">
-          {{ model.description }}
-        </p>
-      </div>
-    </div>
+<div class="container py-4 main-container">
+  <!-- Step 1: Description -->
+  <div class="mb-4">
+    <h3 class="fw-bold">{{ model.name }}
+      <span class="fs-6">({{ model.categorie }}
+        <i class="bi bi-question-circle-fill ms-2" [attr.title]="getCategoryDescription()"></i>)</span>
+    </h3>
+    <p>{{ model.description }}</p>
+  </div>
 
-    <!-- Step 2: Metrics -->
-    <h4><strong>Metrics</strong></h4>
-    <div>
-      <p><strong>Accuracy:</strong> {{ model.accuracy }}
-        <i class="bi bi-question-circle-fill"
-          title="Accuracy measures the percentage of correct predictions out of all predictions. The range is from 0% (no correct predictions) to 100% (all predictions correct). A higher percentage indicates better model performance. Note that accuracy may not fully represent model effectiveness, especially in cases of class imbalance."></i>
-      </p>
-    </div>
-    <div>
-      <p><strong>Loss:</strong> {{ model.loss }}
-        <i class="bi bi-question-circle-fill"
-          title="Loss quantifies the error between the predicted values and the actual target values. It depends on the loss function used. For example, Mean Squared Error (MSE) ranges from 0 (perfect predictions) to positive infinity, with higher values indicating greater error. Cross-Entropy Loss also ranges from 0 to positive infinity, reflecting how well the model's probability estimates match the actual classes. Lower values indicate better model performance."></i>
-      </p>
-    </div>
+  <!-- Step 2: Metrics -->
+  <div class="p-3 metrics-container border border-2">
+    <h4 class="fw-bold">Metrics</h4>
+    <p><strong>Accuracy:</strong> {{ model.accuracy }}
+      <i class="bi bi-question-circle-fill" title="Accuracy measures model performance."></i>
+    </p>
+    <p><strong>Loss:</strong> {{ model.loss }}
+      <i class="bi bi-question-circle-fill" title="Loss quantifies prediction errors."></i>
+    </p>
+  </div>
 
-    <!-- Step 3: Examples -->
-    <div>
-      <h4><strong>Examples</strong></h4>
-      <img src="{{ model.example1 }}" alt="Architecture Image" style="width: 100%;">
-      <!--<hr>
-        <p>{{ model.example2 }}</p>-->
-    </div>
+  <!-- Step 3: Examples -->
+  <div class="mt-4 p-4 border border-2 border-rad">
+    <h4 class="fw-bold">Examples</h4>
+    <img [src]="model.example1" class="img-fluid" alt="Example Image">
+  </div>
 
+  <!-- Step 4: Architecture -->
+  <div class="p-3 mt-4 metrics-container border border-2">
+    <h4 class="fw-bold">Architecture Image</h4>
+    <img [src]="model.architectureImage" class="img-fluid" alt="Architecture Image">
+    <p class="fw-bold">Number of Layers: {{ model.numLayers }}</p>
+    <p><strong>Number of Parameters:</strong> {{ model.numParams }}</p>
+  </div>
 
-    <!-- Step 4: Architecture -->
-    <div>
-      <h4><strong>Architecture Image</strong></h4>
-      <img src="{{ model.architectureImage }}" alt="Architecture Image" style="width: 100%;">
-    </div>
-    <div>
-      <p><strong>Number of Layers : </strong>{{ model.numLayers }}</p>
-    </div>
-    <div>
-      <p><strong>Number of Parameters : </strong>{{ model.numParams }}</p>
-    </div>
-
-    <!-- Step 5: Model Usage -->
-    <h4><strong>Model Usage</strong></h4>
-    <div>
-      <p class="text">{{ model.modelUsage }}</p>
-    </div>
+  <!-- Step 5: Model Usage -->
+  <div class="p-3 mt-4 metrics-container border border-2">
+    <h4 class="fw-bold">Utility of Model</h4>
+    <p>{{ model.modelUsage }}</p>
   </div>
 </div>

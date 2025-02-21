@@ -56,14 +56,16 @@ export class CreeModeleComponent implements OnInit {
   }
 
   nextStep() {
+    console.log(this.currentStep);
     if (this.currentStep < 3) {
-      this.currentStep++;
+      this.currentStep = this.currentStep + 1;
     }
   }
 
   prevStep() {
+    console.log(this.currentStep)
     if (this.currentStep > 1) {
-      this.currentStep--;
+      this.currentStep = this.currentStep - 1;
     }
   }
 

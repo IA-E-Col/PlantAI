@@ -1,29 +1,35 @@
 <div class="container" style="margin-top: 0px;" [style.max-width]="width ? '80%' : '99%'">
 
   <div class="row mb-4">
-    <div class="Statistique">
-      <div class="Circle">{{formatted_nbr_c}}</div>
-      <div class="Content">
-          <div class="Title">Datasets</div>
-          <div class="Underline"></div>
-          <div class="Subtitle">Number of available Datasets</div>
-      </div>
+    <div class="col-lg-4 mb-lg-0 mb-3">
+      <div class="Statistique p-2">
+        <div class="Circle">{{formatted_nbr_c}}</div>
+        <div class="Content">
+            <div class="Title">Datasets</div>
+            <div class="Underline"></div>
+            <div class="Subtitle">Number of available Datasets</div>
+        </div>
+    </div>
   </div>
-  <div class="Statistique">
-      <div class="Circle">{{nbr_m}}</div>
-      <div class="Content">
-          <div class="Title">Models</div>
-          <div class="Underline"></div>
-          <div class="Subtitle">Number of used models</div>
-      </div>
+  <div class="col-lg-4 mb-lg-0 mb-3">
+    <div class="Statistique p-2">
+        <div class="Circle">{{nbr_m}}</div>
+        <div class="Content">
+            <div class="Title">Models</div>
+            <div class="Underline"></div>
+            <div class="Subtitle">Number of used models</div>
+        </div>
+    </div>
   </div>
-  <div class="Statistique">
-      <div class="Circle">{{formatted_nbr_s}}</div>
-      <div class="Content">
-          <div class="Title">Specimens</div>
-          <div class="Underline"></div>
-          <div class="Subtitle">Number of specimens by Datasets</div>
-      </div>
+  <div class="col-lg-4">
+    <div class="Statistique p-2">
+        <div class="Circle">{{formatted_nbr_s}}</div>
+        <div class="Content">
+            <div class="Title">Specimens</div>
+            <div class="Underline"></div>
+            <div class="Subtitle">Number of specimens by Datasets</div>
+        </div>
+    </div>
   </div>
     <!-- Carré 1 - Nombre total de collections 
     <div class="col-sm-3" style="margin-left: 0%;">
@@ -87,8 +93,9 @@
 
     <div class="nex_div ">
       <div class="add">
-        <div><span class="fw-bold fs-4 me-2"> Dataset </span></div>
-
+        <div>
+          <span class="font-bold fs-4 me-2">List of Datasets</span>
+        </div>
         <div class="text-center mb-4 p-4" id="mb-5">
           <button *ngIf="bol" (click)="func_ajout_col()" class="btn btn-outline-primary btn-lg px-4"
             style="padding: 2px;">
@@ -112,14 +119,14 @@
       <div class='sort_filter'>
 
         <div class="sort_filter-container">
-          <div class="sort">
-            <strong>Sort By :</strong>
-            <p (click)="sortBy('name')">Dataset name<i class="bi"
+          <div class="sort mt-4">
+            <strong class="me-2">Sort By :</strong>
+            <button class="p-1 bg-white border-rounded border-gray me-2" (click)="sortBy('name')">Dataset name<i class="bi"
                                                              [ngClass]="currentSortField === 'name' ? (isAscending ? 'bi-caret-up' : 'bi-caret-down') : 'bi-chevron-expand'"></i>
-            </p>
-            <p (click)="sortBy('dateCreation')">Dataset creation date<i class="bi"
+            </button>
+            <button class="p-1 bg-white border-rounded border-gray" (click)="sortBy('dateCreation')">Dataset creation date<i class="bi"
                                                                          [ngClass]="currentSortField === 'dateCreation' ? (isAscending ? 'bi-caret-up' : 'bi-caret-down') : 'bi-chevron-expand'"></i>
-            </p>
+            </button>
           </div>
         </div>
 

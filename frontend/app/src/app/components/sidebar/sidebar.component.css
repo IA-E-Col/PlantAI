@@ -1,6 +1,6 @@
 .sidebar {
-  width: 250px;
-  height: 100vh;
+  height: 100%;
+  min-height: 100vh;
   background-color: #A3B18A;
   transition: width 0.3s ease-in-out;
   overflow: hidden;

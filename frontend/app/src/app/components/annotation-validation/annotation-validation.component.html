@@ -1,0 +1,86 @@
+<div class="annotation-card p-4">
+    <div class="d-flex">
+        <img [src]="annotation.imageUrl" alt="Annotation Image" class="h-100">
+        <div class="d-flex flex-column w-100 p-4">
+            <div class="d-flex justify-content-between w-100">
+                <div>
+                    <h2 class="text-fawn spartan-bold">Annotations Validation</h2>
+                </div>
+                <div class="d-flex gap-3">
+                    <button class="validate bg-green rounded-lg">Validate</button>
+                    <button class="decline bg-green rounded-lg">Decline</button>
+                </div>
+
+        </div>
+        <div class="d-flex align-items-start flex-column mt-3">
+            <h5><strong class="text-fawn spartan-bold">Class:</strong> {{ annotation.class }}</h5>
+            <h5><strong class="text-fawn spartan-bold">Prediction:</strong> {{ annotation.prediction }}</h5>
+        </div>  
+        <p class="text-fawn text-start">As an administrator, you can choose to validate the annotation or refuse its validation based on the opinion of the participants in the real-time discussion below.</p>
+    </div>
+  </div>
+</div>
+<div class="annotation-card mt-3 ps-3 pe-3 pb-3">
+  <div class="annotation-form">
+    <div class="d-flex justify-content-start">
+        <h3 class="text-fawn spartan-bold">Annotations Validation</h3>
+    </div>
+    <div class="d-flex">
+        <div class="d-flex justify-content-start col-lg-1 col-md-3 col-sm-4 col-6">
+            <h4 class="text-fawn spartan-bold">Description:</h4>
+        </div>
+        <div class="w-100">
+            <textarea class="w-100 h-100" placeholder="Add comment..."></textarea>
+        </div>
+    </div>
+    <div class="d-flex">
+        <div class="d-flex justify-content-start col-lg-1 col-md-3 col-sm-4 col-6">
+            <h4 class="text-fawn spartan-bold">Mark:</h4>
+        </div>
+    <div class="w-100 d-flex gap-3">
+        <select class="w-100">
+            <option>Rating</option>
+        </select>
+        <button class="btn bg-green text-light rounded-lg" (click)="submitValidation()">OK</button>
+    </div>
+    </div>
+
+  </div>
+</div>
+<div class="annotation-card mt-3 p-3">
+  <div class="survey-status">
+    <div class="d-flex justify-content-start">
+        
+        <h3 class="text-fawn spartan-bold">Survey Status</h3>
+    </div>
+    <div class="mt-3">
+        <h3 class="text-green spartan-bold text-start"><strong>People who voted in favor:</strong></h3>
+        <div class="w-100 bg-gray position-relative progress-bar">
+            <div class="progress-bar favor" [style.width.%]="votes.inFavor"></div>
+        </div>
+    </div>
+    <div class="mt-3">
+    <h3 class="text-green spartan-bold text-start"><strong>People who voted against:</strong></h3>
+    <div class="w-100 bg-gray position-relative progress-bar">
+        <div class="progress-bar favor" [style.width.%]="votes.against"></div>
+    </div>
+    </div>
+  </div>
+</div>
+  <div class="annotation-card mt-4 p-3">
+  <div class="comments">
+    <h3 class="text-start text-fawn spartan-bold">Survey Status</h3>
+    <div *ngFor="let comment of comments" class="comment d-flex flex-column align-items-start">
+      <div class="d-flex justify-content gap-1 align-items-center">
+        <img [src]="comment.avatar" alt="User Avatar">
+        <div class="d-flex align-items-center">
+            <h5 class="text-fawn spartan-bold"><strong>{{ comment.name }}</strong></h5>
+        </div>
+      </div>
+      <div class="comment-text mt-5">
+
+        <p>{{ comment.text }}</p>
+      </div>
+    </div>
+  </div>
+</div>

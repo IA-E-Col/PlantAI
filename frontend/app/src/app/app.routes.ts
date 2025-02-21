@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { ScoresComponent } from './components/scores/scores.component';
 import { ProjetsComponent } from "./components/projets/projets.component";
 import { ModeleComponent } from "./components/modele/modele.component";
 import { ClasseComponent } from "./components/classe/classe.component";
@@ -28,6 +29,7 @@ import { CollectionInfoComponent } from "./components/collection-info/collection
 import { CollectionImgComponent } from "./components/collection-img/collection-img.component";
 import { CollectionDashboardComponent } from "./components/collection-dashboard/collection-dashboard.component";
 import { GererCollectionComponent } from "./components/gerer-collection/gerer-collection.component";
+import { ValidationHistoryComponent } from "./components/validation-history/validation-history.component";
 
 import { ListImagesComponent } from "./components/list-images/list-images.component";
 import { ImagesFormComponent } from "./components/images-form/images-form.component";
@@ -38,14 +40,17 @@ import { GererDatasetComponent } from "./components/gerer-dataset/gerer-dataset.
 import { DatasetPredictionComponent } from "./components/dataset-prediction/dataset-prediction.component";
 import { CreeModeleComponent } from "./components/cree-modele/cree-modele.component";
 import { CreeCollectionComponent } from "./components/cree-collection/cree-collection.component";
+import { AnnotationValidationComponent } from './components/annotation-validation/annotation-validation.component';
+import { SignUpComponent } from './components/sign-up/sign-up.component';
 export const routes: Routes = [
-
+  {path : 'signup', component: SignUpComponent},
   { path: 'login', component: LoginComponent },
   { path: '', component: LoginComponent },
   {
     path: 'admin', component: AdminTemplateComponent, canActivate: [authenticationGuard], children: [
       { path: 'projets', component: ProjetsComponent },
       { path: 'profile', component: ProfileComponent },
+      { path: 'validation-history', component: ValidationHistoryComponent }, // ✅ Ajout ici
       { path: '', component: ProjetsComponent },
       { path: 'explorer', component: ExplorerComponent },
       { path: 'collection/total', component: CollectionComponent },
@@ -86,6 +91,7 @@ export const routes: Routes = [
           { path: 'gererprojet/:id', component: GererprojetComponent },
           { path: 'ajoutercollab/:id', component: AjouterCollabComponent },
           { path: 'supprcollab/:id', component: SupprimerCollabComponent },
+          { path: 'validation-history/:projectId', component: ValidationHistoryComponent }, // ✅ Ajout ici
           { path: '', component: ProjetInfComponent },
         ]
       },
@@ -119,7 +125,9 @@ export const routes: Routes = [
           { path: 'gererdataset/:id', component: GererDatasetComponent },
         ]
       },
-      { path: 'model_inf/:id', component: ModelInfComponent }
+      { path: 'model_inf/:id', component: ModelInfComponent },
+      { path: 'annotation_validation', component: AnnotationValidationComponent },
+      { path: 'scores', component: ScoresComponent },
     ]
   },
 

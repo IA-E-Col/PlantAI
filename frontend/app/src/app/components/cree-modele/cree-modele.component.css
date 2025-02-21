@@ -53,7 +53,7 @@
   ;
 }
 .formbold-steps li.active span {
-  background: #007bff;
+  background: #86A786;
   color: #FFFFFF;
 }
 
@@ -77,8 +77,15 @@
   outline: none;
   resize: none;
 }
+.btn-green{
+  background-color: #86A786;
+  color: white;
+}
+.border-bottom-green{
+  border-bottom: 1px solid #86A786;
+}
 .formbold-form-input:focus {
-  border-color: #6a64f1;
+  border-color: #86A786;
   box-shadow: 0px 3px 8px rgba(0, 0, 0, 0.05);
 }
 .formbold-form-label {
