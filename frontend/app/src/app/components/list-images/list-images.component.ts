@@ -85,7 +85,7 @@ export class ListImagesComponent implements OnInit {
        console.log(this.test);
        this.handleDataChange();
      });*/
-    this.test = this.route.snapshot.paramMap.get('id');
+    this.test = this.route.snapshot.parent?.paramMap.get('id');
     console.log(this.test, "daba khdam ?"); // Maintenant vous pouvez utiliser idCollection
     this.handleDataChange();
     /* this.route.queryParams.subscribe(params => {
@@ -129,7 +129,7 @@ export class ListImagesComponent implements OnInit {
   }
 
   navigateToImageInf(plante: any) {
-    this.router.navigate(['/admin/image-inf', plante.catalogueCode], {
+    this.router.navigate([`/admin/datasets/${this.test}/images`, plante.catalogueCode], {
       state: { plante: plante, plantes: this.plantes }
     });
   }

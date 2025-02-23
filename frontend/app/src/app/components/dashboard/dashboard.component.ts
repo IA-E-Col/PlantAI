@@ -103,8 +103,8 @@ export class DashboardComponent implements OnInit {
   }
 
   loadchartdata() {
-    this.route.params.subscribe(params => {
-      this.projectId = params['Id'];
+    this.route.parent?.params.subscribe(params => {
+      this.projectId = params['id'];
 
       this.projetservice.func_get_Id(this.projectId).subscribe({
         next: data => {

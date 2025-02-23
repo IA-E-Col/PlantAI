@@ -171,11 +171,13 @@ export class FormulaireComponent implements OnInit {
 
     fieldContainers.forEach(container => {
       const label = container.querySelector('label')?.innerText || '';
+      console.log(label);
       const tagContainer = container.querySelector('.tag-container') as HTMLElement;
 
       if (tagContainer) { // Ensure tagContainer is not null
         const tags = this.getUniqueTags(tagContainer);
         allTags[label] = tags;
+        console.log("ALL TAGS", allTags);
       } else {
         console.warn(`No tag container found for ${label}`);
       }
@@ -185,8 +187,8 @@ export class FormulaireComponent implements OnInit {
 
     const selectedOptions = [
       allTags['Country'],
-      allTags['Genre'],
-      allTags['Recorded By'],
+      allTags['Genus'],
+      allTags['Collected By'],
       allTags['Family'],
       allTags['Specific Epithet'],
       allTags['Scientific Name'],
@@ -195,6 +197,7 @@ export class FormulaireComponent implements OnInit {
       allTags['Department'],
       allTags['Location']
     ];
+    console.log(selectedOptions);
     this.Filtres.test=selectedOptions;
     console.log('ici tout les filtre', this.Filtres); // Here, you can send these data to the server in Angular
     this.projetService.func_get_Specimen_Filtred(this.Filtres,this.projetService.projet.id).subscribe({
@@ -269,7 +272,7 @@ export class FormulaireComponent implements OnInit {
     const tag = document.createElement('div');
     tag.className = 'tag';
     tag.innerText = value;
-    tag.style.background = '#007bff';
+    tag.style.background = '#86A786';
     tag.style.color = 'white';
     tag.style.padding = '5px 10px';
     tag.style.borderRadius = '20px';
@@ -282,7 +285,7 @@ export class FormulaireComponent implements OnInit {
     closeBtn.className = 'close-btn';
     closeBtn.innerText = 'x';
     closeBtn.style.background = '#fff';
-    closeBtn.style.color = '#007bff';
+    closeBtn.style.color = '#86A786';
     closeBtn.style.marginLeft = '5px';
     closeBtn.style.borderRadius = '50%';
     closeBtn.style.padding = '0 8px';

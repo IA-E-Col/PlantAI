@@ -13,6 +13,9 @@
       opacity: 0.9; /* Réduit légèrement l'opacité au survol */
     }
     
+    .border-bottom-green{
+      border-bottom : 1px solid #86A786;
+    }
     .btn-primary {
       background-color: #007bff;
       border-color: #007bff;

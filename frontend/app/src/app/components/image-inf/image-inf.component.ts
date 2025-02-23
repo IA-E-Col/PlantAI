@@ -20,6 +20,7 @@ import { CommonModule } from '@angular/common';
 export class ImageInfComponent implements OnInit, AfterViewInit {
   currentStep: number = 1;
   currentStep1: number = 0;
+  datasetId : number = 0;
   plante: any;
   plantes: any;
   imageUrl!: string;

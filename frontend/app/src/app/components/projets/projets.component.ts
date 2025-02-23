@@ -124,7 +124,7 @@ export class ProjetsComponent implements OnInit {
       next: (projet) => {
         // Naviguez vers la page du projet ou gérez les données du projet selon les besoins
         this.projetService.projet=projet
-        this.router.navigateByUrl(`/admin/projbar/${id}`);
+        this.router.navigateByUrl(`/admin/projects/${id}`);
       },
       error: (err) => {
         // Gérez l'erreur
@@ -141,7 +141,7 @@ export class ProjetsComponent implements OnInit {
       text: 'You are about to delete this project. This action cannot be undone.',
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonColor: '#3085d6',
+      confirmButtonColor: '#86A786',
       cancelButtonColor: '#d33',
       confirmButtonText: 'Yes, delete project',
       cancelButtonText: 'Cancel'

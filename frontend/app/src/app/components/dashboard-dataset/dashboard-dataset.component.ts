@@ -88,7 +88,10 @@ export class DashboardDatasetComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.loadChartData();
+    this.route.parent?.params.subscribe(params => {
+      this.datasets = params['id'];
+      this.loadChartData();
+    });
   }
 
   initializeChartTypes(count: number): ChartType[] {
@@ -101,12 +104,11 @@ export class DashboardDatasetComponent implements OnInit {
   }
 
   loadChartData() {
-    this.datasets = this.projetservice.collection_actuelle;
 
     const statistics = ['genre', 'famille', 'pays', 'ville', 'departement', 'epitheteSpecifique', 'lieu', 'nomScientifique', 'dateCreation'];
 
     const requests = statistics.map(statistic =>
-      this.projetservice.func_get_SpecimenByDataset(this.datasets.id).toPromise()
+      this.projetservice.func_get_SpecimenByDataset(this.datasets).toPromise()
         .then(specimens => {
           let count: { [key: string]: number } = {};
           specimens.forEach((specimen: { [key: string]: string }) => {
@@ -188,7 +190,7 @@ export class DashboardDatasetComponent implements OnInit {
   async collectLibelleClassData() {
     const libelleCount: { [key: string]: { [key: string]: number } } = {};
 
-    await this.projetservice.func_get_SpecimenByDataset(this.datasets.id).toPromise().then(specimens => {
+    await this.projetservice.func_get_SpecimenByDataset(this.datasets).toPromise().then(specimens => {
       specimens.forEach((specimen: { annotations: { classe: string, libelle: string }[] }) => {
         specimen.annotations.forEach(annotation => {
           const { classe, libelle } = annotation;

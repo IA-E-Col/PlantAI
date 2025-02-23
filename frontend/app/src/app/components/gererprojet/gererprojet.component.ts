@@ -45,7 +45,7 @@ export class GererprojetComponent implements OnInit {
   constructor(private fb: FormBuilder, private projetService: ProjetService, private route: ActivatedRoute, private router: Router) { }
 
   ngOnInit() {
-    this.route.params.subscribe(params => {
+    this.route.parent?.params.subscribe(params => {
       this.projectId = params['id'];
       this.projetService.func_get_Id(this.projectId).subscribe({
         next: (data) => {
@@ -91,7 +91,7 @@ export class GererprojetComponent implements OnInit {
             console.log("test projet 1", projet)
             Swal.fire('Success', 'Project modified successfully', 'success').then(() => {
               console.log(data);
-              this.router.navigateByUrl(`/admin/projbar/${this.projectId}/projetInf/${this.projectId}`);
+              this.router.navigateByUrl(`/admin/projects/${this.projectId}/details`);
             });
           },
           error: (err) => {
@@ -105,11 +105,11 @@ export class GererprojetComponent implements OnInit {
 
 
   ajouterCollaborateur() {
-    this.router.navigateByUrl(`/admin/projbar/${this.projectId}/ajoutercollab/${this.projectId}`);
+    this.router.navigateByUrl(`/admin/projects/${this.projectId}/collaborators`);
   }
 
   supprimerCollaborateur() {
-    this.router.navigateByUrl(`/admin/projbar/${this.projectId}/supprcollab/${this.projectId}`);
+    this.router.navigateByUrl(`/admin/projects/${this.projectId}/supprcollab/${this.projectId}`);
   }
 
   func_suppr_collab(username: string) {
@@ -128,7 +128,7 @@ export class GererprojetComponent implements OnInit {
         this.projetService.func_suppr_collab(this.projectId, username).subscribe({
           next: (data) => {
             Swal.fire('Success', 'Collaborator removed successfully', 'success').then(() => {
-              this.router.navigateByUrl(`/admin/projbar/${this.projectId}/projetInf/${this.projectId}`);
+              this.router.navigateByUrl(`/admin/projects/${this.projectId}/details`);
             });
           },
           error: (err) => {

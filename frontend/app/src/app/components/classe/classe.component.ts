@@ -163,13 +163,13 @@ export class ClasseComponent implements OnInit {
   }
 
   ouvrirCol(id: any) {
-    this.router.navigateByUrl(`/admin/explore-details/${id}`);
+    this.router.navigateByUrl(`/admin/corpus/${id}`);
   }
 
   supprimerCol(id: any) { }
 
   func_inf_m(id: any) {
-    this.router.navigateByUrl(`/admin/model_inf/${id}`);
+    this.router.navigateByUrl(`/admin/models/${id}/model-library`);
   }
 
   func_update_m(p: any){

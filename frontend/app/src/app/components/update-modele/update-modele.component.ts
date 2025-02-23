@@ -40,7 +40,7 @@ export class UpdateModeleComponent {
       text: 'You are about to modify this model. Are you sure you want to proceed?',
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonColor: '#3085d6',
+      confirmButtonColor: '#86A786',
       cancelButtonColor: '#d33',
       confirmButtonText: 'Yes, modify model',
       cancelButtonText: 'Cancel'

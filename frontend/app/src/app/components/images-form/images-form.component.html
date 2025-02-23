@@ -52,7 +52,7 @@
         <div class="d-flex justify-content-between align-items-center mb-3" style="margin: 0 !important;">
           <pagination-controls class="mr-auto" (pageChange)="p = $event" [autoHide]="true" [previousLabel]="'Prev'"
                 [nextLabel]="'Next'" [responsive]="true"></pagination-controls>
-          <button class="btn btn-primary" *ngIf="afficherBouton" [routerLink]="['/admin/formulaire/images-form/'+0+'/cree']"
+          <button class="btn btn-green text-white" *ngIf="afficherBouton" [routerLink]="['/admin/formulaire/images-form/'+0+'/cree']"
             style="margin-bottom: 15px;">
             <i class="bi bi-plus-circle-fill"></i>
             Create a Dataset

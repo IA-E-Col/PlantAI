@@ -37,7 +37,7 @@ export class LoginComponent implements OnInit{
           this.loginServ.authenticateUser(data).subscribe({
             next:(data)=>{
               this.loginServ.authenticatedOK();
-              this.router.navigateByUrl('/admin');
+              this.router.navigateByUrl('/admin/corpus');
             },
             error:err => {
               Swal.fire('Error', 'Failed to authenticate user', 'error');

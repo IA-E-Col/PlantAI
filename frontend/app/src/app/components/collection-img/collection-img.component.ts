@@ -36,13 +36,15 @@ export class CollectionImgComponent  implements OnInit, OnDestroy {
   constructor(private projetService: ProjetService, private router: Router, private route: ActivatedRoute) {}
 
   ngOnInit(): void {
-    this.routeSub = this.route.paramMap.subscribe(params => {
-      this.collectionId = params.get('Id') || params.get('id');
-      console.log('Collection ID:', this.collectionId);
-      if (this.collectionId) {
-        this.fetchSpecimens();
-      }
-    });
+    if (this.route.parent){
+      this.routeSub = this.route.parent.paramMap.subscribe(params => {
+        this.collectionId = params.get('Id') || params.get('id');
+        console.log('Collection ID:', this.collectionId);
+        if (this.collectionId) {
+          this.fetchSpecimens();
+        }
+      });
+    }
   }
 
   fetchSpecimens(): void {
@@ -66,7 +68,7 @@ export class CollectionImgComponent  implements OnInit, OnDestroy {
   }
 
   navigateToImageInf(plante: any): void {
-    this.router.navigate(['/admin/image-inf', plante.catalogueCode], {
+    this.router.navigate([`/admin/corpus/${this.collectionId}/images`, plante.catalogueCode], {
       state: { plante, plantes: this.collectionSpecimens }
     });
   }

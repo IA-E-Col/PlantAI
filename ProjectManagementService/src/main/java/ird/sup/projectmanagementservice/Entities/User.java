@@ -1,6 +1,7 @@
 package ird.sup.projectmanagementservice.Entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -22,6 +23,9 @@ public class User {
     String Tel;
     String Departement;
     String password;
+    @Column(nullable = true)
+    @Lob
+    byte[] image;
     @OneToMany(fetch=FetchType.LAZY,mappedBy = "createur",cascade = CascadeType.ALL)
     @JsonIgnore
     private List<Projet> projetsCree;

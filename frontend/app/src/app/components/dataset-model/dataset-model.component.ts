@@ -6,6 +6,8 @@ import { CommonModule } from '@angular/common';
 import { NgxPaginationModule } from 'ngx-pagination';
 import Swal from "sweetalert2";
 import { FormsModule } from '@angular/forms';
+import { faInfoCircle, faPlay } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 
 @Component({
@@ -17,7 +19,8 @@ import { FormsModule } from '@angular/forms';
     RouterLink,
     FilterPipe,
     CommonModule,
-    NgxPaginationModule
+    NgxPaginationModule,
+    FontAwesomeModule
   ],
   templateUrl: './dataset-model.component.html',
   styleUrl: './dataset-model.component.css'
@@ -26,6 +29,8 @@ export class DatasetModelComponent {
   searchtext: any;
   modeles!: Array<any>
   m: number = 1;
+  faPlay = faPlay
+  faInfoCircle = faInfoCircle
 
   private Dataset: any;
 
@@ -45,7 +50,7 @@ export class DatasetModelComponent {
     });
 
 
-    this.Dataset = this.route.snapshot.queryParamMap.get('IdDataset');
+    this.Dataset = this.route.snapshot.parent?.queryParamMap.get('id');
    console.log(this.Dataset)
   }
 

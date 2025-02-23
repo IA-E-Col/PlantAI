@@ -1,13 +1,13 @@
 <div class="validation-history-container">
     <div class="header">
         <h2 class="title">Annotation Validation History</h2>
-        <button class="add-user-btn">➕ Add a user</button>
+
     </div>
 
     <div class="filters">
         <input type="text" [(ngModel)]="filterText" (input)="filterAnnotations()" placeholder="🔍 Search by annotation name">
-        <input type="text" [(ngModel)]="filterScore" (input)="filterAnnotations()" placeholder="🔍 Search by score">
-        <input type="date" [(ngModel)]="filterDate" (input)="filterAnnotations()" placeholder="📅 Filter by date">
+        <input type="text" [(ngModel)]="filterState" (input)="filterAnnotations()" placeholder="🔍 Search by state">
+        <input type="date" [(ngModel)]="filterDate" (input)="filterAnnotations()" placeholder="Filter by date">
     </div>
 
     <table class="validation-table">
@@ -15,20 +15,15 @@
             <tr>
                 <th (click)="sortBy('name')">Annotation <span class="sort-icons">⬆⬇</span></th>
                 <th (click)="sortBy('submissionDate')">Date of Submission <span class="sort-icons">⬆⬇</span></th>
-                <th (click)="sortBy('score')">Score <span class="sort-icons">⬆⬇</span></th>
-                <th>Actions</th>
+                <th (click)="sortBy('state')">State <span class="sort-icons">⬆⬇</span></th>
             </tr>
         </thead>
         <tbody>
             <tr *ngFor="let annotation of filteredAnnotations">
                 <td>{{ annotation.name }}</td>
                 <td>{{ annotation.submissionDate }}</td>
-                <td [ngClass]="annotation.score.toLowerCase()">
-                    {{ annotation.score }}
-                </td>
-                <td class="actions">
-                    <button class="edit-btn" title="Edit">✏️</button>
-                    <button class="delete-btn" title="Delete">🗑️</button>
+                <td [ngClass]="annotation.state.toLowerCase()">
+                    {{ annotation.state }}
                 </td>
             </tr>
         </tbody>

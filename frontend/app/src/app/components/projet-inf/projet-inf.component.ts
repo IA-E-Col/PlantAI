@@ -38,7 +38,7 @@ export class ProjetInfComponent implements OnInit {
 
 
   ngOnInit() {
-    this.route.params.subscribe({
+    this.route.parent?.params.subscribe({
       next: (params) => {
         // Récupère le projet par ID
         this.projectId = params['id'];

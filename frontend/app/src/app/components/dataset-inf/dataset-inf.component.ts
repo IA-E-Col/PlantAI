@@ -19,7 +19,7 @@ export class DatasetInfComponent {
   constructor(private route: ActivatedRoute, private projetservice: ProjetService) { }
 
   ngOnInit() {
-    this.IdCollection = this.route.snapshot.paramMap.get('id') || this.route.snapshot.paramMap.get('Id');
+    this.IdCollection = this.route.snapshot.parent?.paramMap.get('id');
 
     this.projetservice.func_get_dataset(this.IdCollection).subscribe({
       next: (data) => {

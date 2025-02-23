@@ -219,3 +219,7 @@ select::after {
 .navbar__item {
   margin-bottom: 18px;
 }
+:host >>> .mat-mdc-progress-spinner .mdc-circular-progress__determinate-circle,
+:host >>> .mat-mdc-progress-spinner .mdc-circular-progress__indeterminate-circle-graphic {
+    stroke: #86A786 !important;
+}
