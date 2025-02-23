@@ -134,7 +134,7 @@ export const routes: Routes = [
           { path: 'images/:catalogueCode', component: ImageInfComponent },
         ]
       },
-      { path: 'annotation_validation', component: AnnotationValidationComponent }
+      { path: 'annotation_validation', component: AnnotationValidationComponent },
       { path: 'scores', component: ScoresComponent },
     ]
   },  
