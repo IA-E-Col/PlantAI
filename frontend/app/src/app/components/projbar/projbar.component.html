@@ -4,7 +4,7 @@
     <nav class="navbar border border-dark">
       <ul class="navbar__menu">
         <li class="navbar__item">
-          <a class="navbar__link" [routerLink]="['projetInf', projectId]">
+          <a class="navbar__link" [routerLink]="['details']">
             <i class="bi bi-file-earmark-text-fill"></i>
             <span style="width: 107px; padding-left: 7px;">
               Information
@@ -12,7 +12,7 @@
           </a>
         </li>
         <li class="navbar__item">
-          <a class="navbar__link" [routerLink]="['collection', projectId]">
+          <a class="navbar__link" [routerLink]="['datasets']">
             <i class="bi bi-collection-fill"></i>
             <span style="width: 85px; padding-left: 7px;">
               Datasets
@@ -20,7 +20,7 @@
           </a>
         </li>
         <li class="navbar__item">
-          <a class="navbar__link" [routerLink]="['dashboard', projectId]">
+          <a class="navbar__link" [routerLink]="['dashboard']">
             <i class="bi bi-pie-chart-fill"></i>
             <span style="width: 97px; padding-left: 7px;">
               Dashboard
@@ -28,7 +28,7 @@
           </a>
         </li>
         <li class="navbar__item">
-          <a class="navbar__link" [routerLink]="['gererprojet', projectId]">
+          <a class="navbar__link" [routerLink]="['edit']">
             <i class="bi bi-gear-wide-connected"></i>
             <span style="width: 80px; padding-left: 7px;">
               Manage
@@ -37,7 +37,7 @@
         </li>
         <!-- ✅ Bouton pour accéder à la validation-history -->
         <li class="navbar__item">
-          <a class="navbar__link" [routerLink]="['validation-history', projectId]">
+          <a class="navbar__link" [routerLink]="['validation-history']">
             <i class="bi bi-clock-history"></i>
             <span style="width: 120px; padding-left: 7px;">
               Validation History

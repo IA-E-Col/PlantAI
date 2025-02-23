@@ -26,3 +26,10 @@
 h5{
   padding-left: 0px;
 }
+.btn-green{
+  background-color: #86A786;
+  color: white;
+}
+.border-bottom-green{
+  border-bottom: 1px solid #86A786;
+}

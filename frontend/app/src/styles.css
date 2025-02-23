@@ -26,4 +26,10 @@
 .btn-green{
     background-color: #86A786;
     color: white;
+}
+.uploader-status ::ng-deep .mat-progress-spinner circle, .mat-spinner circle {
+    stroke: #86A786 !important;
   }
+.mat-progress-spinner circle, .mat-spinner circle {
+    stroke: red;
+}

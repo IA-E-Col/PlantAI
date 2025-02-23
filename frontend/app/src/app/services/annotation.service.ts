@@ -6,7 +6,7 @@ interface Annotation {
   id: number;
   name: string;
   submissionDate: string;
-  score: string; // "VALIDATED" | "DECLINED"
+  state: string; // "VALIDATED" | "DECLINED"
 }
 
 @Injectable({

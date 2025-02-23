@@ -26,7 +26,7 @@ export class AjouterCollabComponent implements OnInit {
   constructor(private fb: FormBuilder, private projetServ: ProjetService, private route: ActivatedRoute, private router: Router) { }
 
   ngOnInit() {
-    this.route.params.subscribe(params => {
+    this.route.parent?.params.subscribe(params => {
       this.projectId = params['id'];
     });
 
@@ -55,7 +55,7 @@ export class AjouterCollabComponent implements OnInit {
       next: (data) => {
         console.log(data)
         Swal.fire('Success', 'Collaborator added successfully', 'success').then(() => {
-          this.router.navigateByUrl(`/admin/projbar/${this.projectId}/projetInf/${this.projectId}`);
+          this.router.navigateByUrl(`/admin/projects/${this.projectId}/details`);
         });
       },
       error: (err) => {
@@ -66,6 +66,6 @@ export class AjouterCollabComponent implements OnInit {
   }
 
   modifer_infomation() {
-    this.router.navigateByUrl(`/admin/projbar/${this.projectId}/gererprojet/${this.projectId}`);
+    this.router.navigateByUrl(`/admin/projects/${this.projectId}/edit`);
   }
 }

@@ -12,7 +12,6 @@ import { catchError } from 'rxjs/operators';
 import { of, Subscription } from 'rxjs';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from "@angular/forms";
 
-
 @Component({
   selector: 'app-gerer-dataset',
   standalone: true,
@@ -42,15 +41,30 @@ export class GererDatasetComponent {
   constructor(private fb: FormBuilder, private projetService: ProjetService, private router: Router, private route: ActivatedRoute) { }
 
   ngOnInit(): void {
-
-    this.IdDataset = this.route.snapshot.paramMap.get('id');
-    this.DatasetNam = this.route.snapshot.queryParamMap.get('DatasetNam');
-    this.DatasetDescription = this.route.snapshot.queryParamMap.get('DatasetDescription');
-
     this.datasetFormGroup = this.fb.group({
       nomDataset: this.fb.control(this.DatasetNam || '', [Validators.required]),
       description: this.fb.control(this.DatasetDescription || '', [Validators.required, Validators.minLength(3)]),
     });
+     this.route.parent?.params.subscribe(params => {
+      this.IdDataset = params['id'];
+      console.log("ID DATASET",this.IdDataset)
+      this.projetService.func_get_dataset(this.IdDataset).subscribe({
+        next: dataset => {
+          console.log("DATASET RES", dataset)
+          this.datasetFormGroup.patchValue({
+            nomDataset: dataset.name,
+            description: dataset.description
+          });
+          
+        },
+        error: (err) => {
+          console.error(err);
+        }
+      })
+    });
+
+
+
   }
 
   afficherFormulaire(afficher: boolean): void {
@@ -66,7 +80,7 @@ export class GererDatasetComponent {
       text: 'You are about to modify this dataset. Are you sure you want to proceed?',
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonColor: '#3085d6',
+      confirmButtonColor: '#86A786',
       cancelButtonColor: '#d33',
       confirmButtonText: 'Yes, modify dataset',
       cancelButtonText: 'Cancel'
@@ -77,7 +91,7 @@ export class GererDatasetComponent {
         this.projetService.func_modif_collection(this.dataset, this.IdDataset).subscribe({
           next: (data) => {
             Swal.fire('Success', 'dataset modified successfully', 'success').then(() => {
-              this.router.navigateByUrl(`/admin/explore-details/${this.IdDataset}/collectionInf/${this.IdDataset}`);
+              this.router.navigateByUrl(`/admin/corpus/${this.IdDataset}/;
             });
           },
           error: (err) => {

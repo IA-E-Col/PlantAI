@@ -3,12 +3,13 @@ import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { AnnotationService } from '../../services/annotation.service';
+import { faSearch } from '@fortawesome/free-solid-svg-icons';
 
 interface Annotation {
   id: number;
   name: string;
   submissionDate: string;
-  score: string;
+  state: string;
 }
 
 @Component({
@@ -22,10 +23,11 @@ export class ValidationHistoryComponent implements OnInit {
   annotations: Annotation[] = [];
   filteredAnnotations: Annotation[] = [];
   filterText: string = '';
-  filterScore: string = '';
+  filterState: string = '';
   filterDate: string = '';
   sortField: keyof Annotation | null = null;
   isAscending: boolean = true;
+  faSearch = faSearch
 
   constructor(private annotationService: AnnotationService) {}
 
@@ -39,7 +41,7 @@ export class ValidationHistoryComponent implements OnInit {
   filterAnnotations() {
     this.filteredAnnotations = this.annotations.filter(annotation => 
       annotation.name.toLowerCase().includes(this.filterText.toLowerCase()) &&
-      annotation.score.toLowerCase().includes(this.filterScore.toLowerCase()) &&
+      annotation.state.toLowerCase().includes(this.filterState.toLowerCase()) &&
       annotation.submissionDate.includes(this.filterDate)
     );
   }

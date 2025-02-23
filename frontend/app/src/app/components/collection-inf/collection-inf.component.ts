@@ -27,14 +27,14 @@ export class CollectionInfComponent {
   modeles! : Array<any>
   m: number = 1;
 
-  constructor(private route: ActivatedRoute, private router : Router,private projetservice:ProjetService) {
+  constructor(private route: ActivatedRoute, private router : Router,private projetService:ProjetService) {
   }
 
   ngOnInit() {
-    this.collection = this.projetservice.collection_actuelle
-    this.IdCollection = this.collection.id
-    console.log(this.IdCollection)
-    console.log('hnnnnnaaa',this.collection)
+    this.route.params.subscribe(params => {
+      this.IdCollection = params['id'];
+    });
+    console.log("ID:", this.IdCollection)
     this.modeles = [
       {
         id: 'ML001',

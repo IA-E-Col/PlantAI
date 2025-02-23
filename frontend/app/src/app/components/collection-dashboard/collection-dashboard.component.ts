@@ -120,8 +120,8 @@ export class CollectionDashboardComponent implements OnInit {
   }
 
   loadChartData() {
-    this.route.params.subscribe((params: { [key: string]: string }) => {
-      this.collectionId = params['Id'];
+    this.route.parent?.params.subscribe((params: { [key: string]: string }) => {
+      this.collectionId = params['id'];
 
       // Load specimens data for the given collection
       this.projetservice.func_get_SpecimenByCollection(this.collectionId).subscribe({

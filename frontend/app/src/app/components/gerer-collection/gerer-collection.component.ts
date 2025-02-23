@@ -37,12 +37,20 @@ export class GererCollectionComponent {
   private routeSub!: Subscription;
   collectionFormGroup!: FormGroup;
 
-  constructor(private fb: FormBuilder, private projetService: ProjetService, private router: Router, private route: ActivatedRoute) { }
+  constructor(private fb: FormBuilder, private projetService: ProjetService, private router: Router, private route: ActivatedRoute) {
+
+    this.collectionFormGroup = this.fb.group({
+      nomCollection: this.fb.control(this.collection?.nom || '', [Validators.required]),
+      description: this.fb.control(this.collection?.description || '', [Validators.required, Validators.minLength(3)]),
+    });
+   }
 
   ngOnInit(): void {
-    this.routeSub = this.route.paramMap.subscribe(params => {
-      this.collectionId = params.get('Id');
-      console.log('Collection ID:', this.collectionId);  // Debugging purpose
+    if (this.route.parent)
+    this.routeSub = this.route.parent.paramMap.subscribe(params => {
+      this.collectionId = params.get('id');
+      console.log('Collection ID:', this.collectionId);
+        // Debugging purpose
     });
 
     this.projetService.func_get_collection_by_id(this.collectionId)
@@ -58,9 +66,9 @@ export class GererCollectionComponent {
         (collection) => {
           console.log(collection)
           this.collection = collection;
-          this.collectionFormGroup = this.fb.group({
-            nomCollection: this.fb.control(this.collection?.nom || '', [Validators.required]),
-            description: this.fb.control(this.collection?.description || '', [Validators.required, Validators.minLength(3)]),
+          this.collectionFormGroup.patchValue({
+            nomCollection: collection.nom,
+            description: collection.description
           });
         }
       );
@@ -79,7 +87,7 @@ export class GererCollectionComponent {
       text: 'You are about to modify this collection. Are you sure you want to proceed?',
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonColor: '#3085d6',
+      confirmButtonColor: '#86A786',
       cancelButtonColor: '#d33',
       confirmButtonText: 'Yes, modify collection',
       cancelButtonText: 'Cancel'
@@ -90,7 +98,7 @@ export class GererCollectionComponent {
         this.projetService.func_modif_collection(this.collection, this.collectionId).subscribe({
           next: (data) => {
             Swal.fire('Success', 'collection modified successfully', 'success').then(() => {
-              this.router.navigateByUrl(`/admin/explore-details/${this.collectionId}/collectionInf/${this.collectionId}`);
+              this.router.navigateByUrl(`/admin/corpus/${this.collectionId}/details`);
             });
           },
           error: (err) => {

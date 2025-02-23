@@ -20,6 +20,17 @@
     border-top-right-radius: 10px;
   }
   
+
+  .btn-green{
+    background-color: #86A786;
+    color: white;
+}
+.text-green{
+    color: #86A786 !important;
+}
+.border-bottom-green{
+  border-bottom: 2px solid #86A786;
+}
   /* Styles pour le titre dans l'en-tête de la carte */
   .card-header h3 {
     margin-bottom: 0;

@@ -13,6 +13,12 @@
     border-radius: 10px;
 }
 
+.border-bottom-green{
+    border-bottom: 2px solid #86A786;
+  }
+.text-green{
+    color: #86A786;
+}
 /* Section principale */
 .content {
     flex: 1;

@@ -32,15 +32,16 @@ body {
 /* Style list-group-item */
 .list-group-item {
     padding: 3px !important;
+    border-radius :15px;
     border: none;
-    background-color: #f8f9fa;
+    background-color: white ;
     /* Light gray background */
     margin-bottom: 10px;
 }
 
 /* Style list-group-item hover effect */
 .list-group-item:hover {
-    background-color: #e9ecef;
+    background-color: white;
     /* Lighter gray background on hover */
 }
 
@@ -264,7 +265,10 @@ ul {
 .plant-list-container::-webkit-scrollbar {
     display: none;
 }
-
+.btn-green{
+    background-color: #86A786;
+    color: white;
+}
 .list_grid {
     display: flex;
     flex-direction: column;

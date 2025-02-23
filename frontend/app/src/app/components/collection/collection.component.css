@@ -70,7 +70,6 @@
   display: flex;
   align-items: flex-start;
   background-color: white;
-  padding: 10px;
   border-radius: 10px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   flex-direction: column;
@@ -201,7 +200,10 @@
   overflow-y: auto;
   max-height: 400px;
 }
-
+.btn-green{
+  background-color: #86A786;
+  color: white;
+}
 .card .card-body h4 {
   color: #000000;
   /*margin: 8px;*/
@@ -236,8 +238,8 @@
   width: 16.6%;
 }
 
-.btn:hover {
-  animation: pulse 0.5s ease-in-out;
+.font-bold{
+  font-family: SpartanBold;
 }
 
 @keyframes pulse {
@@ -611,4 +613,142 @@ p i {
 .Subtitle {
   font-size: 0.9em;
   color: grey;
+}
+.dataset-list-container {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  font-family: Arial, sans-serif;
+  border-radius: 15px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.search-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.search-icon {
+  position: absolute;
+  right: 10px;
+  color: #A3B18A;
+  cursor: pointer;
+}
+
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.table thead th {
+  background: #EAE7DC;
+  font-weight: bold;
+  cursor: pointer;
+  color: black;
+}
+
+.header h2 {
+  color: #86A786;
+}
+
+.create-btn {
+  background-color: #86A786;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.search-bar {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.dataset-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 15px;
+}
+
+.dataset-table th, .dataset-table td {
+  padding: 10px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+.dataset-table th{
+  background: #EAE7DC;
+}
+
+.sort-icon {
+  cursor: pointer;
+  margin-left: 5px;
+}
+
+.input__field {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 15px;
+  font-size: 14px;
+}
+.input__label {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: #fff;
+  padding: 0 5px;
+  font-size: 14px;
+  color: #888;
+  transition: all 0.3s ease;
+}
+
+.input__field:focus ~ .input__label,
+.input__field:not(:placeholder-shown) ~ .input__label,
+.input__label.clicked {
+  top: 0;
+  font-size: 12px;
+  color: #4a9277;
+}
+.form-outline {
+  position: relative;
+  width: 100%;
+}
+
+.info-btn, .play-btn {
+  background-color: #86A786;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-right: 5px;
+}
+
+.pagination {
+  display: flex;
+  justify-content: flex-end;
+  gap: 5px;
+}
+
+.page-btn, .next-btn {
+  background-color: #86A786;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.page-btn.active {
+  background-color: #6A8A6B;
 }

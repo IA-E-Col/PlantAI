@@ -91,15 +91,15 @@
 
   <div class="" style="margin-bottom: 15px;">
 
-    <div class="nex_div ">
+    <div class="nex_div">
+      <div class="p-4 w-100">
       <div class="add">
         <div>
           <span class="font-bold fs-4 me-2">List of Datasets</span>
         </div>
         <div class="text-center mb-4 p-4" id="mb-5">
-          <button *ngIf="bol" (click)="func_ajout_col()" class="btn btn-outline-primary btn-lg px-4"
-            style="padding: 2px;">
-            <span class="fw-bold fs-41 me-2" style="margin-right: 0rem !important; padding: 4px 20px; margin-bottom: 1px;">
+          <button *ngIf="bol" (click)="func_ajout_col()" class="btn btn-green btn-lg ps-3 pe-3 pt-1 pb-1">
+            <span class="font-bold fs-41">
               <!--<img [src]="cheminPlus" alt="add image" width="25" height="25" style="filter: invert(100%); margin-bottom: 4px; margin-right: 5px; margin-left: 5px;">-->
               New Dataset
             </span>
@@ -129,42 +129,36 @@
             </button>
           </div>
         </div>
-
       </div>
-
+      </div>
+    <div class="container mt-5 p-0">
+      <table class="dataset-table">
+        <thead>
+          <tr>
+            <th (click)="sortBy('name')">Name</th>
+            <th>Description</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let c of collections | filterByName: searchtext: 'name' | paginate: { itemsPerPage: 9, currentPage: p }">
+            <td>{{ c.name }}</td>
+            <td [title]="c.description">{{ c.description.length > 148 ? (c.description | slice:0:148) + '...' : c.description }}</td>
+            <td>
+              <button class="info-btn text-white" (click)="onFinishClicked(c)">
+                <fa-icon [icon]="faEdit"></fa-icon>
+              </button>
+              <button class="play-btn" (click)="func_inf_C(c)">
+                <fa-icon [icon]="faTrash"></fa-icon>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
 
     </div>
 
-    <div class="container mt-5">
-      <div class="" style="margin-bottom: 0px;">
-        <div class="card-body"
-          *ngFor="let c of collections | filterByName: searchtext: 'name' | paginate: { itemsPerPage: 9, currentPage: p }">
-          <div class="Grp">
-            <div class="Inf">
-              <h4>{{c.name}}</h4>
-              <!--<span>  ( {{c.dateCreation | date:'dd/MM/yyyy'}})</--span>-->
-              <p [title]="c.description">
-                {{ c.description.length > 148 ? (c.description | slice:0:148) + '...' : c.description }}
-              </p>
-            </div>
-            <div class="Btns">
-              <button (click)="onFinishClicked(c)" class="btn btn-success me-2">
-                <i class="bi bi-folder2"></i>
-                Open
-              </button>
-              <button (click)="func_inf_C(c)" class="btn btn-danger">
-                <i class="bi bi-trash"></i>
-                Delete
-              </button>
-
-
-            </div>
-          </div>
-          <hr>
-        </div>
-      </div>
-
-    </div>
   </div>
   <pagination-controls (pageChange)="p = $event" [autoHide]="true" [previousLabel]="'Prev'"
               [nextLabel]="'Next'" [responsive]="true"></pagination-controls>

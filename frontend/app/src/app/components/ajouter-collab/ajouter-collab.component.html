@@ -6,7 +6,7 @@
       <div class="form-group">
         <label for="collaborateur">Name of collaborator :</label>
         <select id="collaborateur" formControlName="collaborateur">
-          <option *ngFor="let user of users" [value]="user.username">{{user.username}}</option>
+          <option *ngFor="let user of users" [value]="user.id">{{user.username}}</option>
         </select>
       </div>
 

@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -18,7 +19,9 @@ public class UserService  {
         return ur.findAll();
     }
 
-
+    public Optional<User> findUserById(Long id) {
+        return ur.findById(id);
+    }
 
     public User getUser(String code) {
         try {

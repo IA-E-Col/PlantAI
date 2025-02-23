@@ -8,7 +8,8 @@ import { CommonModule } from '@angular/common';
 import { ProjetService } from "../../services/projet.service";
 import Swal from 'sweetalert2';
 import { NgModule } from '@angular/core';
-
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { faCircle, faCircleInfo, faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
 @Component({
   selector: 'app-collection',
   standalone: true,
@@ -18,6 +19,7 @@ import { NgModule } from '@angular/core';
     NgxPaginationModule,
     NgForOf,
     NgIf,
+    FontAwesomeModule,
     DatePipe,
     FormsModule
   ],
@@ -26,7 +28,9 @@ import { NgModule } from '@angular/core';
 })
 export class CollectionComponent implements OnInit {
   sortMenuActive: boolean = false;
-
+  faTrash = faTrash;
+  faEdit = faEdit;
+  faCircleInfo = faCircleInfo;
   p: number = 1;
   currentSortField: string = '';
   isAscending: boolean = true;
@@ -145,7 +149,7 @@ export class CollectionComponent implements OnInit {
   ngAfterViewInit() {
     this.route.url.subscribe(urlSegments => {
       const path = urlSegments.map(segment => segment.path).join('/');
-      if (path === 'collection/total') {
+      if (path === 'datasets') {
         this.width = true;
       } else {
         this.width = false;
@@ -156,8 +160,8 @@ export class CollectionComponent implements OnInit {
   ngOnInit() {
     this.route.url.subscribe(urlSegments => {
       const path = urlSegments.map(segment => segment.path).join('/');
-      if (path === 'collection/total') {
-        console.log('Traitement spécial pour collection/total');
+      if (path === 'datasets') {
+        console.log('Traitement spécial pour datasets');
 
         this.width = true;
         this.bol = false;
@@ -207,9 +211,9 @@ export class CollectionComponent implements OnInit {
           }
         });
       } else {
-        this.route.params.subscribe(params => {
-          this.projectId = params['Id'];
-          console.log('Id:', this.projectId)
+        this.route.parent?.params.subscribe(params => {
+          this.projectId = params['id'];
+          console.log('id:', this.projectId)
           /*this.collection = this.data["collect1"];
           console.log(this.collection)*/
 
@@ -242,7 +246,7 @@ export class CollectionComponent implements OnInit {
       text: 'You are about to delete this collection. This action cannot be undone.',
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonColor: '#3085d6',
+      confirmButtonColor: '#86A786',
       cancelButtonColor: '#d33',
       confirmButtonText: 'Yes, delete collection',
       cancelButtonText: 'Cancel'
@@ -301,7 +305,7 @@ export class CollectionComponent implements OnInit {
 
   onFinishClicked(collection: any) {
     this.projetservice.collection_actuelle = collection
-    this.router.navigateByUrl(`/admin/collection-inf/datasetInf/${collection.id}`);
+    this.router.navigateByUrl(`/admin/datasets/${collection.id}/details`);
   }
 
   toggleSortMenu() {

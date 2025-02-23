@@ -55,7 +55,7 @@ label {
 }
 
 .tag {
-  background: #007bff;
+  background: #86A786;
   color: white;
   padding: 5px 10px;
   border-radius: 20px;
@@ -75,7 +75,7 @@ label {
 
 .close-btn {
   background: #fff;
-  color: #007bff;
+  color: #86A786;
   margin-left: 5px;
   border-radius: 50%;
   padding: 0 5px;
@@ -87,7 +87,7 @@ label {
 }
 
 button[type="submit"] {
-  background: #007bff;
+  background: #86A786;
   color: white;
   border: none;
   padding: 10px 20px;
@@ -99,7 +99,7 @@ button[type="submit"] {
 }
 
 button[type="submit"]:hover {
-  background: #0056b3;
+  background: #86A786;
 }
 
 @keyframes fadeOut {

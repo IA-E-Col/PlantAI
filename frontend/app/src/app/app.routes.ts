@@ -47,13 +47,13 @@ export const routes: Routes = [
   { path: '', component: LoginComponent },
   {
     path: 'admin', component: AdminTemplateComponent, canActivate: [authenticationGuard], children: [
-      { path: 'projets', component: ProjetsComponent },
+      { path: 'projects', component: ProjetsComponent },
       { path: 'profile', component: ProfileComponent },
-      { path: 'validation-history', component: ValidationHistoryComponent }, // ✅ Ajout ici
+      { path: 'validation-history', component: ValidationHistoryComponent },
       { path: '', component: ProjetsComponent },
-      { path: 'explorer', component: ExplorerComponent },
-      { path: 'collection/total', component: CollectionComponent },
-      { path: 'models', component: ModeleComponent },
+      { path: 'corpus', component: ExplorerComponent },
+      { path: 'datasets', component: CollectionComponent },
+      { path: 'models', component: ModeleComponent ,},
       { path: 'classes', component: ClasseComponent },
       {
         path: 'DatasetPrediction', component: DatasetPredictionComponent,
@@ -81,28 +81,36 @@ export const routes: Routes = [
       { path: 'UpdateMode', component: UpdateModeleComponent },
       { path: 'NewCollection', component: CreeCollectionComponent },
       {
-        path: 'projbar/:id',
+        path: 'projects/:id',
         component: ProjbarComponent,
         children: [
-          { path: 'collection/:Id', component: CollectionComponent },
-          { path: 'dashboard/:Id', component: DashboardComponent },
-          { path: 'projetInf/:id', component: ProjetInfComponent },
-          { path: 'gererprojet/:id', component: GererprojetComponent },
-          { path: 'ajoutercollab/:id', component: AjouterCollabComponent },
+          { path: 'datasets', component: CollectionComponent },
+          { path: 'dashboard', component: DashboardComponent },
+          { path: 'details', component: ProjetInfComponent },
+          { path: 'edit', component: GererprojetComponent },
+          { path: 'collaborators', component: AjouterCollabComponent },
           { path: 'supprcollab/:id', component: SupprimerCollabComponent },
-          { path: 'validation-history/:projectId', component: ValidationHistoryComponent }, // ✅ Ajout ici
+          { path: 'validation-history', component: ValidationHistoryComponent }, // ✅ Ajout ici
           { path: '', component: ProjetInfComponent },
         ]
       },
       {
-        path: 'explore-details/:id',
+        path: 'models/:id/model-library',
+        component: ModelInfComponent,
+      },
+      {
+        path: 'models/:id/edit',
+        component: UpdateModeleComponent,
+      },
+      {
+        path: 'corpus/:id',
         component: ExplorerDetailsComponent,
         children: [
-          { path: '', component: CollectionInfoComponent },
-          { path: 'collectionInf/:Id', component: CollectionInfoComponent },
-          { path: 'collectionImg/:Id', component: CollectionImgComponent },
-          { path: 'collectionDashboard/:Id', component: CollectionDashboardComponent },
-          { path: 'gerercollection/:Id', component: GererCollectionComponent }
+          { path: 'details', component: CollectionInfoComponent },
+          { path: 'images', component: CollectionImgComponent },
+          { path: 'dashboard', component: CollectionDashboardComponent },
+          { path: 'edit', component: GererCollectionComponent },
+          {path: 'images/:catalogueCode', component: ImageInfComponent}
         ]
       },
       {
@@ -113,20 +121,20 @@ export const routes: Routes = [
         ]
       },
       {
-        path: 'collection-inf',
+        path: 'datasets/:id',
         component: CollectionInfComponent,
         children: [
         //  { path: '', component: ListImagesComponent, data: { afficherBouton: false } },
-          { path: 'Images/:id', component: ListImagesComponent, data: { afficherBouton: false } },
-          { path: 'dashboard_dataset/:id', component: DashboardDatasetComponent },
-          { path: 'datasetInf/:id', component: DatasetInfComponent },
-          { path: 'Models/:id', component: DatasetModelComponent },
-          { path: 'gererdataset/:id', component: GererDatasetComponent },
+          { path: 'images', component: ListImagesComponent, data: { afficherBouton: false } },
+          { path: 'dashboard', component: DashboardDatasetComponent },
+          { path: 'details', component: DatasetInfComponent },
+          { path: 'models', component: DatasetModelComponent },
+          { path: 'edit', component: GererDatasetComponent },
+          { path: 'images/:catalogueCode', component: ImageInfComponent },
         ]
       },
-      { path: 'model_inf/:id', component: ModelInfComponent },
       { path: 'annotation_validation', component: AnnotationValidationComponent }
     ]
-  },
+  },  
 
 ];

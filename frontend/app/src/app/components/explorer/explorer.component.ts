@@ -125,7 +125,7 @@ export class ExplorerComponent {
   }
   ouvrirCol(id: any) {
     this.sharedServiceService.setCorpusId(id);
-    this.router.navigateByUrl(`/admin/explore-details/${id}`);
+    this.router.navigateByUrl(`/admin/corpus/${id}/edit`);
   }
 
   supprimerCol(id: any) { }

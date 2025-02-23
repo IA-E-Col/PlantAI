@@ -8,9 +8,18 @@
       padding: 20px; /* Ajout de marge intérieure pour un meilleur espacement */
       transition: opacity 0.3s ease; /* Transition pour l'opacité */
     }
+
+    .btn-green{
+      background-color: #86A786;
+      color: white;
+  }
     
     .card:hover {
       opacity: 0.9; /* Réduit légèrement l'opacité au survol */
+    }
+
+    .border-bottom-green{
+      border-bottom: 1px solid #86A786;
     }
     
     .btn-primary {

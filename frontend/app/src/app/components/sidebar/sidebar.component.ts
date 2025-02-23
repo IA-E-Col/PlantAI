@@ -34,23 +34,31 @@ export class SidebarComponent implements OnDestroy, OnInit{
         });
         this.submenus = {
           corpus : [
-            { name: 'Details', icon: faCircleInfo, path: `/admin/explore-details/${this.itemId}/collectionInf/${this.itemId}`  },
-            { name: 'Images', icon: faImage, path: `/admin/explore-details/${this.itemId}/collectionImg/${this.itemId}` },
-            { name: 'Dashboard', icon: faTachometerAlt, path: `/admin/explore-details/${this.itemId}/collectionDashboard/${this.itemId}` },
-            { name: 'Settings', icon: faGear, path: `/admin/explore-details/${this.itemId}/gerercollection/${this.itemId}`  }
+            { name: 'Details', icon: faCircleInfo, path: `/admin/corpus/${this.itemId}/details`  },
+            { name: 'Images', icon: faImage, path: `/admin/corpus/${this.itemId}/images` },
+            { name: 'Dashboard', icon: faTachometerAlt, path: `/admin/corpus/${this.itemId}/dashboard` },
+            { name: 'Settings', icon: faGear, path: `/admin/corpus/${this.itemId}/edit`  }
           ],
           projects :  [
-            { name: 'Details', icon: faUserCircle, path: `/admin/projbar/${this.itemId}/projetInf/${this.itemId}`},
-            { name: 'Datasets', icon: faDatabase, path: `/admin/projbar/${this.itemId}/collection/${this.itemId}` },
-            { name: 'Dashboard', icon: faTachometerAlt, path: `/admin/projbar/${this.itemId}/dashboard/${this.itemId}` },
-            { name: 'Collaborators', icon: faUserCircle, path: `/admin/projbar/${this.itemId}/ajoutercollab/${this.itemId}`},
-            { name: 'Settings', icon: faGear, path: `/admin/projbar/${this.itemId}/gererprojet/${this.itemId}`},
+            { name: 'Details', icon: faUserCircle, path: `/admin/projects/${this.itemId}/details`},
+            { name: 'Datasets', icon: faDatabase, path: `/admin/projects/${this.itemId}/datasets` },
+            { name: 'Dashboard', icon: faTachometerAlt, path: `/admin/projects/${this.itemId}/dashboard` },
+            { name: 'Collaborators', icon: faUserCircle, path: `/admin/projects/${this.itemId}/collaborators`},
+            { name: 'Validation History', icon: faHistory, path: `/admin/projects/${this.itemId}/validation-history`},
+            { name: 'Settings', icon: faGear, path: `/admin/projects/${this.itemId}/edit`},
           ],
           models :  [
-            { name: 'Validation History', icon: faHistory, path :"#" },
-            { name: 'Model Library', icon: faBook, path: `/admin/model_inf/${this.itemId}`},
-            { name: 'Collaborative Validation', icon: faBrain, path: "/admin/annotation_validation" },
+            { name: 'Model Library', icon: faBook, path: `/admin/models/${this.itemId}/model-library`},
+            { name: 'Settings', icon: faGear, path: `/admin/models/${this.itemId}/edit`},
+            { name: 'Collaborative Validation', icon: faBrain, path: `/admin/annotation_validation`},
           ],
+          datasets : [
+            { name: 'Details', icon: faUserCircle, path: `/admin/datasets/${this.itemId}/details`},
+            { name: 'Images', icon: faImage, path: `/admin/datasets/${this.itemId}/images` },
+            { name: 'Dashboard', icon: faTachometerAlt, path: `/admin/datasets/${this.itemId}/dashboard` },
+            { name: 'Models', icon: faMicrochip, path: `/admin/datasets/${this.itemId}/models`},
+            { name: 'Settings', icon: faGear, path: `/admin/datasets/${this.itemId}/edit`},
+          ]
           
         }
       }
@@ -65,10 +73,10 @@ export class SidebarComponent implements OnDestroy, OnInit{
       console.log(id);
       this.submenus = {
         corpus : [
-          { name: 'Details', icon: faCircleInfo, path: `/admin/explore-details/${id}/collectionInf/${id}`  },
-          { name: 'Images', icon: faImage, path: `/admin/explore-details/${id}/collectionImg/${id}` },
-          { name: 'Dashboard', icon: faTachometerAlt, path: `/admin/explore-details/${id}/collectionDashboard/${id}` },
-          { name: 'Settings', icon: faGear, path: `/admin/explore-details/${id}/gerercollection/${id}`  }
+          { name: 'Details', icon: faCircleInfo, path: `/admin/corpus/${id}/details`  },
+          { name: 'Images', icon: faImage, path: `/admin/corpus/${id}/images` },
+          { name: 'Dashboard', icon: faTachometerAlt, path: `/admin/corpus/${id}/dashboard` },
+          { name: 'Settings', icon: faGear, path: `/admin/corpus/${id}/edit`  }
         ]
       }
     }
@@ -80,11 +88,11 @@ export class SidebarComponent implements OnDestroy, OnInit{
       this.itemId = id;
       this.submenus = {
         projects :  [
-          { name: 'Details', icon: faUserCircle, path: `/admin/projbar/${id}/projetInf/${id}`},
-          { name: 'Datasets', icon: faDatabase, path: `/admin/projbar/${id}/collection/${id}` },
-          { name: 'Dashboard', icon: faTachometerAlt, path: `/admin/projbar/${id}/dashboard/${id}` },
-          { name: 'Collaborators', icon: faUserCircle, path: `/admin/projbar/${id}/ajoutercollab/${id}`},
-          { name: 'Settings', icon: faGear, path: `/admin/projbar/${id}/gererprojet/${id}`},
+          { name: 'Details', icon: faUserCircle, path: `/admin/projects/${id}/details`},
+          { name: 'Datasets', icon: faDatabase, path: `/admin/projects/${id}/datasets` },
+          { name: 'Dashboard', icon: faTachometerAlt, path: `/admin/projects/${id}/dashboard` },
+          { name: 'Collaborators', icon: faUserCircle, path: `/admin/projects/${id}/collaborators`},
+          { name: 'Settings', icon: faGear, path: `/admin/projects/${id}/edit}`},
 
         ]
       }
@@ -104,9 +112,9 @@ export class SidebarComponent implements OnDestroy, OnInit{
       this.itemId = id
       this.submenus = {
         models :  [
-        { name: 'Validation History', icon: faHistory, path :null },
-        { name: 'Model Library', icon: faBook, path: `/admin/model_inf/${id}`},
-        { name: 'Collaborative Validation', icon: faBrain },
+        { name: 'Model Library', icon: faBook, path: `/admin/models/${id}/model-library`},
+        { name: 'Settings', icon: faGear, path: `/admin/models/${id}/edit`},
+        { name: 'Collaborative Validation', icon: faBrain, path: `/admin/annotation_validation`},
       ]
     }
   }
@@ -144,9 +152,9 @@ export class SidebarComponent implements OnDestroy, OnInit{
   faNetworkWired = faNetworkWired;
   itemId : string | null = null;
   menuItems : any = [
-    { name: 'Corpus', icon: faFile, path: '/admin/explorer'},
-    { name: 'Projects', icon: faDiagramProject, path : '/admin/projets' },
-    { name: 'Datasets', icon: faDatabase, path : '/admin/collection/total' },
+    { name: 'Corpus', icon: faFile, path: '/admin/corpus'},
+    { name: 'Projects', icon: faDiagramProject, path : '/admin/projects' },
+    { name: 'Datasets', icon: faDatabase, path : '/admin/datasets' },
     { name: 'Models', icon: faMicrochip, path: '/admin/models' },
     { name: 'Classes', icon: faNetworkWired, path: '/admin/classes' }, 
   ];
@@ -158,14 +166,21 @@ export class SidebarComponent implements OnDestroy, OnInit{
     return this.menuItems.map((menuItem:any) => menuItem.name == selectedMenu).routeMatcher;
 
   }
+
+ getFirstSegmentAfterAdmin(url : string) : string | null{
+    const parts = url.split('/').filter(Boolean); // Remove empty parts
+    const adminIndex = parts.indexOf('admin');
+    return adminIndex !== -1 && adminIndex + 1 < parts.length ? parts[adminIndex + 1] : null;
+}
+
   getRouteMatcher() : void{
-    if (this.currentRoute.includes('explore-details') || this.currentRoute.includes("collectionInf"))
+    if (this.getFirstSegmentAfterAdmin(this.currentRoute) == 'corpus')
       this.setActive('Corpus');
-    else if (this.currentRoute.includes('UpdateModel') || this.currentRoute.includes('model_inf'))
+    else if (this.getFirstSegmentAfterAdmin(this.currentRoute) == 'models')
        this.setActive('Models');
-    else if (this.currentRoute.includes('image-inf') || this.currentRoute.includes('projbar') || this.currentRoute.includes('projets'))
+    else if (this.getFirstSegmentAfterAdmin(this.currentRoute) == 'projects')
        this.setActive('Projects');
-    else if (this.currentRoute.includes('collection-inf'))
+    else if (this.getFirstSegmentAfterAdmin(this.currentRoute) == 'datasets')
        this.setActive('Datasets');
   }
   activeSub : string = '';

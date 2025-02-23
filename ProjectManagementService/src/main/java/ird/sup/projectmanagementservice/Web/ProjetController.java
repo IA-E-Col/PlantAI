@@ -1,5 +1,6 @@
 package ird.sup.projectmanagementservice.Web;
 
+import ird.sup.projectmanagementservice.DTO.Message;
 import ird.sup.projectmanagementservice.Entities.Collection;
 import ird.sup.projectmanagementservice.Entities.DataSet;
 import ird.sup.projectmanagementservice.Entities.Projet;
@@ -39,18 +40,24 @@ public class ProjetController {
     }
 
     @PutMapping("/{IdP}/addCollab/{IdC}")
-    public ResponseEntity<Projet> addCollabProjet(@PathVariable String IdC,@PathVariable Long IdP) {
-        User user = userService.getUser(IdC);
+    public ResponseEntity<?> addCollabProjet(@PathVariable Long IdC,@PathVariable Long IdP) {
+        Optional<User> user = userService.findUserById(IdC);
         Projet projetV = projetService.findProjetbyId(IdP);
-        if(user != null && projetV!=null && user.getId() != projetV.getCreateur().getId()){
+        if (user.isPresent()) {
+            if (user != null && projetV != null && user.get().getId() != projetV.getCreateur().getId()) {
 
-            List<User> collabs = projetService.getCollaborateurs(IdP);
-            Optional test = collabs.stream().filter(c -> c.getId().equals(user.getId())).findFirst();
-            if(test == Optional.empty()){
-                Projet projet = projetService.addCollaborateur(user.getId(),IdP);
-                return ResponseEntity.ok(projet);
+                List<User> collabs = projetService.getCollaborateurs(IdP);
+                Optional test = collabs.stream().filter(c -> c.getId().equals(user.get().getId())).findFirst();
+                if (test == Optional.empty()) {
+                    Projet projet = projetService.addCollaborateur(user.get().getId(), IdP);
+                    return ResponseEntity.ok(projet);
+                }
+                return ResponseEntity.ok(null);
             }
-            return ResponseEntity.ok(null);
+            else
+            {
+                return ResponseEntity.status(500).body(new Message("User or project does not exist or adding already existing user within the project"));
+            }
         }
         return ResponseEntity.notFound().build();
 

@@ -38,16 +38,16 @@ export class SupprimerCollabComponent {
   func_suppr_collab(){
     let collab = this.projetFormGroup.value
     this.projetServ.func_suppr_collab(this.projectId,collab.collaborateur).subscribe({
-      next:(data)=>{this.router.navigateByUrl(`/admin/projbar/${this.projectId}/projetInf/${this.projectId}`);},
+      next:(data)=>{this.router.navigateByUrl(`/admin/projects/${this.projectId}/details`);},
       error:(err)=>{console.log(err)}
     })
   }
 
   modifer_infomation() {
-    this.router.navigateByUrl(`/admin/projbar/${this.projectId}/gererprojet/${this.projectId}`);
+    this.router.navigateByUrl(`/admin/projects/${this.projectId}/edit`);
   }
 
   ajouterCollaborateur() {
-    this.router.navigateByUrl(`/admin/projbar/${this.projectId}/ajoutercollab/${this.projectId}`);
+    this.router.navigateByUrl(`/admin/projects/${this.projectId}/collaborators`);
   }
 }
