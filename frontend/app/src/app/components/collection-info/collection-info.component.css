@@ -1,3 +1,19 @@
+/* Conteneur des cartes */
+.row {
+    margin-left: 0;
+    margin-right: 0;
+}
+
+.plant-list {
+    max-height: 90vh;
+    overflow-y: auto;
+    border: 2px solid #ccc;
+    border-radius: 12px;
+    padding: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    width: 85vw; /* Largeur totale de la fenêtre */
+    max-width: 85vw;
+}
 /* Conteneur principal */
 .container {
     display: flex;
@@ -32,23 +48,53 @@
     margin-bottom: 20px;
 }
 
-.view-toggle .btn {
+.view-toggle .btn, 
+.custom-pagination .ngx-pagination a, 
+.custom-pagination .ngx-pagination span {
     padding: 10px;
     border: none;
     background-color: #A3B18A;
     color: white;
     border-radius: 5px;
     cursor: pointer;
+    text-decoration: none; /* Supprime le soulignement des liens */
+    display: inline-block;
 }
 
-.view-toggle .btn:hover {
+.view-toggle .btn:hover, 
+.custom-pagination .ngx-pagination a:hover {
     background-color: #82966D;
 }
 
-.list_grid .btn.active {
-    background-color: #007bff;
+.list_grid .btn.active, 
+.custom-pagination ::ng-deep .ngx-pagination .current  {
+    background-color: #82966D !important;
     color: white;
 }
+
+/* Nouveau ciblage pour le contrôle de pagination personnalisé */
+.custom-pagination ngx-pagination a, 
+.custom-pagination ngx-pagination span {
+    padding: 10px;
+    border: none;
+    background-color: #A3B18A;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+    text-decoration: none; 
+    display: inline-block;
+}
+
+.custom-pagination ngx-pagination a:hover, 
+.custom-pagination ngx-pagination span:hover {
+    background-color: #82966D;
+}
+
+.custom-pagination ngx-pagination  .current {
+    background-color : #82966D !important;
+    color: white;
+}
+
 
 /* Liste des plantes */
 .plant-list {
@@ -58,440 +104,102 @@
 }
 
 /* ---------------- LIST VIEW ---------------- */
-/* 2 cartes par ligne */
 .plant-list.list-view .col-md-6 {
     flex: 0 0 50%;
     max-width: 50%;
 }
 
-/* Cartes agrandies en List View */
 .plant-list.list-view .card {
     display: flex;
     flex-direction: column;
     align-items: center;
     padding: 20px;
-    height: 280px; /* Cartes plus grandes pour bien inclure le bouton */
+    height: 280px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-bottom: 8px; /* Espace entre les paragraphes */
+
+
+}
+
+.plant-list.list-view .card-img {
+    width: 180px;
+    height: 180px;
+    object-fit: cover;
+    margin-bottom: 15px;
+    border-radius: 8px;
+}
+
+.plant-list.list-view .card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    height: 280px;
     background-color: white;
     border-radius: 10px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-/* Image à gauche */
-.plant-list.list-view .card-img {
-    width: 180px;
-    height: 180px;
-    object-fit: cover;
-    margin-bottom: 15px; /* Ajout d'espacement entre l'image et le bouton */
-    border-radius: 8px;
-}
-
-/* Texte + bouton à droite */
-.plant-list.list-view .card-body {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    height: 100%;
-}
-/* Espacement entre les cartes en List View */
-.plant-list.list-view .list-card {
-    margin-bottom: 20px; /* Ajoute un espace vertical */
-}
-
-/* Espacement entre les cartes en Grid View */
-.plant-list.grid-view .grid-card {
-    margin-bottom: 20px; /* Ajoute un espace vertical */
-}
-
-/* Bouton "Voir plus" bien visible */
 .plant-list.list-view .btn-voir-plus {
-    background-color: #848441;
+    background-color: #A3B18A;
     color: white;
     border: none;
     padding: 10px;
     border-radius: 5px;
     cursor: pointer;
-    margin-top: auto; /* S'assure que le bouton reste visible en bas */
+    margin-top: auto;
+    display: flex;
+    justify-content: center; /* Centre horizontalement */
+    align-items: center; /* Centre verticalement si besoin */
+    width: fit-content; /* Ajuste la largeur au contenu */
 }
+
 
 .plant-list.list-view .btn-voir-plus:hover {
     background-color: #6d6b3c;
 }
 
 /* ---------------- GRID VIEW ---------------- */
-/* ---------------- GRID VIEW ---------------- */
-/* 3 cartes par ligne avec un espacement ajusté */
-.plant-list.grid-view .row {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 30px; /* Espacement entre les cartes ajusté */
+.plant-list.grid-view {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* 3 colonnes égales */
+    gap: 20px; /* Espacement entre les cartes */
+    justify-content: center;
+    align-items: stretch;
 }
 
-/* Colonne pour 3 cartes par ligne */
-.plant-list.grid-view .col-md-4 {
-    flex: 0 0 33.333%;
-    max-width: 33.333%;
-}
-
-/* Cartes en grid view */
 .plant-list.grid-view .card {
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 20px;
     text-align: center;
     background-color: white;
     border-radius: 10px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    width: 100%;
-    height: auto; /* Ajustement automatique de la hauteur pour une uniformité */
+    padding: 20px;
+    width: 200%; /* Ajuste la largeur */
+    max-width: 320px; /* Taille max d'une carte */
+    height: auto;
 }
 
-/* Image en grid view */
 .plant-list.grid-view .card-img {
     width: 100%;
-    height: 200px; /* Ajuster la hauteur de l'image pour le grid */
+    height: 250px;
     object-fit: cover;
     border-radius: 8px;
     border: 2px solid #ddd;
     padding: 5px;
     background-color: white;
-    margin-bottom: 10px; /* Espacement entre l'image et le bouton */
 }
 
-/* Bouton "Voir plus" sous chaque image */
 .plant-list.grid-view .btn-voir-plus {
     background-color: #848441;
     color: white;
     border: none;
     padding: 10px;
     border-radius: 5px;
-    width: 100%; /* Alignement correct */
     cursor: pointer;
+    margin-top: auto; /* Aligne le bouton en bas */
 }
-
-.plant-list.grid-view .btn-voir-plus:hover {
-    background-color: #6d6b3c;
-}
-/* Grid View: 3 cartes par ligne */
-.plant-list.grid-view .grid-card {
-    flex: 0 0 33.333%;
-    max-width: 33.333%;
-}
-
-/* List View: 2 cartes par ligne */
-.plant-list.list-view .list-card {
-    flex: 0 0 50%;
-    max-width: 50%;
-}
-
-/* Styles spécifiques pour le Grid View */
-.plant-list.grid-view .card {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 15px;
-    text-align: center;
-    background-color: white;
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    width: 100%;
-}
-
-/* ------ GRID VIEW ------ */
-.plant-list.grid-view {
-    justify-content: space-between;
-}
-
-.plant-list.grid-view .grid-card {
-    flex: 0 0 calc(33.333% - 20px); /* 3 cartes par ligne avec espace */
-    max-width: calc(33.333% - 20px);
-}
-
-.plant-list.grid-view .card {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    background-color: white;
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    width: 100%;
-    height: 100%;
-    padding: 15px;
-}
-
-.plant-list.grid-view .card-img {
-    width: 100%;
-    height: 200px;
-    object-fit: cover;
-    border-radius: 8px;
-    border: 2px solid #ddd;
-    padding: 5px;
-    background-color: white;
-}
-
-.plant-list.grid-view .card-body {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    width: 100%;
-    flex-grow: 1;
-}
-
-/* Bouton stylisé */
-.plant-list .btn {
-    width: 100%;
-    background-color: #A3B18A;
-    color: white;
-    border: none;
-    padding: 10px;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-.plant-list .btn:hover {
-    background-color: #A3B18A;
-}
-.list_grid {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 15px;
-}
-
-.list_grid .btn {
-    width: 40px;
-    height: 40px;
-}
-.custom-card {
-    background-color: #f9f9e6;
-    border: 1px solid #c5d6b0;
-    border-radius: 10px;
-    padding: 20px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    width: 100%;
-    max-width: 800px;
-    margin: 0 auto;
-  }
-  
-  .custom-header {
-    background-color: #f1f4e3;
-    border-bottom: 2px solid #c5d6b0;
-    padding: 15px;
-    border-top-left-radius: 10px;
-    border-top-right-radius: 10px;
-    color: #7a9c59;
-    font-weight: bold;
-    font-size: 20px;
-    text-align: center;
-  }
-  
-  .project-info {
-    margin-left: 30px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-around;
-    font-size: 16px;
-  }
-  
-  .info-item {
-    margin-bottom: 15px;
-    font-size: 16px;
-  }
-  
-  .info-item strong {
-    color: #4d4d4d;
-    margin-right: 8px;
-  }
-  
-  .info-item a {
-    color: #7a9c59;
-    text-decoration: underline;
-  }
-  
-  .project-image img {
-    max-width: 150px;
-    border-radius: 50%;
-    background-color: white;
-    padding: 15px;
-  }
-  
-  .card-footer {
-    background-color: transparent;
-    padding-top: 15px;
-    font-size: 16px;
-    color: #4d4d4d;
-    text-align: right;
-  }
-
-  .outer-card {
-    background-color: white;
-    border: 1px solid #c5d6b0;
-    border-radius: 10px;
-    padding: 20px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    background-color: #A3B18A; /* Vert doux */
-    color: white;
-    border-radius: 8px; /* Coins arrondis */
-    border: none;
-    font-size: 18px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.list_grid .btn:hover {
-    background-color: #82966D; /* Légèrement plus foncé au survol */
-}
-
-.list_grid .btn.active {
-    background-color: #C5D0AF; /* Bleu actif */
-}
-/* Conteneur de la pagination */
-.pagination-container {
-    margin-top: 20px; /* Espacement avec les cartes */
-    text-align: right; /* Aligne la pagination à droite */
-}
-
-/* Liste de la pagination */
-.pagination-container .ngx-pagination {
-    display: flex;
-    justify-content: flex-end;
-    gap: 15px; /* Espacement entre les boutons */
-    padding: 0;
-    list-style: none;
-}
-
-/* Élément de la pagination (li) */
-.pagination-container .ngx-pagination li {
-    display: inline-block;
-    margin: 0 5px;
-}
-
-/* Lien de pagination (a) */
-.pagination-container .ngx-pagination li a {
-    display: block;
-    padding: 8px 12px;
-    border-radius: 5px;
-    background-color: #A3B18A; /* Couleur de fond */
-    color: white;
-    text-decoration: none;
-    transition: background-color 0.3s ease;
-}
-
-/* Effet au survol des boutons */
-.pagination-container .ngx-pagination li a:hover {
-    background-color: #82966D; /* Légèrement plus foncé */
-}
-
-/* Bouton actif (page courante) */
-.pagination-container .ngx-pagination li.current a {
-    background-color: #6d6b3c; /* Couleur pour la page active */
-    color: white;
-    font-weight: bold;
-}
-
-/* Boutons "Précédent" et "Suivant" */
-.pagination-container .ngx-pagination .pagination-previous a,
-.pagination-container .ngx-pagination .pagination-next a {
-    background-color: #A3B18A; /* Même couleur de fond */
-    padding: 8px 12px;
-    border-radius: 5px;
-    color: white;
-}
-
-/* Ajouter un survol aux boutons "Précédent" et "Suivant" */
-.pagination-container .ngx-pagination .pagination-previous a:hover,
-.pagination-container .ngx-pagination .pagination-next a:hover {
-    background-color: #82966D;
-}
-
-/* Désactiver les boutons "Précédent" et "Suivant" quand nécessaire */
-.pagination-container .ngx-pagination .pagination-previous.disabled a,
-.pagination-container .ngx-pagination .pagination-next.disabled a {
-    background-color: #ccc; /* Gris pour les boutons désactivés */
-    cursor: not-allowed;
-}
-.custom-icon {
-    position: relative;
-    padding-left: 20px; /* Espace pour le point */
-  }
-  
-  .custom-icon::before {
-    content: "•";  /* Point Unicode */
-    font-size: 18px;
-    color: #007bff; /* Couleur bleue */
-    position: absolute;
-    left: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    min-height: 100vh;
-  }
-  
-  .outer-header {
-    text-align: center;
-    margin-bottom: 20px;
-  }
-  
-  .outer-header h2 {
-    color: #86A786;
-    font-size: 28px;
-    margin: 0;
-  }
-  
-  .outer-separator {
-    border: 0;
-    height: 2px;
-    background: #c5d6b0;
-    width: 90%;
-    margin: 10px auto 20px;
-  }
-  
-  .inner-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-    max-width: 800px;
-    padding: 20px;
-    background-color: #f9f9f9;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  }
-  
-  .separator {
-    border: 0;
-    height: 1px;
-    background: #c5d6b0;
-    margin: 15px 0;
-  }
-  
-  .custom-header {
-    margin-bottom: 10px;
-    padding-bottom: 5px;
-    font-size: 24px;
-    text-align: center;
-  }
-  
-  .card-body {
-    margin-top: 10px;
-  }
-  
-  .created-by {
-    color: #848441;
-  }
-
-  .label {
-    color: #848441;
-  }
-
-  .created-by {
-    color: #848441;
-  }
-
-  .creator-name {
-    color: #000000;
-  }
-  

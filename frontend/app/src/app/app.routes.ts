@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { ScoresComponent } from './components/scores/scores.component';
 import { ProjetsComponent } from "./components/projets/projets.component";
 import { ModeleComponent } from "./components/modele/modele.component";
 import { ClasseComponent } from "./components/classe/classe.component";
@@ -134,6 +135,7 @@ export const routes: Routes = [
         ]
       },
       { path: 'annotation_validation', component: AnnotationValidationComponent }
+      { path: 'scores', component: ScoresComponent },
     ]
   },  
 

@@ -1,0 +1,151 @@
+/* General Styles */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f8f9fa;
+    font-size: 12px;
+  }
+  
+  /* Card Styles */
+  .card {
+    border: none;
+    background-color: #fff;
+    border-radius: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin: 20px auto;
+    width: 95%;
+    overflow: hidden;
+  }
+  
+  .card-header {
+    background-color: #fff !important;
+    padding: 1rem;
+    border-bottom: 1px solid #dee2e6;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .card-header h5 {
+    font-size: 18px;
+    font-weight: bold;
+    color: #76804a;
+  }
+  
+  /* Filters */
+  .filters {
+    display: flex;
+    gap: 10px;
+    padding: 10px;
+  }
+  
+  .filters input,
+  .filters select {
+    padding: 8px;
+    border-radius: 15px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+  }
+  
+  .filters input:focus,
+  .filters select:focus {
+    border-color: #449484;
+    outline: none;
+    box-shadow: 0 0 5px rgba(77, 156, 114, 0.5);
+  }
+  
+  /* Table Styles */
+  .table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+  }
+  
+  .table th,
+  .table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+    background-color: #fff;
+  }
+  
+  .table thead th {
+    background: #EAE7DC;
+    font-weight: bold;
+    cursor: pointer;
+  }
+  
+  .table tbody tr:hover {
+    background: #F5F5F5;
+  }
+  
+  /* Sortable Headers */
+  .sortable {
+    cursor: pointer;
+  }
+  
+  .sortable:hover {
+    color: #51b15c;
+  }
+  
+  /* Action Buttons */
+  .actions {
+    display: flex;
+    gap: 5px;
+  }
+  
+  .btn-sm {
+    padding: 5px 8px;
+    font-size: 14px;
+    transition: all 0.2s ease-in-out;
+  }
+  
+  .btn-sm:hover {
+    transform: scale(1.1);
+  }
+  
+  /* Add User Button */
+  .btn-success {
+    background-color: #c0d7c6;
+    border-color: #c0d7c6;
+    padding: 8px 16px;
+    border-radius: 20px;
+    transition: background-color 0.3s ease;
+  }
+  
+  .btn-success:hover {
+    background-color: #A3B18A;
+  }
+  
+  /* Pagination */
+  .pagination-controls {
+    display: flex;
+    justify-content: center;
+    margin-top: 1rem;
+  }
+  
+  /* Avatar Styles */
+  .rounded-circle {
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    object-fit: cover;
+  }
+  
+  /* Responsive Adjustments */
+  @media (max-width: 768px) {
+    .filters {
+      flex-direction: column;
+      gap: 5px;
+    }
+  
+    .filters input,
+    .filters select {
+      width: 100%;
+    }
+  
+    .card-header {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  }
+  
