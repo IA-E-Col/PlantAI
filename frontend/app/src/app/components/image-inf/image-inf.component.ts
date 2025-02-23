@@ -1,9 +1,11 @@
-import { Component, OnInit, AfterViewInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit, AfterViewChecked } from '@angular/core';
 import { ActivatedRoute, Router } from "@angular/router";
 import { ProjetService } from "../../services/projet.service";
 import Swal from "sweetalert2";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { CommonModule } from '@angular/common';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { faClose } from '@fortawesome/free-solid-svg-icons';
 
 
 @Component({
@@ -12,12 +14,13 @@ import { CommonModule } from '@angular/common';
   imports: [
     FormsModule,
     ReactiveFormsModule,
-    CommonModule
+    CommonModule,
+    FontAwesomeModule
   ],
   templateUrl: './image-inf.component.html',
   styleUrls: ['./image-inf.component.css']
 })
-export class ImageInfComponent implements OnInit, AfterViewInit {
+export class ImageInfComponent implements OnInit, AfterViewChecked {
   currentStep: number = 1;
   currentStep1: number = 0;
   datasetId : number = 0;
@@ -37,9 +40,24 @@ export class ImageInfComponent implements OnInit, AfterViewInit {
   modeles!: Array<any>;
   m: number = 1;
   m1: number = 1;
-
+  isOpenPreview: boolean = false;
+  originalWidth: number = 0;
+  originalHeight: number = 0;
+  faClose = faClose;
   constructor(private route: ActivatedRoute, private router: Router, private projetservice: ProjetService) { }
-
+  ngAfterViewChecked() {
+    if (this.isOpenPreview && !this.zoomElement) {
+      // Wait for the element to be rendered and then access it
+      setTimeout(() => {
+        this.zoomElement = document.getElementById('zoom') as HTMLElement;
+        if (this.zoomElement) {
+          this.originalWidth = this.zoomElement.offsetWidth;
+          this.originalHeight = this.zoomElement.offsetHeight;
+          this.scale = this.initialScale;
+        }
+      }, 0);  // Executes after the view is updated
+    }
+  }
   ngOnInit(): void {
     this.projetservice.func_get_All_models().subscribe({
       next: (data) => {
@@ -72,17 +90,24 @@ export class ImageInfComponent implements OnInit, AfterViewInit {
     console.log('Annotations', this.plantes);
   }
 
-  ngAfterViewInit(): void {
-    this.zoomElement = document.getElementById('zoom') as HTMLElement;
-    this.initialScale = this.scale;
-  }
 
   setTransform(): void {
     if (this.zoomElement) {
-      this.zoomElement.style.transform = `translate(${this.pointX}px, ${this.pointY}px) scale(${this.scale})`;
+      this.zoomElement.style.width = `${this.scale * this.originalWidth}px`;
+      this.zoomElement.style.height = `${this.scale * this.originalHeight}px`;
+      this.zoomElement.style.transform = `translate(${this.pointX}px, ${this.pointY}px)`;
     }
   }
 
+  showPreview(){
+    this.isOpenPreview = true;
+    document.body.classList.add('no-scroll'); 
+  }
+
+  closePreview(){
+    this.isOpenPreview = false;
+    document.body.classList.remove('no-scroll'); 
+  }
   openModal(): void {
     this.isModalOpen = true;
   }

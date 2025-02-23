@@ -1,11 +1,17 @@
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-
-
-
 <div class="container-fluid">
   <div class="row">
-   
+      <div *ngIf="isOpenPreview" class="overflow-hidden position-absolute d-flex flex-column gap-3 justify-content-center align-items-center top-0 start-0 overlay-background wh-100-vh">
+        <div class="position-absolute pos">
+          <fa-icon [icon]="faClose" class="text-white wh-100" (click)="closePreview()"></fa-icon>
+        </div>
+        <div id="zoom">
+          <img class="preview-image w-100 h-100" [src]="imageUrl">
+        </div>
+        <div class="zoom-controls">
+          <button class="btn btn-white text-dark opacity-100" (click)="zoomOut()"><i class="bi bi-zoom-out"></i></button>
+          <button class="btn btn-white text-dark opacity-100" (click)="zoomIn()"><i class="bi bi-zoom-in"></i></button>
+        </div>
+      </div>
 
  
       <div class="Bg_Grp">
@@ -17,8 +23,11 @@
 
         <div class="Grp">
           <div class="zoom_outer">
-            <div id="zoom" class="Img">
-              <img [src]="imageUrl" [alt]="plante.nomScientifique" (click)="openImageInNewWindow()">
+            <div class="Img">
+              <img [src]="imageUrl" (click)="showPreview()">
+            </div>
+            <div class="">
+
             </div>
           </div>
 

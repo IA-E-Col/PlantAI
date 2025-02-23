@@ -21,6 +21,14 @@
   justify-content: center;
 }
 
+.wh-100{
+  font-size: 50px;
+}
+.pos{
+  right:50px;
+  top:50px;
+}
+
 .Img img {
   width: 100%;
   max-width: 250px;
@@ -61,7 +69,24 @@ ul li {
   font-size: 22px; /* Augmente la taille du texte des éléments de la liste */
   margin-bottom: 10px;
 }
-
+.wh-100-vh{
+  height:100vh;
+  width:100vw;
+}
+.overlay-background {
+  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent dark background */
+}
+.preview-image {
+  opacity: 1; /* Adjust image opacity separately */
+}
+.btn-white{
+  opacity:1;
+  background-color: white;
+}
+.btn-white:hover{
+  opacity:1;
+  background-color: white;
+}
 strong {
   font-size: 24px; /* Augmente la taille du texte des éléments en gras */
   color: #333;

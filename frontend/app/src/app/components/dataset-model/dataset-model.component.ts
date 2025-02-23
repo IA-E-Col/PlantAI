@@ -50,12 +50,15 @@ export class DatasetModelComponent {
     });
 
 
-    this.Dataset = this.route.snapshot.parent?.queryParamMap.get('id');
-   console.log(this.Dataset)
+    this.route.parent?.params.subscribe(params => {
+          this.Dataset = params['id'];
+        });
+    
   }
 
   doPrediction(modeleId :any) {
-    this.router.navigate(['/admin/DatasetPrediction'], {state: {dataset :this.Dataset  ,modeleId: modeleId}});
+    console.log(this.Dataset)
+    this.router.navigate([`/admin/datasets/${this.Dataset}/datasetPrediction/${modeleId}`]);
   }
 
   info_model(id: any){
