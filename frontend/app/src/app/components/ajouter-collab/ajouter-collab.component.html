@@ -1,19 +1,40 @@
-<div class="form-wrapper">
-  <h2 class="form-title">Add a collaborator to your project.</h2>
-  
-  <div class="form-container">
-    <form [formGroup]="projetFormGroup" (ngSubmit)="ajouter_collab()">
-      <div class="form-group">
-        <label for="collaborateur">Name of collaborator :</label>
-        <select id="collaborateur" formControlName="collaborateur">
-          <option *ngFor="let user of users" [value]="user.id">{{user.username}}</option>
-        </select>
-      </div>
+<div class="model-list-container">
+  <div class="header">
+    <div _ngcontent-ng-c2565222890="" class="fw-bold fs-4 me-2">List of Collaborators</div>
+    <button class="create-btn" (click)="add_collaborator()">Add a collaborator</button>
+  </div>
+  <div class="fltr">
+    <div class="form-outline" style="width: 100%; margin-bottom: 5px;">
+        <input type="search" [(ngModel)]="searchtext" id="form1"
+            class="form-control input__field" placeholder=" " aria-label="search">
+        <label for="form1" class="input__label" [class.clicked]="searchtext"><i
+                class="bi bi-search"></i>
+            Search by
+            name</label>
+    </div>
+</div>
+  <table class="model-table">
+    <thead>
+      <tr>
+        <th>Full Name</th>
+        <th>Email</th>
+        <th>Department</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let u of users | paginate: { itemsPerPage: 5, currentPage: p }">
+        <td>{{ u.prenom }} {{ u.nom }}</td>
+        <td>{{ u.email }}</td>
+        <td>{{ u.departement }}</td>
+        <td>
+          <button class="play-btn" (click)="delete_collaborator(u.id)"><fa-icon [icon]="faTrash"></fa-icon></button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
 
-      <div class="button-group">
-        <button [disabled]="projetFormGroup.invalid" type="submit" class="btn-add">Add Collaborator</button>
-        <button type="button" class="btn-back" (click)="modifer_infomation()">Back</button>
-      </div>
-    </form>
+  <div class="pagination">
+    <pagination-controls (pageChange)="p = $event"  [previousLabel]="'Prev'" [nextLabel]="'Next'" [responsive]="true" class="custom-pagination"></pagination-controls>
   </div>
 </div>

@@ -78,14 +78,15 @@ public class ProjetController {
     }
 
     @DeleteMapping("/delete/{IdP}/collab/{IdC}")
-    public ResponseEntity<Void> deleteCollabProjet(@PathVariable String IdC,@PathVariable Long IdP) {
-        User user = userService.getUser(IdC);
+    public ResponseEntity<Void> deleteCollabProjet(@PathVariable Long IdC,@PathVariable Long IdP) {
+        System.out.println(IdC + " " + IdP);
+        Optional<User> user = userService.findUserById(IdC);
         Projet projet = projetService.findProjetbyId(IdP);
-        if(user != null && projet !=null) {
+        if(user.isPresent() && projet !=null) {
             List<User> collabs = projetService.getCollaborateurs(IdP);
-            Optional test = collabs.stream().filter(c -> c.getId().equals(user.getId())).findFirst();
+            Optional test = collabs.stream().filter(c -> c.getId().equals(user.get().getId())).findFirst();
             if(test != Optional.empty()) {
-                projetService.deleteCollaborateur(user.getId(), IdP);
+                projetService.deleteCollaborateur(user.get().getId(), IdP);
                 return ResponseEntity.ok().build();
             }
             return ResponseEntity.notFound().build();
@@ -159,6 +160,10 @@ public class ProjetController {
         List<DataSet> collections = projetService.getDatasets(id);
         return ResponseEntity.ok(collections);
     }
-
+    @GetMapping("/{id}/possible_collaborators")
+    public ResponseEntity<List<User>> getPossibleCollaborators(@PathVariable Long id) {
+        List<User> collaborators = projetService.getPossibleCollaborateurs(id);
+        return ResponseEntity.ok(collaborators);
+    }
 }
 

@@ -57,12 +57,6 @@ export const routes: Routes = [
       { path: 'models', component: ModeleComponent ,},
       { path: 'classes', component: ClasseComponent },
       {
-        path: 'DatasetPrediction', component: DatasetPredictionComponent,
-        children: [
-          { path: 'cree', component: CreateCollectionModalComponent },
-        ]
-      },
-      {
         path: 'formulaire', component: FormulaireComponent,
         children: [
           {
@@ -132,6 +126,12 @@ export const routes: Routes = [
           { path: 'models', component: DatasetModelComponent },
           { path: 'edit', component: GererDatasetComponent },
           { path: 'images/:catalogueCode', component: ImageInfComponent },
+          {
+            path: 'datasetPrediction/:modelId', component: DatasetPredictionComponent,
+            children: [
+              { path: 'cree', component: CreateCollectionModalComponent },
+            ]
+          },
         ]
       },
       { path: 'annotation_validation', component: AnnotationValidationComponent },

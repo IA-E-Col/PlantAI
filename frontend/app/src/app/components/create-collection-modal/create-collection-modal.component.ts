@@ -55,7 +55,7 @@ export class CreateCollectionModalComponent {
         console.log('rani hna ',data)
         this.projetService.func_add_Specimens_To_Dataset(data.id).subscribe({
           next:(data)=>{
-            this.router.navigate([`/admin/projects/${this.projetService.projet.id}/collection`]);
+            this.router.navigate([`/admin/projects/${this.projetService.projet.id}/datasets`]);
           }, error:(err)=>{
             console.log(err)
             alert('DATASET non cree')

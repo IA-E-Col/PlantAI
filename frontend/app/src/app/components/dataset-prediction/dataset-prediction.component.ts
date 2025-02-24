@@ -30,6 +30,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 })
 export class DatasetPredictionComponent {
   private IdDataset: any;
+  private modelId : any;
   annotations: any;
   isCalculated: boolean = true; //false
   Dataset: any;
@@ -86,9 +87,9 @@ export class DatasetPredictionComponent {
 
   ngOnInit(): void {
 
-    this.route.paramMap.subscribe(params => {
-      const navigation = window.history.state;
-      this.IdDataset = navigation.dataset;
+    this.route.parent?.paramMap.subscribe(params => {
+      this.IdDataset = params.get("id");
+      this.modelId = params.get("modelId");
       this.projetService.func_get_dataset(this.IdDataset).subscribe({
         next: (data) => {
 
@@ -137,7 +138,7 @@ export class DatasetPredictionComponent {
 
   protected readonly Date = Date;
   doPrediction(plante: any) {
-    this.router.navigate(['/admin/AnnotationDetail'], { state: { plante: plante, modeleId: 1 } });
+    this.router.navigate(['/admin/AnnotationDetail'], { state: { plante: plante, modeleId: this.modelId } });
   }
 
   isGridView = false;

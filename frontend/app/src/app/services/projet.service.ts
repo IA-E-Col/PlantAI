@@ -154,6 +154,10 @@ export class ProjetService {
     return this.http.get<any[]>('http://localhost:8080/api/users/');
   }
 
+  func_get_possible_collaborators(idP : number): Observable<any[]> {
+    return this.http.get<any[]>(`http://localhost:8080/api/projets/${idP}/possible_collaborators`);
+  }
+
   func_get_Champs_Filtre():Observable<Array<any>>{
     return this.http.get<any[]>('http://localhost:8080/api/specimen/ValeurFilters');
   }

@@ -73,8 +73,7 @@ public class ProjetService  {
     }
 
     public List<User> getCollaborateurs(Long id) {
-        Projet p=pr.findById(id).get();
-        return p.getCollaborateurs();
+        return pr.findUsersInProject(id);
     }
 
     public Projet addCollaborateur(Long idU , Long idP){
@@ -87,7 +86,9 @@ public class ProjetService  {
         System.out.println("test");
         return pr.save(p);
     }
-
+    public List<User> getPossibleCollaborateurs(Long idP) {
+        return pr.findUsersNotInProject(idP);
+    }
     public Projet deleteCollaborateur(Long idU , Long idP){
         Projet p = pr.findById(idP).get();
         User u = ur.findById(idU).get();

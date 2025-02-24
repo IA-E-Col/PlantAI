@@ -33,3 +33,6 @@
 .mat-progress-spinner circle, .mat-spinner circle {
     stroke: red;
 }
+.no-scroll {
+    overflow: hidden;
+  }
