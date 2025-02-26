@@ -1,11 +1,9 @@
-import { Component, OnInit, AfterViewInit, AfterViewChecked } from '@angular/core';
+import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { ActivatedRoute, Router } from "@angular/router";
 import { ProjetService } from "../../services/projet.service";
 import Swal from "sweetalert2";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { CommonModule } from '@angular/common';
-import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faClose } from '@fortawesome/free-solid-svg-icons';
 
 
 @Component({
@@ -14,16 +12,16 @@ import { faClose } from '@fortawesome/free-solid-svg-icons';
   imports: [
     FormsModule,
     ReactiveFormsModule,
-    CommonModule,
-    FontAwesomeModule
+    CommonModule
   ],
   templateUrl: './image-inf.component.html',
   styleUrls: ['./image-inf.component.css']
 })
-export class ImageInfComponent implements OnInit, AfterViewChecked {
+export class ImageInfComponent implements OnInit, AfterViewInit {
+  isOpenPreview: boolean = false; // <-- Initialisation avec 'false'
+
   currentStep: number = 1;
   currentStep1: number = 0;
-  datasetId : number = 0;
   plante: any;
   plantes: any;
   imageUrl!: string;
@@ -40,25 +38,11 @@ export class ImageInfComponent implements OnInit, AfterViewChecked {
   modeles!: Array<any>;
   m: number = 1;
   m1: number = 1;
-  isOpenPreview: boolean = false;
-  originalWidth: number = 0;
-  originalHeight: number = 0;
-  faClose = faClose;
+
   constructor(private route: ActivatedRoute, private router: Router, private projetservice: ProjetService) { }
-  ngAfterViewChecked() {
-    if (this.isOpenPreview && !this.zoomElement) {
-      // Wait for the element to be rendered and then access it
-      setTimeout(() => {
-        this.zoomElement = document.getElementById('zoom') as HTMLElement;
-        if (this.zoomElement) {
-          this.originalWidth = this.zoomElement.offsetWidth;
-          this.originalHeight = this.zoomElement.offsetHeight;
-          this.scale = this.initialScale;
-        }
-      }, 0);  // Executes after the view is updated
-    }
-  }
+
   ngOnInit(): void {
+
     this.projetservice.func_get_All_models().subscribe({
       next: (data) => {
         this.modeles = data;
@@ -89,25 +73,35 @@ export class ImageInfComponent implements OnInit, AfterViewChecked {
     });
     console.log('Annotations', this.plantes);
   }
+  activeTab: string = 'metadata';
 
+  // Méthode pour changer d'onglet
+  switchTab(tab: string): void {
+    this.activeTab = tab;
+  }
+
+  closePreview(): void {
+    // Implémentez la logique de fermeture ici
+    this.isOpenPreview = false;
+  }
+
+  // Méthode pour afficher la preview
+  showPreview(): void {
+    // Implémentez la logique d'affichage ici
+    this.isOpenPreview = true;
+  }
+
+  ngAfterViewInit(): void {
+    this.zoomElement = document.getElementById('zoom') as HTMLElement;
+    this.initialScale = this.scale;
+  }
 
   setTransform(): void {
     if (this.zoomElement) {
-      this.zoomElement.style.width = `${this.scale * this.originalWidth}px`;
-      this.zoomElement.style.height = `${this.scale * this.originalHeight}px`;
-      this.zoomElement.style.transform = `translate(${this.pointX}px, ${this.pointY}px)`;
+      this.zoomElement.style.transform = `translate(${this.pointX}px, ${this.pointY}px) scale(${this.scale})`;
     }
   }
 
-  showPreview(){
-    this.isOpenPreview = true;
-    document.body.classList.add('no-scroll'); 
-  }
-
-  closePreview(){
-    this.isOpenPreview = false;
-    document.body.classList.remove('no-scroll'); 
-  }
   openModal(): void {
     this.isModalOpen = true;
   }
@@ -195,20 +189,17 @@ export class ImageInfComponent implements OnInit, AfterViewChecked {
       }
     }
   }
-
-  scrollLeft(): void {
+  scrollLeft() {
     const wrapper = document.querySelector('.wrapper') as HTMLElement | null;
     if (wrapper) {
       wrapper.scrollBy({ left: -300, behavior: 'smooth' });
-      setTimeout(() => this.updateArrowVisibility(), 300);
     }
   }
-
-  scrollRight(): void {
+  
+  scrollRight() {
     const wrapper = document.querySelector('.wrapper') as HTMLElement | null;
     if (wrapper) {
       wrapper.scrollBy({ left: 300, behavior: 'smooth' });
-      setTimeout(() => this.updateArrowVisibility(), 300);
     }
   }
-}
+}  

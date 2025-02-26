@@ -1,85 +1,177 @@
 <div class="container-fluid">
   <div class="row">
-      <div *ngIf="isOpenPreview" class="overflow-hidden position-absolute d-flex flex-column gap-3 justify-content-center align-items-center top-0 start-0 overlay-background wh-100-vh">
-        <div class="position-absolute pos">
-          <fa-icon [icon]="faClose" class="text-white wh-100" (click)="closePreview()"></fa-icon>
-        </div>
-        <div id="zoom">
-          <img class="preview-image w-100 h-100" [src]="imageUrl">
-        </div>
-        <div class="zoom-controls">
-          <button class="btn btn-white text-dark opacity-100" (click)="zoomOut()"><i class="bi bi-zoom-out"></i></button>
-          <button class="btn btn-white text-dark opacity-100" (click)="zoomIn()"><i class="bi bi-zoom-in"></i></button>
-        </div>
+    <!-- Preview Overlay -->
+    <div *ngIf="isOpenPreview" class="overflow-hidden position-absolute d-flex flex-column gap-3 justify-content-center align-items-center top-0 start-0 overlay-background wh-100-vh">
+      <div class="position-absolute pos">
+        <button class="close-button" (click)="closePreview()">×</button>
+      </div>
+      <div id="zoom">
+        <img class="preview-image w-100 h-100" [src]="imageUrl">
+      </div>
+      <div class="zoom-controls">
+        <button class="btn btn-white text-dark opacity-100" (click)="zoomOut()"><i class="bi bi-zoom-out"></i></button>
+        <button class="btn btn-white texconsole.log('isOpenPreview:', isOpenPreview);
+console.log('imageUrl:', imageUrl);
+console.log('plante:', plante);
+console.log('modeles:', modeles);
+console.log('activeTab:', activeTab);
+console.log('plantes:', plantes);t-dark opacity-100" (click)="zoomIn()"><i class="bi bi-zoom-in"></i></button>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="Bg_Grp">
+      <!-- Zoom Controls -->
+      <div class="zoom-controls">
+        <button (click)="zoomIn()"><i class="bi bi-zoom-in"></i></button>
+        <button (click)="zoomOut()"><i class="bi bi-zoom-out"></i></button>
       </div>
 
- 
-      <div class="Bg_Grp">
-        <!-- Zoom Controls -->
-        <div class="zoom-controls">
-          <button (click)="zoomIn()"><i class="bi bi-zoom-in"></i></button>
-          <button (click)="zoomOut()"><i class="bi bi-zoom-out"></i></button>
-        </div>
-
-        <div class="Grp">
-          <div class="zoom_outer">
-            <div class="Img">
-              <img [src]="imageUrl" (click)="showPreview()">
-            </div>
-            <div class="">
-
-            </div>
-          </div>
-
-          <!-- Info Cards -->
-          <div class="info">
-            <div class="cards">
-              <h2>Metadata:</h2>
-              <ul>
-                <li *ngIf="plante.nomScientifique"><strong>Scientific Name:</strong> {{plante.nomScientifique}}</li>
-                <li *ngIf="plante.nomScientifiqueAuteur"><strong>Scientific Name Author:</strong> {{plante.nomScientifiqueAuteur}}</li>
-                <li *ngIf="plante.genre"><strong>Genus:</strong> {{plante.genre}}</li>
-                <li *ngIf="plante.famille"><strong>Family:</strong> {{plante.famille}}</li>
-                <li *ngIf="plante.epitheteSpecifique"><strong>Specific Epithet:</strong> {{plante.epitheteSpecifique}}</li>
-                <li *ngIf="plante.pays"><strong>Country:</strong> {{plante.pays}}</li>
-                <li *ngIf="plante.departement"><strong>Department:</strong> {{plante.departement}}</li>
-                <li *ngIf="plante.ville"><strong>City:</strong> {{plante.ville}}</li>
-                <li *ngIf="plante.lieu"><strong>Location:</strong> {{plante.lieu}}</li>
-                <li *ngIf="plante.latitude"><strong>Latitude:</strong> {{plante.latitude}}</li>
-                <li *ngIf="plante.dateCreation"><strong>Collected On:</strong> {{plante.dateCreation}}</li>
-                <li *ngIf="plante.enregistrePar"><strong>Collected By:</strong> {{plante.enregistrePar}}</li>
-              </ul>
-            </div>
-
-            <div class="cards">
-              <h2>Models:</h2>
-              <ul *ngFor="let m of modeles">
-                <li><strong>{{m.name}} (version: {{m.version}})</strong></li>
-                <li><strong>Accuracy:</strong> {{m.accuracy}}</li>
-                <li><strong>Loss:</strong> {{m.loss}}</li>
-              </ul>
-            </div>
+      <div class="Grp">
+        <div class="zoom_outer">
+          <div class="Img">
+            <img [src]="imageUrl" (click)="showPreview()">
           </div>
         </div>
-      </div>
 
-      <!-- Scroll Arrows -->
-      <div class="scroll-arrows">
-        <div class="scroll-arrow left" (click)="scrollLeft()">
-          <i class="bi bi-chevron-left"></i>
-        </div>
-        <div class="scroll-arrow right" (click)="scrollRight()">
-          <i class="bi bi-chevron-right"></i>
-        </div>
-      </div>
+        <!-- Tab Container -->
+        <div class="info">
+          <div class="tab-container">
+            <div class="tabs">
+              <button class="tab-button active" (click)="switchTab('metadata')">Metadata</button>
+              <button class="tab-button" (click)="switchTab('annotations')">Annotations</button>
+            </div>
 
-      <!-- Cards Grid -->
-      <div class="wrapper">
-        <div class="card" *ngFor="let plante of plantes">
-          <img [src]="plante.image.image_url" (click)="chng_img(plante, plantes)" />
-          <h2 class="card-title">{{plante.nomScientifique}}</h2>
+            <!-- Metadata Tab -->
+            <div class="tab-content" [style.display]="activeTab === 'metadata' ? 'block' : 'none'">
+              <div class="cards">
+                <div class="tab-content" [style.display]="activeTab === 'metadata' ? 'block' : 'none'">
+                  <div class="metadata-grid">
+                    
+                    <!-- Section Identification -->
+                    <div class="metadata-group">
+                      <h3 class="metadata-section-title">Identification Details</h3>
+                      
+                      <div class="metadata-item" *ngIf="plante.nomScientifique">
+                        <span class="metadata-label">Scientific Name:</span>
+                        <span class="metadata-value">{{plante.nomScientifique}}</span>
+                      </div>
+                
+                      <div class="metadata-item" *ngIf="plante.nomScientifiqueAuteur">
+                        <span class="metadata-label">Scientific Name Author:</span>
+                        <span class="metadata-value">{{plante.nomScientifiqueAuteur}}</span>
+                      </div>
+                
+                      <div class="metadata-item" *ngIf="plante.epitheteSpecifique">
+                        <span class="metadata-label">Specific Epithet:</span>
+                        <span class="metadata-value">{{plante.epitheteSpecifique}}</span>
+                      </div>
+                    </div>
+                
+                    <!-- Section Classification -->
+                    <div class="metadata-group">
+                      <h3 class="metadata-section-title">Classification</h3>
+                      
+                      <div class="metadata-item" *ngIf="plante.genre">
+                        <span class="metadata-label">Genus:</span>
+                        <span class="metadata-value">{{plante.genre}}</span>
+                      </div>
+                
+                      <div class="metadata-item" *ngIf="plante.famille">
+                        <span class="metadata-label">Family:</span>
+                        <span class="metadata-value">{{plante.famille}}</span>
+                      </div>
+                    </div>
+                
+                    <!-- Section Géographique -->
+                    <div class="metadata-group">
+                      <h3 class="metadata-section-title">Geographic Details</h3>
+                      
+                      <div class="metadata-item" *ngIf="plante.pays">
+                        <span class="metadata-label">Country:</span>
+                        <span class="metadata-value">{{plante.pays}}</span>
+                      </div>
+                
+                      <div class="metadata-item" *ngIf="plante.departement">
+                        <span class="metadata-label">Department:</span>
+                        <span class="metadata-value">{{plante.departement}}</span>
+                      </div>
+                
+                      <div class="metadata-item" *ngIf="plante.ville">
+                        <span class="metadata-label">City:</span>
+                        <span class="metadata-value">{{plante.ville}}</span>
+                      </div>
+                
+                      <div class="metadata-item" *ngIf="plante.lieu">
+                        <span class="metadata-label">Location:</span>
+                        <span class="metadata-value">{{plante.lieu}}</span>
+                      </div>
+                
+                      <div class="metadata-item" *ngIf="plante.latitude">
+                        <span class="metadata-label">Latitude:</span>
+                        <span class="metadata-value">{{plante.latitude}}</span>
+                      </div>
+                    </div>
+                
+                    <!-- Section Collection -->
+                    <div class="metadata-group">
+                      <h3 class="metadata-section-title">Collection Details</h3>
+                      
+                      <div class="metadata-item" *ngIf="plante.dateCreation">
+                        <span class="metadata-label">Collected On:</span>
+                        <span class="metadata-value">{{plante.dateCreation | date: 'dd/MM/yyyy'}}</span>
+                      </div>
+                
+                      <div class="metadata-item" *ngIf="plante.enregistrePar">
+                        <span class="metadata-label">Collected By:</span>
+                        <span class="metadata-value">{{plante.enregistrePar}}</span>
+                      </div>
+                    </div>
+                
+                  </div>
+                </div>
+                  
+              </div>
+              </div>
+              <div class="cards">
+                <h2>Models:</h2>
+                <ul *ngFor="let m of modeles">
+                  <li><strong>{{m.name}} (version: {{m.version}})</strong></li>
+                  <li><strong>Accuracy:</strong> {{m.accuracy}}</li>
+                  <li><strong>Loss:</strong> {{m.loss}}</li>
+                </ul>
+              </div>
+            </div>
+
+            <!-- Annotations Tab -->
+            <div class="tab-content" [style.display]="activeTab === 'annotations' ? 'block' : 'none'">
+              <div class="cards">
+                <h2>Annotations</h2>
+                <div class="annotation-section">
+                  <!-- Contenu des annotations -->
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
-  </div>
 
+    <!-- Scroll Arrows -->
+    <div class="scroll-arrows">
+      <div class="scroll-arrow left" (click)="scrollLeft()">
+        <i class="bi bi-chevron-left"></i>
+      </div>
+      <div class="scroll-arrow right" (click)="scrollRight()">
+        <i class="bi bi-chevron-right"></i>
+      </div>
+    </div>
+
+    <!-- Cards Grid -->
+    <div class="wrapper">
+      <div class="card" *ngFor="let plante of plantes">
+        <img [src]="plante.image.image_url" (click)="chng_img(plante, plantes)" />
+        <h2 class="card-title">{{plante.nomScientifique}}</h2>
+      </div>
+    </div>
+  </div>
