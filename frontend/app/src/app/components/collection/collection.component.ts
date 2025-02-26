@@ -164,7 +164,6 @@ export class CollectionComponent implements OnInit {
         console.log('Traitement spécial pour datasets');
 
         this.width = true;
-        this.bol = false;
         this.projetservice.func_get_AllPrj_User().subscribe({
           next: (data) => {
             this.projetservice.projets = data;
