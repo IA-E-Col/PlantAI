@@ -126,8 +126,8 @@ export class ProjetService {
     return this.http.put<any>(`http://localhost:8080/api/projets/update/${projectId}`,Vprojet);
   }
 
-  func_ajout_collab(IdP:any, IdC:any): Observable<any>{
-    return this.http.put<any>(`http://localhost:8080/api/projets/${IdP}/addCollab/${IdC}`,null);
+  func_ajout_collab(IdP:any, IdC:any,IdE: any): Observable<any>{
+    return this.http.put<any>(`http://localhost:8080/api/projets/${IdP}/addCollab/${IdC}/${IdE}`,null);
   }
 
   func_suppr_collab(IdP:any, IdC:any): Observable<any>{
@@ -279,5 +279,9 @@ export class ProjetService {
   // Méthode pour ajouter un commentaire
   addCommentToAnnotation(idAnnotation: number, idUser: number, commentaire: any): Observable<any> {
     return this.http.post<any>(`http://127.0.0.1:8080/api/annotationModele/${idAnnotation}/${idUser}/addComment`, commentaire);
+  }
+
+  getExpertises() : Observable<any>{
+    return this.http.get<any>(`http://127.0.0.1:8080/api/expertises/`)
   }
 }

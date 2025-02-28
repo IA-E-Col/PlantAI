@@ -59,23 +59,6 @@ export class AjouterCollabComponent implements OnInit {
     });
   }
 
-  ajouter_collab() {
-    let collab = this.projetFormGroup.value;
-    console.log("test", collab);
-    
-    this.projetServ.func_ajout_collab(this.projectId, collab.collaborateur).subscribe({
-      next: (data) => {
-        console.log(data)
-        Swal.fire('Success', 'Collaborator added successfully', 'success').then(() => {
-          this.router.navigateByUrl(`/admin/projects/${this.projectId}/details`);
-        });
-      },
-      error: (err) => {
-        Swal.fire('Error', 'Failed to add collaborator', 'error');
-        console.error(err);
-      }
-    });
-  }
 
   modifer_infomation() {
     this.router.navigateByUrl(`/admin/projects/${this.projectId}/edit`);
@@ -114,7 +97,7 @@ export class AjouterCollabComponent implements OnInit {
     console.log("OPEN")
         const dialogRef = this.dialogRef.open(AddCollaboratorComponent, {
           width: '700px',
-          height: '300px',
+          height: '380px',
           data: { is_active : false, id : this.projectId }
         });
          dialogRef.afterClosed().subscribe(result => {

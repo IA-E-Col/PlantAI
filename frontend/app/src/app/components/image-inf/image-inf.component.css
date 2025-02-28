@@ -596,6 +596,14 @@ strong {
   }
 }
 
+.Btns{
+  display:flex;
+  gap: 0.5rem;
+}
+.btn-green{
+  background-color: #86A786;
+  color: white;
+}
 /* Styles existants restants */
 .scroll-arrow { /* ... */ }
 .wrapper { /* ... */ }
