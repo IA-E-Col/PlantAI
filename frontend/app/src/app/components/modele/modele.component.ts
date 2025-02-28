@@ -138,7 +138,31 @@ export class ModeleComponent implements OnInit{
     this.router.navigateByUrl("/admin/UpdateMode")
   }
 
-  func_delete_m(p: any){
-
+  func_delete_m(id: any) {
+    Swal.fire({
+      title: 'Are you sure?',
+      text: 'You are about to delete this model. This action cannot be undone.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#86A786',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, delete model',
+      cancelButtonText: 'Cancel'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.projetService.func_supp_modele(id).subscribe({
+          next: () => {
+            Swal.fire('Success', 'Model deleted successfully', 'success');
+            this.ngOnInit(); // Rafraîchir la liste des modèles après suppression
+          },
+          error: (err) => {
+            Swal.fire('Error', 'Failed to delete model', 'error');
+            console.error(err);
+          }
+        });
+      }
+    });
   }
+  
+  
 }

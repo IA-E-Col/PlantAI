@@ -280,4 +280,9 @@ export class ProjetService {
   addCommentToAnnotation(idAnnotation: number, idUser: number, commentaire: any): Observable<any> {
     return this.http.post<any>(`http://127.0.0.1:8080/api/annotationModele/${idAnnotation}/${idUser}/addComment`, commentaire);
   }
+
+  func_supp_modele(id: any) {
+    return this.http.delete(`/api/models/${id}`);
+  }
+  
 }
