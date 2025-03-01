@@ -1,12 +1,8 @@
 package ird.sup.projectmanagementservice.Services;
 
-import ird.sup.projectmanagementservice.DAO.CollectionRepository;
-import ird.sup.projectmanagementservice.DAO.ProjetRepository;
-import ird.sup.projectmanagementservice.DAO.UserRepository;
-import ird.sup.projectmanagementservice.Entities.Collection;
-import ird.sup.projectmanagementservice.Entities.DataSet;
-import ird.sup.projectmanagementservice.Entities.Projet;
-import ird.sup.projectmanagementservice.Entities.User;
+import ird.sup.projectmanagementservice.DAO.*;
+import ird.sup.projectmanagementservice.DTO.UserWithExpertiseDTO;
+import ird.sup.projectmanagementservice.Entities.*;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,10 +20,11 @@ public class ProjetService  {
     @Autowired
     private UserRepository ur;
     @Autowired
-
     private CollectionRepository cs;
-
-
+    @Autowired
+    private ExpertiseRepository er;
+    @Autowired
+    private ParticipationRepository prp;
     public Projet addProjet(Projet p , Long idUser , Long idCollection) {
         User u=ur.findById(idUser).get();
         Collection c=cs.findById(idCollection).get();
@@ -65,25 +62,28 @@ public class ProjetService  {
     public List<Projet> getProjetsIdCollab(Long Id){
         List<Projet> projets = new ArrayList<>();
         for(Projet p: this.getProjets()){
-            Optional user = p.getCollaborateurs().stream().filter(c -> c.getId().equals(Id)).findFirst();
+            Optional user = p.getParticipations().stream().filter(c -> c.getUser().getId().equals(Id)).findFirst();
             if(user != Optional.empty())
                 projets.add(p);
         }
         return projets;
     }
 
-    public List<User> getCollaborateurs(Long id) {
+    public List<UserWithExpertiseDTO> getCollaborateurs(Long id) {
         return pr.findUsersInProject(id);
     }
 
-    public Projet addCollaborateur(Long idU , Long idP){
+    public Projet addCollaborateur(Long idU , Long idP, Long idE){
         System.out.println("test");
         Projet p = pr.findById(idP).get();
         User u = ur.findById(idU).get();
-        System.out.println("test");
-        p.getCollaborateurs().add(u);
-        u.getProjetsCollab().add(p);
-        System.out.println("test");
+        Expertise e = er.findById(idE).get();
+        Participation pa = new Participation(null,u,p,e);
+        p.getParticipations().add(pa);
+        u.getParticipations().add(pa);
+        prp.save(pa);
+        ur.save(u);
+
         return pr.save(p);
     }
     public List<User> getPossibleCollaborateurs(Long idP) {
@@ -92,8 +92,15 @@ public class ProjetService  {
     public Projet deleteCollaborateur(Long idU , Long idP){
         Projet p = pr.findById(idP).get();
         User u = ur.findById(idU).get();
-        p.getCollaborateurs().remove(u);
-        u.getProjetsCollab().remove(p);
+        Participation participationToRemove;
+        for (Participation participation : p.getParticipations()) {
+            if (participation.getUser().getId().equals(idU) && participation.getProjet().getId().equals(idP)) {
+                prp.deleteById(participation.getId());
+                break;
+            }
+        }
+
+
         ur.save(u);
         return pr.save(p);
     }

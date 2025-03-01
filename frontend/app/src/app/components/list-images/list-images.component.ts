@@ -129,7 +129,7 @@ export class ListImagesComponent implements OnInit {
   }
 
   navigateToImageInf(plante: any) {
-    this.router.navigate([`/admin/datasets/${this.test}/images`, plante.catalogueCode], {
+    this.router.navigate([`/admin/datasets/${this.test}/images`, plante.id], {
       state: { plante: plante, plantes: this.plantes }
     });
   }

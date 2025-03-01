@@ -7,6 +7,9 @@ import { ImageService } from '../../services/image.service';
 import { MatDialog } from '@angular/material/dialog';
 import { CommentDialogComponent } from '../comment-dialog/comment-dialog.component';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import Swal from 'sweetalert2';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { faUserCircle } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-annotation-detail',
@@ -14,14 +17,28 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
   imports: [
     CommonModule,
     FormsModule,
+    FontAwesomeModule,
     MatProgressSpinnerModule
   ],
   templateUrl: './annotation-detail.component.html',
   styleUrl: './annotation-detail.component.css'
 })
 export class AnnotationDetailComponent {
+  votes = {
+    inFavor: 75,
+    against: 25,
+    inFavorUsers: [
+      { name: 'Jane Doe', avatar: 'https://th.bing.com/th/id/R.737c59144b9b2f046b6cc535c365b5bb?rik=Z1jk4d3OWIfoOw&pid=ImgRaw&r=0' },
+      { name: 'Paula Poe', avatar: 'https://th.bing.com/th/id/OIP.Xe0FlT8qEGLqyrrIbv2P9wHaF7?rs=1&pid=ImgDetMain' }
+    ],
+    againstUsers: [
+      { name: 'John Doe', avatar: 'https://th.bing.com/th/id/OIP.IrUBHhdMo6wWLFueKNreRwHaHa?rs=1&pid=ImgDetMain' }
+    ]
+  };
 
+  comments : any = [];
   /****************/
+  faUserCircle = faUserCircle;
   idModele: any;
   Specimen: any;
   Model: any;
@@ -43,7 +60,6 @@ export class AnnotationDetailComponent {
   /****************/
   descriptionsVisible: boolean[] = [];
   selectedValue: any;
-  comments!: any;
   newComment: string = '';
   userId!: any;
   private user!: any;
@@ -95,12 +111,19 @@ export class AnnotationDetailComponent {
   ngOnInit() {
     this.route.paramMap.subscribe(params => {
       const navigation = window.history.state;
-      this.Specimen = navigation.plante;
-      this.idModele = navigation.modeleId;
+      const specimenId = params.get('specimenId')
+      this.projetservice.func_get_Specimen(specimenId).subscribe({
+        next: (data) => {
+          this.Specimen = data;
+        },
+        error: (err) => {
+          Swal.fire('Error', 'Failed to load specimen', 'error');
+          console.error(err);
+        }
+      });
+      this.idModele = params.get('modelId');
       console.log("the model id receved ", this.idModele)
-    });
-
-    this.projetservice.func_predict(this.Specimen.id, this.idModele).subscribe({
+    this.projetservice.func_predict(specimenId, this.idModele).subscribe({
       next: (data) => {
         console.log(data)
         this.Annotation = data;
@@ -155,6 +178,7 @@ export class AnnotationDetailComponent {
         }
       }
     )
+  });
   }
 
   addComment() {
@@ -165,32 +189,16 @@ export class AnnotationDetailComponent {
         {
           next: (data) => {
             console.log("commentaire added", data)
-            this.ngOnInit()
+            this.comments = [data,...this.comments];
           },
           error: err => {
             alert("erreur recuperation model");
           }
         }
       )
-
       // Réinitialiser le champ de texte
       this.newComment = '';
     }
-
-    /* openCommentDialog() {
-       const dialogRef = this.dialog.open(CommentDialogComponent, {
-         width: '400px'
-       });
-   
-       dialogRef.afterClosed().subscribe(result => {
-         if (result) {
-           console.log('Comment:', result);
-   
-           this.isValide = "validé";
-           console.log(this.selectedValue)
-           this.correct = this.selectedValue;
-         }
-       });*/
   }
 
   openCommentDialog(comments: string[]) {
