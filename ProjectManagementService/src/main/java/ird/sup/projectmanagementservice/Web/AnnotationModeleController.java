@@ -63,4 +63,22 @@ public class AnnotationModeleController {
     }
 
 
+    @PutMapping("/{idUser}/{idAnnotation}/{idCommentaire}/updateComment")
+    public Commentaire updateComment(
+            @PathVariable Long idUser,
+            @PathVariable Long idAnnotation,
+            @PathVariable Long idCommentaire,
+            @RequestBody Commentaire updatedComment) {
+        return annotationModeleService.updateComment(idUser, idAnnotation, idCommentaire, updatedComment);
+    }
+
+    @DeleteMapping("/{idUser}/{idAnnotation}/{idCommentaire}/deleteComment")
+    public boolean deleteComment(@PathVariable Long idUser, @PathVariable Long idAnnotation, @PathVariable Long idCommentaire) {
+        System.out.println("DELETE /api/annotationModele/" + idUser + "/" + idAnnotation + "/" + idCommentaire + "/deleteComment");
+        return annotationModeleService.deleteComment(idUser, idAnnotation, idCommentaire);
+    }
+
+
+
+
 }

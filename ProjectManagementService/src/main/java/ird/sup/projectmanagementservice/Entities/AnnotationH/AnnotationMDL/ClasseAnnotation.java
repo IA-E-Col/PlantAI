@@ -9,7 +9,8 @@ import lombok.NoArgsConstructor;
 @Entity
 @Data
 @NoArgsConstructor
-public class ClasseAnnotation {
+public class
+ClasseAnnotation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
