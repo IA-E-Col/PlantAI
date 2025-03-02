@@ -88,7 +88,7 @@ public class AnnotationModeleService {
         User u = userRepository.findById(idUser).get();
         u.getCommentaires().add(commentaire);
         a.getCommentaires().add(commentaire);
-        commentaire.setCreationDate(new Date());
+       // commentaire.setCreationDate(new Date());
         commentaire.setAnnotation(a);
         commentaire.setCreateurC(u);
         return commentaireRepository.save(commentaire);

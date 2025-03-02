@@ -281,6 +281,16 @@ export class ProjetService {
     return this.http.post<any>(`http://127.0.0.1:8080/api/annotationModele/${idAnnotation}/${idUser}/addComment`, commentaire);
   }
 
+
+  deleteCommentFromAnnotation(idAnnotation: number, idUser: number, idCommentaire: number): Observable<any> {
+    return this.http.delete<any>(`http://127.0.0.1:8080/api/annotationModele/${idUser}/${idAnnotation}/${idCommentaire}/deleteComment`);
+  }
+
+  updateCommentOnAnnotation(idAnnotation: number, idUser: number, idCommentaire: number, commentaire: any): Observable<any> {
+    return this.http.put<any>(`http://127.0.0.1:8080/api/annotationModele/${idUser}/${idAnnotation}/${idCommentaire}/updateComment`, commentaire);
+  }
+  
+
   getExpertises() : Observable<any>{
     return this.http.get<any>(`http://127.0.0.1:8080/api/expertises/`)
   }

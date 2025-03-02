@@ -46,6 +46,13 @@
             <button class="btn btn-green" (click)="addComment()" [disabled]="newComment.length === 0">Add Comment</button>
           
           </div>
+          <div *ngFor="let comment of comments">
+            <p>{{ comment.commentaire }}</p>
+            <button class="btn btn-danger" (click)="deleteComment(comment.id)">Delete</button>
+            <input [(ngModel)]="newComment" placeholder="Edit comment">
+            <button class="btn btn-warning" (click)="updateComment(comment.id, newComment)">Update</button>
+          </div>
+          
 
         </div>
     </div>
