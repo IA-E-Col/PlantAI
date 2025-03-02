@@ -83,6 +83,42 @@ public class ModelService {
             return null;
 
     }
+    public void deleteModele(Long id) {
+        Optional<Modele> modeleOptional = modelRepository.findById(id);
+
+        if (modeleOptional.isPresent()) {
+            Modele modele = modeleOptional.get();
+
+            // Supprimer toutes les classifications associées
+            for (AnnClassification annClass : modele.getAnnClassifications()) {
+                annClassificationRepository.delete(annClass);
+            }
+            modele.getAnnClassifications().clear();
+
+            // Supprimer tous les jeux de données associés
+            for (DataSet ds : modele.getDatasets()) {
+                dataSetRepository.delete(ds);
+            }
+            modele.getDatasets().clear();
+
+            // Supprimer l'annotation associée
+            if (modele.getAnnotation() != null) {
+                annotationModeleRepository.delete(modele.getAnnotation());
+                modele.setAnnotation(null);
+            }
+
+            // Sauvegarder les changements avant la suppression
+            modelRepository.save(modele);
+
+            // Supprimer le modèle de la base de données
+            modelRepository.deleteById(id);
+        } else {
+            throw new RuntimeException("Modèle non trouvé");
+        }
+    }
+
+
+
 
 
     public Modele addDataSetToModele(Long modeleId, DataSet dataSet) {

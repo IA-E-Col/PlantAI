@@ -141,6 +141,7 @@ export class ProjetService {
   func_supp_prj(IdP:any):Observable<any>{
     return this.http.delete<any>(`http://localhost:8080/api/projets/delete/${IdP}`);
   }
+  
 
   func_get_username(){
     const userString = localStorage.getItem("authUser");
@@ -281,8 +282,10 @@ export class ProjetService {
     return this.http.post<any>(`http://127.0.0.1:8080/api/annotationModele/${idAnnotation}/${idUser}/addComment`, commentaire);
   }
 
-  func_supp_modele(id: any) {
-    return this.http.delete(`/api/models/${id}`);
-  }
+  func_supp_modele(id: any): Observable<any> {
+    console.log(`Tentative de suppression du modèle avec ID : ${id}`); // Debugging log
+    return this.http.delete(`http://localhost:8080/api/models/${id}`);
+}
+
   
 }

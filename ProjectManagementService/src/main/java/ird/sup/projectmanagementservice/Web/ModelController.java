@@ -90,7 +90,11 @@ public class ModelController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
-
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteModel(@PathVariable Long id) {
+        modelService.deleteModele(id);
+        return ResponseEntity.noContent().build();
+    }
 
 
 }
