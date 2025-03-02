@@ -74,9 +74,9 @@ export class ProjetService {
     );
   }
 
-  func_predict(s: any,modeleId :any): Observable<any> {
+  func_predict(s: any,modeleId :any, datasetId : any): Observable<any> {
     console.log(s, modeleId)
-    return this.http.get<any>(`http://localhost:8080/api/models/predict/${s}/${modeleId}`);
+    return this.http.get<any>(`http://localhost:8080/api/models/predict/${datasetId}/${s}/${modeleId}`);
   }
 
   func_predict_dataset(datasetId:any): Observable<any> {
@@ -126,8 +126,8 @@ export class ProjetService {
     return this.http.put<any>(`http://localhost:8080/api/projets/update/${projectId}`,Vprojet);
   }
 
-  func_ajout_collab(IdP:any, IdC:any): Observable<any>{
-    return this.http.put<any>(`http://localhost:8080/api/projets/${IdP}/addCollab/${IdC}`,null);
+  func_ajout_collab(IdP:any, IdC:any,IdE: any): Observable<any>{
+    return this.http.put<any>(`http://localhost:8080/api/projets/${IdP}/addCollab/${IdC}/${IdE}`,null);
   }
 
   func_suppr_collab(IdP:any, IdC:any): Observable<any>{
@@ -281,8 +281,21 @@ export class ProjetService {
     return this.http.post<any>(`http://127.0.0.1:8080/api/annotationModele/${idAnnotation}/${idUser}/addComment`, commentaire);
   }
 
+  getExpertises() : Observable<any>{
+    return this.http.get<any>(`http://127.0.0.1:8080/api/expertises/`)
+  }
+
+  submitVote(idAnnotation : number, idUser: number, value: boolean): Observable<any>{
+    return this.http.put<any>(`http://127.0.0.1:8080/api/annotationModele/${idAnnotation}/${idUser}/vote`,{value})
+  }
+
+  getEvaluations(idAnnotation : number): Observable<any>{
+    return this.http.get<any>(`http://127.0.0.1:8080/api/annotationModele/${idAnnotation}/evaluation`)
+  }
+  updateAnnotationState(idAnnotation : number, newState: string){
+    return this.http.get<any>(`http://127.0.0.1:8080/api/annotationModele/${idAnnotation}/state?state=${newState}`)
+  }
   func_supp_modele(id: any) {
     return this.http.delete(`/api/models/${id}`);
   }
-  
 }

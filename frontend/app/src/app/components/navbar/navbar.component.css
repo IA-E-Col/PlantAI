@@ -11,7 +11,15 @@
     margin-right: 0.5rem;
     font-size: 1.8rem; 
   }
-  
+  .cursor-pointer {
+    cursor:pointer
+  }
+  .fix-positions{
+    top: 2rem;
+  }
+  .dropdown-menu{
+    --bs-dropdown-link-active-bg: #A3B18A;
+  }
   .user-icon {
     font-size: 1.5rem;  /* Increase the icon size */
     margin-right: 0.5rem;  /* Spacing between the icon and username */

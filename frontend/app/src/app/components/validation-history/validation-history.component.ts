@@ -10,6 +10,7 @@ interface Annotation {
   name: string;
   submissionDate: string;
   state: string;
+  etat: string;
 }
 
 @Component({

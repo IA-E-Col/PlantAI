@@ -8,6 +8,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
+
 @Entity
 @Data
 @NoArgsConstructor
@@ -17,6 +19,7 @@ public class Commentaire {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
     String commentaire;
+    Date creationDate;
     @ManyToOne(cascade = CascadeType.ALL)
     private User createurC;
     @ManyToOne(cascade = CascadeType.ALL)

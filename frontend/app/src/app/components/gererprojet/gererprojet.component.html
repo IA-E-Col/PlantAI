@@ -28,24 +28,6 @@
             </div>
           </div>
           -->
-
-          <div class="row mb-3" style="border:none; align-items:baseline;">
-            <div class="col-lg-4 col-auto add" style="padding-left: 0px;">
-              <button type="button" class="btn btn-primary" (click)="ajouterCollaborateur()" style="margin-right: 10px;">  
-                <i class="bi bi-person-plus"></i>
-              </button>
-              <h5 class="card-title">Collaborators:</h5>
-            </div>
-            <div class="col-lg-8 table-container">
-              <ul class="collaborateurs-liste" style="list-style: none; margin-bottom: 0;">
-                <li *ngFor="let c of collaborateurs | paginate: { itemsPerPage: 3, currentPage: p }" class="collaborateur-item" style="margin: 3px;" >
-                  <img [src]="cheminUser" alt="Your image" width="25" height="25" style="margin-right: 5px;">
-                  <div style="width: 145px; display: inline-block;">{{c.username}}</div>
-                  <button type="button" class="btn btn-danger" (click)="func_suppr_collab(c.username)" style="margin-left: 0px; padding: 2px;"><img [src]="cheminDel" alt="Your image" width="25" height="25" style="margin-right: 0px; filter: invert(100%);"></button>
-                </li>
-              </ul>                
-            </div>
-          </div>
           <div class="d-flex justify-content-center">
             <pagination-controls (pageChange)="p = $event" [autoHide]="true" [previousLabel]="'Prev'"
               [nextLabel]="'Next'" [responsive]="true"></pagination-controls>

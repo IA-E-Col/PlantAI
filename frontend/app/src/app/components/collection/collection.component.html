@@ -1,4 +1,4 @@
-<div class="container" style="margin-top: 0px;" [style.max-width]="width ? '80%' : '99%'">
+<div class="container" style="margin-top: 0px;">
 
   <div class="row mb-4">
     <div class="col-lg-4 mb-lg-0 mb-3">
@@ -97,7 +97,7 @@
         <div>
           <span class="font-bold fs-4 me-2">List of Datasets</span>
         </div>
-        <div class="text-center mb-4 p-4" id="mb-5">
+        <div class="text-center mb-4 p-4" id="mb-5" *ngIf="inProject">
           <button (click)="func_ajout_col()" class="btn btn-green btn-lg ps-3 pe-3 pt-1 pb-1">
             <span class="font-bold fs-41">
               New Dataset

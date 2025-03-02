@@ -1,14 +1,15 @@
 import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
 import {LoginService} from "../../services/login.service";
-import {Router} from "@angular/router";
+import {Router, RouterLink} from "@angular/router";
 import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-signup',
   standalone: true,
   imports: [
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    RouterLink
   ],
   templateUrl: './sign-up.component.html',
   styleUrl: './sign-up.component.css'
