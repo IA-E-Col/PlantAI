@@ -39,5 +39,10 @@ public class User {
     @OneToMany(fetch=FetchType.LAZY, mappedBy="createurC", cascade = CascadeType.ALL)
     @JsonIgnore
     private List<Commentaire> commentaires;
+
+    public List<Commentaire> getCommentaires() {
+        return commentaires;
+    }
+
 }
 

@@ -7,12 +7,16 @@ import ird.sup.projectmanagementservice.Entities.AnnotationH.AnnotationMDL.Class
 import ird.sup.projectmanagementservice.Entities.AnnotationH.AnnotationSP.AnnClassification;
 import ird.sup.projectmanagementservice.Entities.AnnotationH.AnnotationSP.AnnotationSpecimen;
 import ird.sup.projectmanagementservice.Entities.Commentaire;
+import ird.sup.projectmanagementservice.Entities.Modele;
 import ird.sup.projectmanagementservice.Entities.Vote;
+
 import ird.sup.projectmanagementservice.Entities.User;
 import ird.sup.projectmanagementservice.Enums.EState;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -33,6 +37,13 @@ public class AnnotationModeleService {
     private UserRepository userRepository;
     @Autowired
     private VoteRepository voteRepository;
+    @Autowired
+    private AnnotationRepository annotationRepository;
+    @Autowired
+    AnnClassificationRepository annClassificationRepository;
+
+    //public List<AnnClassification> GetAnnHistory
+
     public List<AnnotationModele> getAllModels() {
         return annModeleRepository.findAll();
     }
@@ -63,15 +74,17 @@ public class AnnotationModeleService {
         return classeAnnotationRepository.findAll();
     }
 
+
+
+
+
     public List<Commentaire> getcomments(Long id) {
-        AnnotationSpecimen a = annRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("AnnotationSpecimen not found"));
-        List<Commentaire> commentaires = a.getCommentaires();
-        commentaires.sort(Comparator.comparing(Commentaire::getCreationDate));
-        return commentaires;
+        AnnClassification a = annClassificationRepository.findById(id).get();
+        return a.getCommentaires();
     }
 
     public Commentaire addCommentToAnnotation(Long idUser,Long idAnnotation,Commentaire commentaire  ) {
-        AnnotationSpecimen a = annRepository.findById(idAnnotation).get();
+        AnnClassification a = annClassificationRepository.findById(idAnnotation).get();
         User u = userRepository.findById(idUser).get();
         u.getCommentaires().add(commentaire);
         a.getCommentaires().add(commentaire);
@@ -101,4 +114,49 @@ public class AnnotationModeleService {
             annotation.setEtat(EState.valueOf(state));
         return annotationClassificationRepository.save(annotation);
     }
+    public Commentaire updateComment(Long idUser, Long idAnnotation, Long idCommentaire, Commentaire updatedComment) {
+        AnnClassification annotation = annClassificationRepository.findById(idAnnotation).orElse(null);
+        User user = userRepository.findById(idUser).orElse(null);
+        Commentaire commentaire = commentaireRepository.findById(idCommentaire).orElse(null);
+
+        if (annotation == null || user == null || commentaire == null) {
+            return null; // Gérer l'erreur selon votre logique
+        }
+
+        if (!annotation.getCommentaires().contains(commentaire) || !user.getCommentaires().contains(commentaire)) {
+            return null; // Vérification que le commentaire appartient bien à l'utilisateur et à l'annotation
+        }
+
+        commentaire.setCommentaire(updatedComment.getCommentaire());
+        return commentaireRepository.save(commentaire);
+    }
+
+    public boolean deleteComment(Long idUser, Long idAnnotation, Long idCommentaire) {
+        AnnClassification annotation = annClassificationRepository.findById(idAnnotation).orElse(null);
+        User user = userRepository.findById(idUser).orElse(null);
+        Commentaire commentaire = commentaireRepository.findById(idCommentaire).orElse(null);
+
+        System.out.println("Annotation trouvée : " + (annotation != null));
+        System.out.println(idAnnotation);
+        System.out.println("Utilisateur trouvé : " + (user != null));
+        System.out.println("Commentaire trouvé : " + (commentaire != null));
+
+        if (annotation==null || user == null || commentaire == null) {
+            return false;
+        }
+
+        System.out.println("Annotation contient commentaire : " + annotation.getCommentaires().contains(commentaire));
+        System.out.println("Utilisateur contient commentaire : " + user.getCommentaires().contains(commentaire));
+
+        if (!annotation.getCommentaires().contains(commentaire) || !user.getCommentaires().contains(commentaire)) {
+            return false;
+        }
+
+        annotation.getCommentaires().remove(commentaire);
+        user.getCommentaires().remove(commentaire);
+        commentaireRepository.delete(commentaire);
+        return true;
+    }
+
+
 }

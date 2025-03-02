@@ -53,7 +53,7 @@ public class AnnotationModeleController {
     public ClasseAnnotation createClasse(@RequestBody ClasseAnnotation classeAnnotation) {
         return annotationModeleService.createClasseAnnotation(classeAnnotation);
     }
-   @GetMapping("/{idannotation}/comments")
+    @GetMapping("/{idannotation}/comments")
     public List<Commentaire> getComments(@PathVariable Long idannotation) {
         return annotationModeleService.getcomments(idannotation);
     }
@@ -64,12 +64,28 @@ public class AnnotationModeleController {
         System.out.println("commentaire "+commentaire.getCommentaire());
         return annotationModeleService.addCommentToAnnotation(idUser,idAnnotation,commentaire);
     }
+    @PutMapping("/{idUser}/{idAnnotation}/{idCommentaire}/updateComment")
+    public Commentaire updateComment(
+            @PathVariable Long idUser,
+            @PathVariable Long idAnnotation,
+            @PathVariable Long idCommentaire,
+            @RequestBody Commentaire updatedComment) {
+        return annotationModeleService.updateComment(idUser, idAnnotation, idCommentaire, updatedComment);
+    }
+
+    @DeleteMapping("/{idUser}/{idAnnotation}/{idCommentaire}/deleteComment")
+    public boolean deleteComment(@PathVariable Long idUser, @PathVariable Long idAnnotation, @PathVariable Long idCommentaire) {
+        System.out.println("DELETE /api/annotationModele/" + idUser + "/" + idAnnotation + "/" + idCommentaire + "/deleteComment");
+        return annotationModeleService.deleteComment(idUser, idAnnotation, idCommentaire);
+    }
+
+
     @PutMapping("/updateAnnotationSpecimen")
     public AnnotationSpecimen addCommentToAnnotation(@RequestBody AnnClassification annotation) {
         AnnClassification a=annotationClassificationrepository.findById(annotation.getId()).get();
         a.setValeurCorrecte(annotation.getValeurCorrecte());
         a.setEtat(EState.PENDING);
-       return annotationClassificationrepository.save(a);
+        return annotationClassificationrepository.save(a);
     }
 
     @PutMapping("update/{id}")
@@ -126,5 +142,4 @@ public class AnnotationModeleController {
         }
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new Message("Unmatching state value!"));
     }
-    }
-
+}

@@ -27,9 +27,8 @@ public class AnnotationSpecimen extends Annotation {
     @ManyToOne
     @JsonIgnore
     private Media media;
-    @OneToMany(fetch=FetchType.LAZY,mappedBy = "annotation",cascade = CascadeType.ALL)
-    @JsonIgnore
-    private List<Commentaire> commentaires = new ArrayList<>();
 
 
-}
+
+
+    }
