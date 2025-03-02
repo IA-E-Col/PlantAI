@@ -95,24 +95,24 @@ export class ExplorerComponent {
     console.log("hello delete collection");
     Swal.fire({
       title: 'Are you sure?',
-      text: 'You are about to delete this collection. This action cannot be undone.',
+      text: 'You are about to delete this corpus. This action cannot be undone.',
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#86A786',
       cancelButtonColor: '#d33',
-      confirmButtonText: 'Yes, delete collection',
+      confirmButtonText: 'Yes, delete corpus',
       cancelButtonText: 'Cancel'
     }).then((result) => {
       if (result.isConfirmed) {
         // Use ProjetService to delete the collection
         this.projetService.func_delete_collection(id).subscribe({
           next: () => {
-            Swal.fire('Success', 'Collection deleted successfully', 'success').then(() => {
+            Swal.fire('Success', 'Corpus deleted successfully', 'success').then(() => {
             });
             this.ngOnInit(); // Refresh the list after deletion
           },
           error: (err: HttpErrorResponse) => { // Add explicit type for `err`
-            Swal.fire('Error', 'Failed to delete collection', 'error');
+            Swal.fire('Error', 'Failed to delete corpus', 'error');
             console.error(err);
           }
         });
