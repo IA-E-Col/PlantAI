@@ -74,7 +74,7 @@ public class EmailService {
         context.setVariables(properties);
 
         // Configuration de l'email : expéditeur, destinataire et sujet.
-        helper.setFrom("yesmineguesmi@gmail.com");
+        helper.setFrom("ird.recherche.developpement@gmail.com");
         helper.setTo(to);
         helper.setSubject(subject);
 

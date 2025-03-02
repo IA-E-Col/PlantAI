@@ -1,58 +1,41 @@
 import { Injectable } from '@angular/core';
-import {catchError, Observable, of, throwError} from "rxjs";
 import {HttpClient} from "@angular/common/http";
-
-
+import {SignupRequest} from "../model/signup-request";
+import {AuthenticationResponse} from "../model/authentication-response";
+import {VerificationRequest} from "../model/verification-request";
+import {AuthenticationRequest} from "../model/authentication-request";
 
 @Injectable({
   providedIn: 'root'
 })
 export class LoginService {
-  message! : string
-  private isAuthenticated = false;
-  constructor(private http:HttpClient) { }
 
-  public login(p :any):Observable<any>{
+  private baseUrl = 'http://localhost:8080/api/v1/auth'
 
-    let email = p.email
-    return   this.http.get<any>(`http://localhost:8080/api/users/email/${email}`).pipe(
-      catchError(error => {
-        return error;   // ici je dois faire test pour verifier password, c objectif de pipe
-      })               // faire des traitments ici
-    );
+  constructor(
+    private http: HttpClient
+  ) { }
 
+  register(
+    registerRequest: SignupRequest
+  ) {
+    return this.http.post<AuthenticationResponse>
+    (`${this.baseUrl}/register`, registerRequest);
   }
 
-
-
-  public authenticateUser(p :any):Observable<any>{
-    localStorage.setItem("authUser", JSON.stringify({user:p}))
-    return of(true)
+  login(
+    authRequest: AuthenticationRequest
+  ) {
+    return this.http.post<AuthenticationResponse>
+    (`${this.baseUrl}/authenticate`, authRequest);
   }
 
-  public isauthenticated(): boolean {
-    return this.isAuthenticated;
+  verifyCode(verificationRequest: VerificationRequest) {
+    return this.http.post<AuthenticationResponse>
+    (`${this.baseUrl}/verify`, verificationRequest);
   }
-  public authenticatedOK(): void {
-    this.isAuthenticated = true ;
+  confirm(token: string ) {
+    return this.http.get<any>
+    (`${this.baseUrl}/activate-account?emailtoken=${token}`);
   }
-
-  public isadmin() : boolean{
-    // code
-    return true
-  }
-
-  public inscr(p :any):Observable<any>{
-    delete p.password1;
-    p.username = p.prenom +"."+p.nom
-    return this.http.post<any>("http://localhost:8080/api/users/", p).pipe(
-      catchError(error => {
-        return error;
-      })
-    );
-  }
-
-
-
-
 }

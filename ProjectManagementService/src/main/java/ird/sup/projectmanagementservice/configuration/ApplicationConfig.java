@@ -18,6 +18,11 @@ import org.springframework.web.filter.CorsFilter;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Optional;
+
+import static org.springframework.http.HttpHeaders.*;
+import static org.springframework.http.HttpMethod.*;
+import static org.springframework.web.bind.annotation.RequestMethod.PATCH;
 
 @Configuration
 @RequiredArgsConstructor
@@ -28,19 +33,18 @@ public class ApplicationConfig {
 
     /**
      * Bean pour le UserDetailsService.
-     * Ce service est utilisé par Spring Security pour charger un utilisateur en fonction de son email.
-     * Ici, la méthode recherche l'utilisateur via l'email et lève une exception si aucun utilisateur n'est trouvé.
+     * Ce service est utilisé par Spring Security pour charger un utilisateur par son email.
      */
     @Bean
     public UserDetailsService userDetailsService() {
-        return username -> repository.findByEmail(username)
+        return username -> Optional.ofNullable(repository.findByEmail(username))
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
     }
 
+
     /**
      * Bean pour l'AuthenticationProvider.
-     * Il utilise un DaoAuthenticationProvider qui s'appuie sur le UserDetailsService pour récupérer les détails de l'utilisateur
-     * et sur le PasswordEncoder pour comparer les mots de passe.
+     * Utilise un DaoAuthenticationProvider qui s'appuie sur le UserDetailsService et un PasswordEncoder (BCrypt).
      */
     @Bean
     public AuthenticationProvider authenticationProvider() {
@@ -52,8 +56,7 @@ public class ApplicationConfig {
 
     /**
      * Bean pour l'AuthenticationManager.
-     * Ce bean est récupéré à partir de la configuration d'authentification de Spring (AuthenticationConfiguration)
-     * et permet de gérer le processus d'authentification dans l'application.
+     * Récupéré à partir de la configuration d'authentification de Spring.
      */
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
@@ -62,27 +65,23 @@ public class ApplicationConfig {
     
     /**
      * Bean pour le filtrage CORS.
-     * Il configure les règles CORS de l'application pour autoriser les requêtes provenant de l'origine spécifiée.
-     * Ici, l'origine autorisée est "http://localhost:4200", qui est typiquement l'URL de votre application Angular.
+     * Autorise les requêtes provenant de "http://localhost:4200" avec les en-têtes et méthodes spécifiés.
      */
     @Bean
     public CorsFilter corsFilter() {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
-        // Autorise l'origine spécifiée
         config.setAllowedOrigins(Collections.singletonList("http://localhost:4200"));
-        // Autorise les en-têtes nécessaires
-        config.setAllowedHeaders(Arrays.asList("Origin", "Content-Type", "Accept", "Authorization"));
-        // Autorise les méthodes HTTP indiquées
-        config.setAllowedMethods(Arrays.asList("GET", "POST", "DELETE", "PUT", "PATCH"));
+        config.setAllowedHeaders(Arrays.asList(ORIGIN, CONTENT_TYPE, ACCEPT, AUTHORIZATION));
+        config.setAllowedMethods(Arrays.asList(GET.name(), POST.name(), DELETE.name(), PUT.name(), PATCH.name()));
         source.registerCorsConfiguration("/**", config);
         return new CorsFilter(source);
     }
-    
+
     /**
      * Bean pour le PasswordEncoder.
-     * Ce bean utilise BCrypt pour encoder les mots de passe, ce qui permet de stocker et vérifier les mots de passe de manière sécurisée.
+     * Utilise BCryptPasswordEncoder pour encoder les mots de passe de manière sécurisée.
      */
     @Bean
     public PasswordEncoder passwordEncoder() {

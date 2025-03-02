@@ -10,6 +10,7 @@ import java.util.Optional;
 public interface IUserRepository extends JpaRepository<User, Long> {
 
     // Recherche un utilisateur par email via une requête JPQL.
-    @Query("SELECT u FROM User u WHERE u.email = :email")
-    Optional<User> findByEmail(@Param("email") String email);
+	@Query("SELECT u FROM User u WHERE u.email = ?1")
+	Optional<User> findByEmaill(String email);
+    User findByEmail(String email);
 }

@@ -18,7 +18,7 @@ public class EmailToken {
     private Long id;  // Utilisation de Long pour être cohérent avec l'id d'autres entités
 
     @Column(unique = true)
-    private String emailToken;  // Utilisation du camelCase
+    private String emailToken; // Assurez-vous que ce champ existe avec cette casse exacte
 
     private LocalDateTime createdAt;
     private LocalDateTime expiresAt;

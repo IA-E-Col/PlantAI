@@ -2,14 +2,14 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" 
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 
-         https://maven.apache.org/xsd/maven-4.0.0.xsd">
+                             https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>3.2.2</version>
-        <relativePath/> <!-- lookup parent from repository -->
+        <relativePath/>
     </parent>
     
     <groupId>ird.sup</groupId>
@@ -26,16 +26,26 @@
     </properties>
     
     <dependencies>
-        <!-- Spring Data JPA -->
+        <!-- Spring Boot Starters -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
-        
-        <!-- Spring Web -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-mail</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-thymeleaf</artifactId>
         </dependency>
         
         <!-- MySQL Connector -->
@@ -49,7 +59,8 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <optional>true</optional>
+            <version>1.18.26</version>
+            <scope>provided</scope>
         </dependency>
         
         <!-- OpenCSV -->
@@ -66,127 +77,62 @@
             <scope>test</scope>
         </dependency>
         
-        <!-- Spring Boot Starter Security -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-security</artifactId>
-        </dependency>
-        
         <!-- JWT (jjwt) -->
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
-            <artifactId>jjwt</artifactId>
-            <version>0.9.1</version>
+            <artifactId>jjwt-api</artifactId>
+            <version>0.11.5</version>
         </dependency>
         <dependency>
-    		<groupId>org.springframework.boot</groupId>
-   			<artifactId>spring-boot-starter-mail</artifactId>
-		</dependency>
- 
-		 <dependency>
-			  <groupId>io.jsonwebtoken</groupId>
-			  <artifactId>jjwt-api</artifactId>
-		  <version>0.11.5</version>
-		</dependency>
-		<dependency>
-			  <groupId>io.jsonwebtoken</groupId>
-  				<artifactId>jjwt-impl</artifactId>
- 				 <version>0.11.5</version>
- 				 <scope>runtime</scope>
-		</dependency>
-		<dependency>
- 			 <groupId>io.jsonwebtoken</groupId>
-  			<artifactId>jjwt-jackson</artifactId>
-  			<version>0.11.5</version>
-			  <scope>runtime</scope>
-		</dependency>
-		<dependency>
-  			  <groupId>org.thymeleaf</groupId>
-   			 <artifactId>thymeleaf-spring6</artifactId>
-  			  <version>3.1.1.RELEASE</version>
-		</dependency>
-
-		<dependency>
- 		   <groupId>javax.mail</groupId>
-   			 <artifactId>javax.mail-api</artifactId>
-   			 <version>1.6.2</version>
-		</dependency>
-		<dependency>
- 		     <groupId>org.projectlombok</groupId>
- 			  <artifactId>lombok</artifactId>
-   			 <version>1.18.26</version> <!-- Par exemple -->
-   			 <scope>provided</scope>
-		</dependency>
- <dependency>
-<groupId>org.projectlombok</groupId>
-<artifactId>lombok</artifactId>
-<optional>true</optional>
-</dependency>
-<dependency>
-<groupId>io.jsonwebtoken</groupId>
-<artifactId>jjwt-api</artifactId>
-<version>0.11.5</version>
-</dependency>
-<dependency>
-<groupId>io.jsonwebtoken</groupId>
-<artifactId>jjwt-impl</artifactId>
-<version>0.11.5</version>
-</dependency>
-<dependency>
-<groupId>io.jsonwebtoken</groupId>
-<artifactId>jjwt-jackson</artifactId>
-<version>0.11.5</version>
-</dependency>
-<dependency>
-<groupId>dev.samstevens.totp</groupId>
-<artifactId>totp</artifactId>
-<version>1.7.1</version>
-</dependency>
-<dependency>
-<groupId>org.springframework.boot</groupId>
-<artifactId>spring-boot-starter-thymeleaf</artifactId>
-</dependency>
-<dependency>
-<groupId>org.springdoc</groupId>
-<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-<version>2.0.3</version>
-</dependency>
-<dependency>
-<groupId>com.twilio.sdk</groupId>
-<artifactId>twilio</artifactId>
-<version>7.20.0</version>
-</dependency>
-<dependency>
-<groupId>org.springframework.boot</groupId>
-<artifactId>spring-boot-starter-mail</artifactId>
-</dependency>
-<dependency>
-<groupId>com.sun.mail</groupId>
-<artifactId>javax.mail</artifactId>
-<version>1.6.2</version>
-</dependency>
-<dependency>
-<groupId>commons-io</groupId>
-<artifactId>commons-io</artifactId>
-<version>2.11.0</version>
-</dependency>
-
-        <!-- Dépendances commentées (à activer si nécessaire) -->
-        <!--
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-devtools</artifactId>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-impl</artifactId>
+            <version>0.11.5</version>
             <scope>runtime</scope>
-            <optional>true</optional>
         </dependency>
         <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-jackson</artifactId>
+            <version>0.11.5</version>
+            <scope>runtime</scope>
         </dependency>
-        -->
+        
+        <!-- TOTP pour 2FA -->
+        <dependency>
+            <groupId>dev.samstevens.totp</groupId>
+            <artifactId>totp</artifactId>
+            <version>1.7.1</version>
+        </dependency>
+        
+        <!-- SpringDoc OpenAPI -->
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+            <version>2.0.3</version>
+        </dependency>
+        
+        <!-- Twilio (pour SMS ou autres notifications) -->
+        <dependency>
+            <groupId>com.twilio.sdk</groupId>
+            <artifactId>twilio</artifactId>
+            <version>7.20.0</version>
+        </dependency>
+        
+        <!-- Javax Mail API (pour envoyer des emails) -->
+        <dependency>
+            <groupId>com.sun.mail</groupId>
+            <artifactId>javax.mail</artifactId>
+            <version>1.6.2</version>
+        </dependency>
+        
+        <!-- Commons IO -->
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.11.0</version>
+        </dependency>
     </dependencies>
     
-    <!-- Le bloc dependencyManagement est commenté ici, activez-le si nécessaire -->
+    <!-- Vous pouvez décommenter et utiliser ce bloc dependencyManagement si nécessaire -->
     <!--
     <dependencyManagement>
         <dependencies>
@@ -203,7 +149,7 @@
     
     <build>
         <plugins>
-            <!-- Plugin Maven Jar (la version est gérée automatiquement par Maven) -->
+            <!-- Plugin Maven Jar -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
@@ -215,7 +161,6 @@
                     </archive>
                 </configuration>
             </plugin>
-            
             <!-- Spring Boot Maven Plugin -->
             <plugin>
                 <groupId>org.springframework.boot</groupId>

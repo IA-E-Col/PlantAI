@@ -23,6 +23,7 @@ import { DatasetInfComponent } from "./components/dataset-inf/dataset-inf.compon
 import { DatasetModelComponent } from "./components/dataset-model/dataset-model.component";
 import { DashboardDatasetComponent } from "./components/dashboard-dataset/dashboard-dataset.component";
 import { UpdateModeleComponent } from "./components/update-modele/update-modele.component";
+import {ActivateAccountComponent} from "./components/activate-account/activate-account.component";
 
 import { ExplorerDetailsComponent } from "./components/explorer-details/explorer-details.component";
 import { CollectionInfoComponent } from "./components/collection-info/collection-info.component";
@@ -46,6 +47,10 @@ export const routes: Routes = [
   {path : 'signup', component: SignUpComponent},
   { path: 'login', component: LoginComponent },
   { path: '', component: LoginComponent },
+  {
+    path: 'activate-account',
+    component: ActivateAccountComponent
+  },
   {
     path: 'admin', component: AdminTemplateComponent, canActivate: [authenticationGuard], children: [
       { path: 'projects', component: ProjetsComponent },

@@ -1,5 +1,6 @@
 package ird.sup.projectmanagementservice.configuration;
 
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,66 +23,94 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 @EnableMethodSecurity
 public class SecurityConfiguration {
 
-    // Injection des dépendances nécessaires pour la configuration de la sécurité
+    /* private static final String[] WHITE_LIST_URL = {"/api/v1/auth/**",
+              "/v2/api-docs",
+              "/v3/api-docs",
+              "/v3/api-docs/**",
+              "/swagger-resources",
+              "/swagger-resources/**",
+              "/configuration/ui",
+              "/configuration/security",
+              "/swagger-ui/**",
+              "/webjars/**",
+              "/swagger-ui.html"};*/
     private final JwtAuthenticationFilter jwtAuthFilter;
     private final AuthenticationProvider authenticationProvider;
     private final LogoutHandler logoutHandler;
-
-    /**
-     * Définit le SecurityFilterChain, qui configure la sécurité HTTP de l'application.
-     * 
-     * La configuration inclut :
-     * - La gestion CORS pour autoriser les requêtes provenant de n'importe quelle origine.
-     * - La désactivation de CSRF (utile pour une API REST stateless).
-     * - L'autorisation des requêtes vers les endpoints d'authentification (/api/v1/auth/**) sans authentification.
-     * - L'exigence d'authentification pour toutes les autres requêtes.
-     * - La configuration de la gestion des sessions en mode stateless.
-     * - L'ajout d'un AuthenticationProvider personnalisé.
-     * - L'insertion du JwtAuthenticationFilter avant le filtre UsernamePasswordAuthenticationFilter.
-     * - La configuration du logout pour invalider le contexte de sécurité.
-     *
-     * @param http la configuration HttpSecurity à personnaliser.
-     * @return le SecurityFilterChain construit.
-     * @throws Exception en cas d'erreur de configuration.
-     */
+/*@Bean public SecurityFilterChain securityFilterChain(HttpSecurity security) throws Exception {
+        return security
+                .cors().configurationSource(request -> {
+                    CorsConfiguration corsConfig = new CorsConfiguration();
+                    corsConfig.addAllowedOrigin("*"); // Allow requests from any origin
+                    corsConfig.addAllowedMethod("*"); // Allow all HTTP methods
+                    corsConfig.addAllowedHeader("*"); // Allow all headers
+                    return corsConfig;
+                }).and()
+                .csrf().disable()// Cross-Site Request Forgery (CSRF) protection by default.
+                .authorizeRequests(authorizeRequests ->
+                        authorizeRequests
+                                .requestMatchers("/api/v1/auth/**").permitAll()
+                                //.requestMatchers("/**").authenticated()
+                                //.requestMatchers("/user/**").hasAuthority("Admin")
+                                .anyRequest().authenticated())
+                .sessionManagement()
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and().addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+                .build();
+    }*/
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            // Configuration CORS : autorise toutes les origines, méthodes et en-têtes
-            .cors().configurationSource(request -> {
-                CorsConfiguration corsConfig = new CorsConfiguration();
-                corsConfig.addAllowedOrigin("*"); // Autorise toutes les origines
-                corsConfig.addAllowedMethod("*"); // Autorise toutes les méthodes HTTP
-                corsConfig.addAllowedHeader("*"); // Autorise tous les en-têtes
-                return corsConfig;
-            }).and()
-            // Désactivation de CSRF, car l'API est stateless
-            .csrf().disable()
-            // Configuration des règles d'autorisation
-            .authorizeHttpRequests()
-                // Autorise toutes les requêtes vers les endpoints d'authentification
-                .requestMatchers(new AntPathRequestMatcher("/api/v1/auth/**")).permitAll()
-                // Exige que toutes les autres requêtes soient authentifiées
-                .anyRequest().authenticated()
-            .and()
-            // Configure la gestion des sessions pour qu'elles soient stateless
-            .sessionManagement()
+                .cors().configurationSource(request -> {
+                    CorsConfiguration corsConfig = new CorsConfiguration();
+                    corsConfig.addAllowedOrigin("*"); // Allow requests from any origin
+                    corsConfig.addAllowedMethod("*"); // Allow all HTTP methods
+                    corsConfig.addAllowedHeader("*"); // Allow all headers
+                    return corsConfig;
+                }).and()
+                .csrf()
+                .disable()
+                .authorizeHttpRequests()
+                .requestMatchers(new AntPathRequestMatcher("/api/v1/auth/**"))
+                .permitAll()
+                .anyRequest()
+                .authenticated()
+                .and()
+                .sessionManagement()
                 .sessionCreationPolicy(STATELESS)
-            .and()
-            // Ajoute l'AuthenticationProvider personnalisé pour la vérification des identifiants
-            .authenticationProvider(authenticationProvider)
-            // Ajoute le filtre JWT avant le filtre standard d'authentification
-            .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
-            // Configure le logout
-            .logout()
-                .logoutUrl("/api/v1/auth/logout") // URL pour le logout
-                .addLogoutHandler(logoutHandler)   // Gestionnaire de logout personnalisé
-                // Nettoie le contexte de sécurité après le logout
+                .and()
+                .authenticationProvider(authenticationProvider)
+                .addFilterBefore(jwtAuthFilter,UsernamePasswordAuthenticationFilter.class)
+                .logout()
+                .logoutUrl("/api/v1/auth/logout")
+                .addLogoutHandler(logoutHandler)
                 .logoutSuccessHandler((request, response, authentication) ->
-                    SecurityContextHolder.clearContext()
+                        SecurityContextHolder.clearContext()
                 );
 
-        // Retourne la configuration construite
+
         return http.build();
+    /*http
+                .cors()
+                .and()
+                .csrf()
+                .disable()
+                .authorizeHttpRequests()
+                .requestMatchers(new AntPathRequestMatcher("/**")).permitAll() // Allow all URLs
+                .and()
+                .sessionManagement()
+                .sessionCreationPolicy(STATELESS)
+                .and()
+                .authenticationProvider(authenticationProvider)
+                .addFilterBefore(jwtAuthFilter,UsernamePasswordAuthenticationFilter.class)
+                .logout()
+                .logoutUrl("/api/v1/auth/logout")
+                .addLogoutHandler(logoutHandler)
+                .logoutSuccessHandler((request, response, authentication) ->
+                        SecurityContextHolder.clearContext()
+                );
+
+
+        return http.build();*/
     }
 }
