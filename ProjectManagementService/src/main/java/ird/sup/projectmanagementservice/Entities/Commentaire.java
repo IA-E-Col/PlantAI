@@ -20,7 +20,7 @@ public class Commentaire {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
 
-    Date creationDate;
+    //Date creationDate;
     private Long id;
 
     private String commentaire;

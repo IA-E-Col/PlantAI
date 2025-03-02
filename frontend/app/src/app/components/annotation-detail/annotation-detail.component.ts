@@ -10,6 +10,15 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import Swal from 'sweetalert2';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faUserCircle } from '@fortawesome/free-solid-svg-icons';
+interface Commentaire {
+  id: number;
+  commentaire: string;
+  createurC: {
+    prenom: string;
+    nom: string;
+  };
+  avatar?: string;  // L'avatar est optionnel
+}
 
 @Component({
   selector: 'app-annotation-detail',
@@ -23,9 +32,11 @@ import { faUserCircle } from '@fortawesome/free-solid-svg-icons';
   templateUrl: './annotation-detail.component.html',
   styleUrl: './annotation-detail.component.css'
 })
-export class AnnotationDetailComponent {
 
-  comments : any = [];
+export class AnnotationDetailComponent {
+  comments: Commentaire[] = [];
+
+  commentss : any = [];
   /****************/
   faUserCircle = faUserCircle;
   idModele: any;
@@ -196,7 +207,7 @@ export class AnnotationDetailComponent {
         {
           next: (newCommentaire) => {
             console.log("commentaire added", newCommentaire)
-            this.comments = [...this.comments,newCommentaire];
+            this.commentss = [...this.commentss,newCommentaire];
           },
           error: err => {
             alert("erreur recuperation model");
@@ -207,6 +218,47 @@ export class AnnotationDetailComponent {
       this.newComment = '';
     }
   }
+  deleteComment(idCommentaire: number) {
+    console.log('Suppression du commentaire avec id:', idCommentaire);
+    
+    this.projetservice.deleteCommentFromAnnotation(this.Annotation.id, this.userId, idCommentaire).subscribe(
+      {
+        next: (response) => {
+          console.log('Commentaire supprimé avec succès:', response);
+          // Mettre à jour la liste des commentaires
+          this.comments = this.comments.filter(comment => comment.id !== idCommentaire);
+        },
+        error: err => {
+          console.error('Erreur lors de la suppression du commentaire:', err);
+          alert("Erreur lors de la suppression du commentaire");
+        }
+      }
+    );
+  }
+
+  // Méthode pour mettre à jour un commentaire
+  updateComment(idCommentaire: number, newComment: string) {
+    console.log('Mise à jour du commentaire avec id:', idCommentaire, 'Nouveau texte:', newComment);
+    
+    const updatedComment = { commentaire: newComment };
+    
+    this.projetservice.updateCommentOnAnnotation(this.Annotation.id, this.userId, idCommentaire, updatedComment).subscribe(
+      {
+        next: (updatedCommentaire) => {
+          console.log('Commentaire mis à jour avec succès:', updatedCommentaire);
+          // Mettre à jour la liste des commentaires avec le commentaire mis à jour
+          this.comments = this.comments.map(comment => 
+            comment.id === idCommentaire ? { ...comment, commentaire: updatedCommentaire.commentaire } : comment
+          );
+        },
+        error: err => {
+          console.error('Erreur lors de la mise à jour du commentaire:', err);
+          alert("Erreur lors de la mise à jour du commentaire");
+        }
+      }
+    );
+  }
+    
 
   openCommentDialog(comments: string[]) {
     if (comments.length != 0){
