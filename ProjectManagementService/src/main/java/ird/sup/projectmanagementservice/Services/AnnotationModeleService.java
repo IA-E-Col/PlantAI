@@ -37,6 +37,8 @@ public class AnnotationModeleService {
     @Autowired
     AnnClassificationRepository annClassificationRepository;
 
+    //public List<AnnClassification> GetAnnHistory
+
     public List<AnnotationModele> getAllModels() {
         return annModeleRepository.findAll();
     }
@@ -66,6 +68,10 @@ public class AnnotationModeleService {
     public List<ClasseAnnotation> getAllClasses() {
         return classeAnnotationRepository.findAll();
     }
+
+
+
+
 
     public List<Commentaire> getcomments(Long id) {
         AnnClassification a = annClassificationRepository.findById(id).get();
