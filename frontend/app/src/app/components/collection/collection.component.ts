@@ -51,7 +51,7 @@ export class CollectionComponent implements OnInit {
   cheminEsp = "assets/esp.png";
   collections: any;
   message_err: any;
-  bol: boolean = true;
+  inProject: boolean = true;
   width: boolean = true;
 
   /*data = {
@@ -149,6 +149,7 @@ export class CollectionComponent implements OnInit {
   ngAfterViewInit() {
     this.route.url.subscribe(urlSegments => {
       const path = urlSegments.map(segment => segment.path).join('/');
+      console.log(path)
       if (path === 'datasets') {
         this.width = true;
       } else {
@@ -158,9 +159,10 @@ export class CollectionComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.inProject = this.router.url.includes('projects');
     this.route.url.subscribe(urlSegments => {
       const path = urlSegments.map(segment => segment.path).join('/');
-      if (path === 'datasets') {
+      if (path === 'datasets' && !this.inProject) {
         console.log('Traitement spécial pour datasets');
 
         this.width = true;

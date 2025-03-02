@@ -6,9 +6,10 @@ import ird.sup.projectmanagementservice.Entities.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
-
+@Repository
 public interface ProjetRepository extends JpaRepository<Projet,Long> {
     @Query("select u from Projet u where u.createur.Id = :x")
     List<Projet> findPrjByIdC(@Param("x") Long Id);
@@ -28,10 +29,11 @@ public interface ProjetRepository extends JpaRepository<Projet,Long> {
     List<User> findUsersNotInProject(@Param("projectId") Long projectId);
 
     @Query("SELECT new ird.sup.projectmanagementservice.DTO.UserWithExpertiseDTO(u.Id, u.username,u.nom, u.prenom, u.email," +
-            "u.Tel,u.Departement,u.image, part.expertise.level)" +
+            "u.Tel,u.Departement,u.image, part.expertise)" +
             "FROM User u " +
             "JOIN Participation part ON part.user.Id = u.Id " +
             "JOIN part.projet p " +
             "WHERE p.Id = :projectId")
     List<UserWithExpertiseDTO> findUsersInProject(@Param("projectId") Long projectId);
+
 }

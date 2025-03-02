@@ -25,8 +25,7 @@ public class DataSet {
    // @ManyToOne(cascade = CascadeType.ALL)
    // @JsonIgnore
    // Collection collection ;
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JsonIgnore
+    @ManyToOne(cascade = CascadeType.PERSIST)
     Projet projet ;
     @OneToMany(fetch=FetchType.LAZY,cascade = CascadeType.ALL)
     @JsonIgnore

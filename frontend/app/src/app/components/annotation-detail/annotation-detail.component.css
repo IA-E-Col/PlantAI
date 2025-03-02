@@ -12,6 +12,13 @@
   border-radius: 10px;
 }
 
+.badge-green {
+  background-color:#86A786;
+  color: white;
+}
+.hft{
+  height: fit-content;
+}
 button {
   padding: 10px 15px;
   border: none;
@@ -109,4 +116,8 @@ h5{
 }
 .text-gold{
   color:#848441;
+}
+:host > .mat-mdc-progress-spinner .mdc-circular-progress__determinate-circle,
+:host > .mat-mdc-progress-spinner .mdc-circular-progress__indeterminate-circle-graphic {
+    stroke: #86A786 !important;
 }

@@ -1,6 +1,7 @@
 package ird.sup.projectmanagementservice.Entities.AnnotationH;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import ird.sup.projectmanagementservice.Entities.DataSet;
 import ird.sup.projectmanagementservice.Entities.Modele;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -23,5 +24,6 @@ public class Annotation {
     @OneToMany(mappedBy = "annotation", cascade = CascadeType.ALL)
     @JsonIgnore
     private List<Modele> modeles = new ArrayList<>();
-
+    @ManyToOne
+    private DataSet dataset;
 }

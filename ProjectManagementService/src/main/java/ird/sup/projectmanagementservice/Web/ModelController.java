@@ -62,12 +62,12 @@ public class ModelController {
         return modelService.getAllClasses(idModele);
     }
 
-    @GetMapping("/predict/{idSpecimen}/{idModele}")
-    public AnnClassification predict(@PathVariable Long idSpecimen, @PathVariable String idModele) {
+    @GetMapping("/predict/{idDataset}/{idSpecimen}/{idModele}")
+    public AnnClassification predict(@PathVariable Long idDataset,@PathVariable Long idSpecimen, @PathVariable String idModele) {
        // System.out.println(idSpecimen);
        // System.out.println(idModele);
 
-        AnnClassification prediction = modelService.predictImage(Long.valueOf(idModele),idSpecimen);
+        AnnClassification prediction = modelService.predictImage(idDataset,Long.valueOf(idModele),idSpecimen);
         System.out.println(prediction.getId()+" "+prediction.getValeurPredite());
         if (prediction != null) {
             return prediction;

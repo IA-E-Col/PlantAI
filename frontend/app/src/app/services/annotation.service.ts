@@ -6,7 +6,8 @@ interface Annotation {
   id: number;
   name: string;
   submissionDate: string;
-  state: string; // "VALIDATED" | "DECLINED"
+  etat: string;
+  state: string;
 }
 
 @Injectable({

@@ -1,7 +1,7 @@
 package ird.sup.projectmanagementservice.CommandLineRunners;
 
 import ird.sup.projectmanagementservice.DAO.ExpertiseRepository;
-import ird.sup.projectmanagementservice.Entities.ELevel;
+import ird.sup.projectmanagementservice.Enums.ELevel;
 import ird.sup.projectmanagementservice.Entities.Expertise;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;

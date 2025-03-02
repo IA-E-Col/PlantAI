@@ -1,4 +1,4 @@
-package ird.sup.projectmanagementservice.Entities;
+package ird.sup.projectmanagementservice.Enums;
 
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;

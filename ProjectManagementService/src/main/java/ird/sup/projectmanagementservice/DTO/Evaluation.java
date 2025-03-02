@@ -1,11 +1,15 @@
 package ird.sup.projectmanagementservice.DTO;
+
 import ird.sup.projectmanagementservice.Entities.Expertise;
-import lombok.*;
-@Getter
-@Setter
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@NoArgsConstructor
 @AllArgsConstructor
-public class UserWithExpertiseDTO {
-    Long Id ;
+public class Evaluation {
+    Long userId ;
     String username;
     String nom;
     String prenom;
@@ -14,6 +18,5 @@ public class UserWithExpertiseDTO {
     String departement;
     byte[] image;
     Expertise e;
-
-
+    boolean vote;
 }

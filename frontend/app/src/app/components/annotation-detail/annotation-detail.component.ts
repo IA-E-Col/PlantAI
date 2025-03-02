@@ -24,17 +24,6 @@ import { faUserCircle } from '@fortawesome/free-solid-svg-icons';
   styleUrl: './annotation-detail.component.css'
 })
 export class AnnotationDetailComponent {
-  votes = {
-    inFavor: 75,
-    against: 25,
-    inFavorUsers: [
-      { name: 'Jane Doe', avatar: 'https://th.bing.com/th/id/R.737c59144b9b2f046b6cc535c365b5bb?rik=Z1jk4d3OWIfoOw&pid=ImgRaw&r=0' },
-      { name: 'Paula Poe', avatar: 'https://th.bing.com/th/id/OIP.Xe0FlT8qEGLqyrrIbv2P9wHaF7?rs=1&pid=ImgDetMain' }
-    ],
-    againstUsers: [
-      { name: 'John Doe', avatar: 'https://th.bing.com/th/id/OIP.IrUBHhdMo6wWLFueKNreRwHaHa?rs=1&pid=ImgDetMain' }
-    ]
-  };
 
   comments : any = [];
   /****************/
@@ -48,6 +37,8 @@ export class AnnotationDetailComponent {
   correct: any;
   Plots!: Array<any>;
   isLoad: boolean = true;
+  favorPercentage: number = 0;
+  againstPercentage: number = 0;
 
   /****************/
   SpecimenPath: string | null = null;
@@ -62,6 +53,8 @@ export class AnnotationDetailComponent {
   selectedValue: any;
   newComment: string = '';
   userId!: any;
+  evaluations: any;
+  datasetId!: any
   private user!: any;
 
   constructor(private dialog: MatDialog, private route: ActivatedRoute, private router: Router, private projetservice: ProjetService, private imageService: ImageService) {
@@ -110,6 +103,7 @@ export class AnnotationDetailComponent {
 
   ngOnInit() {
     this.route.paramMap.subscribe(params => {
+      this.datasetId = params.get('datasetId');
       const navigation = window.history.state;
       const specimenId = params.get('specimenId')
       this.projetservice.func_get_Specimen(specimenId).subscribe({
@@ -123,7 +117,7 @@ export class AnnotationDetailComponent {
       });
       this.idModele = params.get('modelId');
       console.log("the model id receved ", this.idModele)
-    this.projetservice.func_predict(specimenId, this.idModele).subscribe({
+    this.projetservice.func_predict(specimenId, this.idModele,this.datasetId).subscribe({
       next: (data) => {
         console.log(data)
         this.Annotation = data;
@@ -160,11 +154,23 @@ export class AnnotationDetailComponent {
             }
           }
         )
-
+        this.projetservice.getEvaluations(this.Annotation.id).subscribe(
+          {
+            next: (evaluations) => {
+              this.evaluations = evaluations;
+              this.calculateVotePercentages();
+              console.log("those are the evaluations:", evaluations)
+            },
+            error: err => {
+              alert("erreur recuperation evaluations");
+            }
+          }
+        )
       },
       error: err => {
         alert("erreur recuperation model");
       }
+      
     })
 
     this.projetservice.func_get_Model(this.idModele).subscribe(
@@ -179,6 +185,7 @@ export class AnnotationDetailComponent {
       }
     )
   });
+  
   }
 
   addComment() {
@@ -187,9 +194,9 @@ export class AnnotationDetailComponent {
       console.log("commentaire ", { id: null, commentaire: this.newComment })
       this.projetservice.addCommentToAnnotation(this.Annotation.id, this.userId, { id: null, commentaire: this.newComment }).subscribe(
         {
-          next: (data) => {
-            console.log("commentaire added", data)
-            this.comments = [data,...this.comments];
+          next: (newCommentaire) => {
+            console.log("commentaire added", newCommentaire)
+            this.comments = [...this.comments,newCommentaire];
           },
           error: err => {
             alert("erreur recuperation model");
@@ -234,5 +241,58 @@ export class AnnotationDetailComponent {
 
   openImageInNewWindow() {
     window.open(this.Specimen.image.image_url, '_blank');
+  }
+  submitVote(value : boolean)  {
+    this.projetservice.submitVote(this.Annotation.id, this.userId, value).subscribe({
+      next: (newEvaluation) => {
+        this.evaluations = [...this.evaluations.filter((evaluation:any) => evaluation.userId != this.userId),newEvaluation];
+        this.calculateVotePercentages();
+      },
+      error: err => {
+        alert("erreur lors du vote");
+      }
+    }
+
+    )
+  }
+  calculateVotePercentages(): void {
+    const totalValue = this.evaluations.reduce((sum:any, vote:any) => sum + vote.e.value, 0);
+
+    const favorVotes = this.evaluations
+      .filter((evaluation : any) => evaluation.vote === true)
+      .reduce((sum : any, evaluation:any) => sum + evaluation.e.value, 0);
+
+    const againstVotes = this.evaluations
+      .filter((evaluation:any) => evaluation.vote === false)
+      .reduce((sum:any, evaluation:any) => sum + evaluation.e.value, 0);
+
+    this.favorPercentage = totalValue ? (favorVotes / totalValue) * 100 : 0;
+    this.againstPercentage = totalValue ? (againstVotes / totalValue) * 100 : 0;
+  }
+  approveAnnotation() : void {
+    this.projetservice.updateAnnotationState(this.Annotation.id, 'APPROVED').subscribe({
+      next: (newAnnotation) => {
+        this.Annotation = newAnnotation;
+        this.calculateVotePercentages();
+      },
+      error: err => {
+        alert("erreur lors du vote");
+      }
+    }
+    
+    )
+  }
+  rejectAnnotation() : void {
+    this.projetservice.updateAnnotationState(this.Annotation.id, 'REJECTED').subscribe({
+      next: (newAnnotation) => {
+        this.Annotation = newAnnotation;
+        this.calculateVotePercentages();
+      },
+      error: err => {
+        alert("erreur lors de la mise à jour de l'annotation");
+      }
+    }
+    
+    )
   }
 }

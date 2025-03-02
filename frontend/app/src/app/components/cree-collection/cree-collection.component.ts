@@ -55,10 +55,10 @@ export class CreeCollectionComponent {
         next: (data) => {
           console.log('appel ajouut_col')
           console.log(data)
-
+          this.dialogRef.close();
           this.projetServ.importCsv(this.file,data.id).subscribe({
                next:(data)=>{
-               if (data=="1")  {this.dialogRef.close();}
+               if (data=="1")  {console.log("Import fully done")}
                else {alert("erreur d'importation de csv")}
                  },
             error:err=>{

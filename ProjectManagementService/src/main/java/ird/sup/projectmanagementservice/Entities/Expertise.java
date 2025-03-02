@@ -1,5 +1,6 @@
 package ird.sup.projectmanagementservice.Entities;
 
+import ird.sup.projectmanagementservice.Enums.ELevel;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;

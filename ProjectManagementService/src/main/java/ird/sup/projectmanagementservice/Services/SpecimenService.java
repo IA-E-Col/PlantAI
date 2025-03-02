@@ -125,7 +125,7 @@ public class SpecimenService {
              for(selectedAnnotation ann : filtreAnn){
                  if(ann.getClasseid()!=null){
 
-                     if(modelService.predictImage(Long.valueOf(ann.getModelid()),s.getId()).getValeurPredite().compareTo(ann.getClasseid())==0){
+                     if(modelService.predictImage(null,Long.valueOf(ann.getModelid()),s.getId()).getValeurPredite().compareTo(ann.getClasseid())==0){
                          ifs++;
                      }
                      else{

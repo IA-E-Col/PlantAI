@@ -68,7 +68,7 @@ export class CollectionImgComponent  implements OnInit, OnDestroy {
   }
 
   navigateToImageInf(plante: any): void {
-    this.router.navigate([`/admin/corpus/${this.collectionId}/images`, plante.catalogueCode], {
+    this.router.navigate([`/admin/corpus/${this.collectionId}/images`, plante.id], {
       state: { plante, plantes: this.collectionSpecimens }
     });
   }

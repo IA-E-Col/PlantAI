@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit, AfterViewChecked } from '@angular/core';
 import { ActivatedRoute, Router } from "@angular/router";
 import { ProjetService } from "../../services/projet.service";
 import Swal from "sweetalert2";
@@ -20,7 +20,7 @@ import { faInfo, faInfoCircle, faPlay } from '@fortawesome/free-solid-svg-icons'
   templateUrl: './image-inf.component.html',
   styleUrls: ['./image-inf.component.css']
 })
-export class ImageInfComponent implements OnInit, AfterViewInit {
+export class ImageInfComponent implements OnInit, AfterViewChecked {
   isOpenPreview: boolean = false;
 
   currentStep: number = 1;
@@ -45,6 +45,8 @@ export class ImageInfComponent implements OnInit, AfterViewInit {
   datasetId!: string | null;
   faPlay = faPlay;
   faInfoCircle = faInfoCircle
+  originalWidth: number = 0;
+  originalHeight: number = 0;
   constructor(private route: ActivatedRoute, private router: Router, private projetservice: ProjetService) { }
 
   ngOnInit(): void {
@@ -89,27 +91,36 @@ export class ImageInfComponent implements OnInit, AfterViewInit {
   }
 
   closePreview(): void {
-    // Implémentez la logique de fermeture ici
     this.isOpenPreview = false;
+    document.body.classList.remove('no-scroll'); 
   }
 
-  // Méthode pour afficher la preview
   showPreview(): void {
-    // Implémentez la logique d'affichage ici
     this.isOpenPreview = true;
+    document.body.classList.add('no-scroll'); 
   }
 
-  ngAfterViewInit(): void {
-    this.zoomElement = document.getElementById('zoom') as HTMLElement;
-    this.initialScale = this.scale;
+  ngAfterViewChecked() {
+    if (this.isOpenPreview && !this.zoomElement) {
+      // Wait for the element to be rendered and then access it
+      setTimeout(() => {
+        this.zoomElement = document.getElementById('zoom') as HTMLElement;
+        if (this.zoomElement) {
+          this.originalWidth = this.zoomElement.offsetWidth;
+          this.originalHeight = this.zoomElement.offsetHeight;
+          this.scale = this.initialScale;
+        }
+      }, 0);  // Executes after the view is updated
+    }
   }
 
   setTransform(): void {
     if (this.zoomElement) {
-      this.zoomElement.style.transform = `translate(${this.pointX}px, ${this.pointY}px) scale(${this.scale})`;
+      this.zoomElement.style.width = `${this.scale * this.originalWidth}px`;
+      this.zoomElement.style.height = `${this.scale * this.originalHeight}px`;
+      this.zoomElement.style.transform = `translate(${this.pointX}px, ${this.pointY}px)`;
     }
   }
-
   openModal(): void {
     this.isModalOpen = true;
   }
