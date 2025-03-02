@@ -295,4 +295,7 @@ export class ProjetService {
   updateAnnotationState(idAnnotation : number, newState: string){
     return this.http.get<any>(`http://127.0.0.1:8080/api/annotationModele/${idAnnotation}/state?state=${newState}`)
   }
+  func_supp_modele(id: any) {
+    return this.http.delete(`/api/models/${id}`);
+  }
 }
