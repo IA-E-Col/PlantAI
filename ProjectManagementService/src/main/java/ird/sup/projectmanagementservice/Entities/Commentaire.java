@@ -2,6 +2,7 @@ package ird.sup.projectmanagementservice.Entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import ird.sup.projectmanagementservice.Entities.AnnotationH.Annotation;
+import ird.sup.projectmanagementservice.Entities.AnnotationH.AnnotationSP.AnnClassification;
 import ird.sup.projectmanagementservice.Entities.AnnotationH.AnnotationSP.AnnotationSpecimen;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -24,5 +25,5 @@ public class Commentaire {
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JsonIgnore
-    private AnnotationSpecimen annotation ;
+    private AnnClassification annotation;
 }

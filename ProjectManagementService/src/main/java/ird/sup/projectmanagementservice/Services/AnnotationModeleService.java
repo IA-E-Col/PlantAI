@@ -68,12 +68,12 @@ public class AnnotationModeleService {
     }
 
     public List<Commentaire> getcomments(Long id) {
-        AnnotationSpecimen a = annRepository.findById(id).get();
+        AnnClassification a = annClassificationRepository.findById(id).get();
         return a.getCommentaires();
     }
 
     public Commentaire addCommentToAnnotation(Long idUser,Long idAnnotation,Commentaire commentaire  ) {
-        AnnotationSpecimen a = annotationSpecimenRepository.findById(idAnnotation).get();
+        AnnClassification a = annClassificationRepository.findById(idAnnotation).get();
         User u = userRepository.findById(idUser).get();
         u.getCommentaires().add(commentaire);
         a.getCommentaires().add(commentaire);
@@ -83,7 +83,7 @@ public class AnnotationModeleService {
 
     }
     public Commentaire updateComment(Long idUser, Long idAnnotation, Long idCommentaire, Commentaire updatedComment) {
-        AnnotationSpecimen annotation = annotationSpecimenRepository.findById(idAnnotation).orElse(null);
+        AnnClassification annotation = annClassificationRepository.findById(idAnnotation).orElse(null);
         User user = userRepository.findById(idUser).orElse(null);
         Commentaire commentaire = commentaireRepository.findById(idCommentaire).orElse(null);
 
@@ -100,7 +100,7 @@ public class AnnotationModeleService {
     }
 
     public boolean deleteComment(Long idUser, Long idAnnotation, Long idCommentaire) {
-        AnnotationSpecimen annotation = annotationSpecimenRepository.findById(idAnnotation).orElse(null);
+        AnnClassification annotation = annClassificationRepository.findById(idAnnotation).orElse(null);
         User user = userRepository.findById(idUser).orElse(null);
         Commentaire commentaire = commentaireRepository.findById(idCommentaire).orElse(null);
 

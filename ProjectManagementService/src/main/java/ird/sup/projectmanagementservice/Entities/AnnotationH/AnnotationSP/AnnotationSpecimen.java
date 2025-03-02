@@ -26,9 +26,7 @@ public class AnnotationSpecimen extends Annotation {
     @JsonIgnore
     private Media media;
 
-    @OneToMany(fetch=FetchType.EAGER,mappedBy = "annotation",cascade = CascadeType.ALL)
-    @JsonIgnore
-    private List<Commentaire> commentaires ;
+
 
 
     }
