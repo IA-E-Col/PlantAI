@@ -1,12 +1,16 @@
 package ird.sup.projectmanagementservice.Entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.IOException;
+import java.sql.Blob;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,7 +30,7 @@ public class User {
     String password;
     @Column(nullable = true)
     @Lob
-    byte[] image;
+    Blob image;
     @OneToMany(fetch=FetchType.LAZY,mappedBy = "createur",cascade = CascadeType.ALL)
     @JsonIgnore
     private List<Projet> projetsCree;
@@ -39,10 +43,13 @@ public class User {
     @OneToMany(fetch=FetchType.LAZY, mappedBy="createurC", cascade = CascadeType.ALL)
     @JsonIgnore
     private List<Commentaire> commentaires;
-
-    public List<Commentaire> getCommentaires() {
-        return commentaires;
+    
+    @JsonProperty("image")
+    public byte[] getImageAsByteArray() throws SQLException, IOException {
+        if (image != null) {
+            return image.getBytes(1, (int) image.length());
+        }
+        return null;
     }
-
 }
 
