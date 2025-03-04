@@ -1,0 +1,101 @@
+
+big-card {
+    margin: 20px;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  .header h2 {
+    font-size: 24px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 20px;
+    color: A3B18A;
+  }
+  .table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 16px;
+    border: 1px solid #ddd;
+  }
+  
+  .table th, .table td {
+    padding: 15px;
+    text-align: center;
+    border: 1px solid #ddd;
+  }
+  
+  .table th {
+    background-color: white;
+    color: black;
+  }
+  
+  .table td img {
+    max-width: 100px;
+    height: auto;
+  }
+  
+  .table tbody tr:hover {
+    background-color: #f1f1f1;
+  }
+  
+  /* Table Checkbox Alignment */
+.table th:first-child, .table td:first-child {
+    text-align: center;
+    width: 50px;
+}
+
+input[type="checkbox"] {
+    transform: scale(1.2);
+    cursor: pointer;
+}
+
+.button-container {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 20px;
+}
+
+.btn {
+  padding: 10px 20px;
+  font-size: 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  border: none;
+  margin-left: 10px;
+}
+
+.export-btn {
+  background-color: #86A786; /* Green color */
+  color: white;
+}
+
+.import-btn {
+  background-color: #86A786; /* Green color */
+  color: white;
+}
+
+.export-btn:hover, .import-btn:hover {
+  background-color: #86A786; /* Darker green on hover */
+}
+
+/* Responsive table for smaller screens */
+@media (max-width: 768px) {
+  .table th, .table td {
+    padding: 10px;
+    font-size: 14px;
+  }
+
+  .table td img {
+    max-width: 80px;
+  }
+}
+/* Buttons aligned to the right */
+.button-container {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
+}

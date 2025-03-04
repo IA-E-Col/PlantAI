@@ -23,6 +23,7 @@ import { DatasetInfComponent } from "./components/dataset-inf/dataset-inf.compon
 import { DatasetModelComponent } from "./components/dataset-model/dataset-model.component";
 import { DashboardDatasetComponent } from "./components/dashboard-dataset/dashboard-dataset.component";
 import { UpdateModeleComponent } from "./components/update-modele/update-modele.component";
+import { ExportannotationComponent } from './components/exportannotation/exportannotation.component';
 
 import { ExplorerDetailsComponent } from "./components/explorer-details/explorer-details.component";
 import { CollectionInfoComponent } from "./components/collection-info/collection-info.component";
@@ -136,6 +137,8 @@ export const routes: Routes = [
       },
       { path: 'annotation_validation', component: AnnotationValidationComponent },
       { path: 'scores', component: ScoresComponent },
+      { path: 'exportannotation', component: ExportannotationComponent },
+
     ]
   },  
 
