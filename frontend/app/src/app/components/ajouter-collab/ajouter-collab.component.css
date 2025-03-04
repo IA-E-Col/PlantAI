@@ -12,7 +12,10 @@
   display: flex;
   align-items: center;
 }
-
+.badge-green {
+  background-color:#86A786;
+  color: white;
+}
 .search-icon {
   position: absolute;
   right: 10px;

@@ -1,6 +1,7 @@
 package ird.sup.projectmanagementservice.Web;
 
 import ird.sup.projectmanagementservice.DTO.Message;
+import ird.sup.projectmanagementservice.DTO.UserWithExpertiseDTO;
 import ird.sup.projectmanagementservice.Entities.Collection;
 import ird.sup.projectmanagementservice.Entities.DataSet;
 import ird.sup.projectmanagementservice.Entities.Projet;
@@ -39,17 +40,17 @@ public class ProjetController {
         return ResponseEntity.ok(updatedProjet);
     }
 
-    @PutMapping("/{IdP}/addCollab/{IdC}")
-    public ResponseEntity<?> addCollabProjet(@PathVariable Long IdC,@PathVariable Long IdP) {
+    @PutMapping("/{IdP}/addCollab/{IdC}/{IdE}")
+    public ResponseEntity<?> addCollabProjet(@PathVariable Long IdC,@PathVariable Long IdP, @PathVariable Long IdE) {
         Optional<User> user = userService.findUserById(IdC);
         Projet projetV = projetService.findProjetbyId(IdP);
         if (user.isPresent()) {
             if (user != null && projetV != null && user.get().getId() != projetV.getCreateur().getId()) {
 
-                List<User> collabs = projetService.getCollaborateurs(IdP);
+                List<UserWithExpertiseDTO> collabs = projetService.getCollaborateurs(IdP);
                 Optional test = collabs.stream().filter(c -> c.getId().equals(user.get().getId())).findFirst();
                 if (test == Optional.empty()) {
-                    Projet projet = projetService.addCollaborateur(user.get().getId(), IdP);
+                    Projet projet = projetService.addCollaborateur(user.get().getId(), IdP, IdE);
                     return ResponseEntity.ok(projet);
                 }
                 return ResponseEntity.ok(null);
@@ -68,7 +69,7 @@ public class ProjetController {
         System.out.println("deleteProjet");
         Projet projet = projetService.findProjetbyId(id);
         projet.setCreateur(null);
-        projet.setCollaborateurs(null);
+        projet.setParticipations(null);
         projet.setCollection(null);
         for(DataSet d :projet.getDatasets()){
             datasetService.deleteDataSet(d.getId());
@@ -83,7 +84,7 @@ public class ProjetController {
         Optional<User> user = userService.findUserById(IdC);
         Projet projet = projetService.findProjetbyId(IdP);
         if(user.isPresent() && projet !=null) {
-            List<User> collabs = projetService.getCollaborateurs(IdP);
+            List<UserWithExpertiseDTO> collabs = projetService.getCollaborateurs(IdP);
             Optional test = collabs.stream().filter(c -> c.getId().equals(user.get().getId())).findFirst();
             if(test != Optional.empty()) {
                 projetService.deleteCollaborateur(user.get().getId(), IdP);
@@ -129,8 +130,8 @@ public class ProjetController {
     }
 
     @GetMapping("/{id}/collaborateurs")
-    public ResponseEntity<List<User>> getCollaborateurs(@PathVariable Long id) {
-        List<User> collaborateurs = projetService.getCollaborateurs(id);
+    public ResponseEntity<List<UserWithExpertiseDTO>> getCollaborateurs(@PathVariable Long id) {
+        List<UserWithExpertiseDTO> collaborateurs = projetService.getCollaborateurs(id);
         return ResponseEntity.ok(collaborateurs);
     }
 

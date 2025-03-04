@@ -1,9 +1,11 @@
-import { Component, OnInit, AfterViewInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit, AfterViewChecked } from '@angular/core';
 import { ActivatedRoute, Router } from "@angular/router";
 import { ProjetService } from "../../services/projet.service";
 import Swal from "sweetalert2";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { CommonModule } from '@angular/common';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { faInfo, faInfoCircle, faPlay } from '@fortawesome/free-solid-svg-icons';
 
 
 @Component({
@@ -12,13 +14,14 @@ import { CommonModule } from '@angular/common';
   imports: [
     FormsModule,
     ReactiveFormsModule,
-    CommonModule
+    CommonModule,
+    FontAwesomeModule
   ],
   templateUrl: './image-inf.component.html',
   styleUrls: ['./image-inf.component.css']
 })
-export class ImageInfComponent implements OnInit, AfterViewInit {
-  isOpenPreview: boolean = false; // <-- Initialisation avec 'false'
+export class ImageInfComponent implements OnInit, AfterViewChecked {
+  isOpenPreview: boolean = false;
 
   currentStep: number = 1;
   currentStep1: number = 0;
@@ -38,7 +41,12 @@ export class ImageInfComponent implements OnInit, AfterViewInit {
   modeles!: Array<any>;
   m: number = 1;
   m1: number = 1;
-
+  planteId!: string | null;
+  datasetId!: string | null;
+  faPlay = faPlay;
+  faInfoCircle = faInfoCircle
+  originalWidth: number = 0;
+  originalHeight: number = 0;
   constructor(private route: ActivatedRoute, private router: Router, private projetservice: ProjetService) { }
 
   ngOnInit(): void {
@@ -53,11 +61,13 @@ export class ImageInfComponent implements OnInit, AfterViewInit {
         console.error(err);
       }
     });
-
+    this.route.parent?.paramMap.subscribe(params => {
+      this.datasetId = params.get('id');
+    })
     this.route.paramMap.subscribe(params => {
-      const catalogueCode = params.get('catalogueCode');
+      this.planteId = params.get('catalogueCode');
       const navigation = window.history.state;
-      this.projetservice.func_get_Specimen(navigation.plante.id).subscribe({
+      this.projetservice.func_get_Specimen(this.planteId).subscribe({
         next: (data) => {
           this.plante = data;
           console.log("specimen", data);
@@ -81,27 +91,36 @@ export class ImageInfComponent implements OnInit, AfterViewInit {
   }
 
   closePreview(): void {
-    // Implémentez la logique de fermeture ici
     this.isOpenPreview = false;
+    document.body.classList.remove('no-scroll'); 
   }
 
-  // Méthode pour afficher la preview
   showPreview(): void {
-    // Implémentez la logique d'affichage ici
     this.isOpenPreview = true;
+    document.body.classList.add('no-scroll'); 
   }
 
-  ngAfterViewInit(): void {
-    this.zoomElement = document.getElementById('zoom') as HTMLElement;
-    this.initialScale = this.scale;
+  ngAfterViewChecked() {
+    if (this.isOpenPreview && !this.zoomElement) {
+      // Wait for the element to be rendered and then access it
+      setTimeout(() => {
+        this.zoomElement = document.getElementById('zoom') as HTMLElement;
+        if (this.zoomElement) {
+          this.originalWidth = this.zoomElement.offsetWidth;
+          this.originalHeight = this.zoomElement.offsetHeight;
+          this.scale = this.initialScale;
+        }
+      }, 0);  // Executes after the view is updated
+    }
   }
 
   setTransform(): void {
     if (this.zoomElement) {
-      this.zoomElement.style.transform = `translate(${this.pointX}px, ${this.pointY}px) scale(${this.scale})`;
+      this.zoomElement.style.width = `${this.scale * this.originalWidth}px`;
+      this.zoomElement.style.height = `${this.scale * this.originalHeight}px`;
+      this.zoomElement.style.transform = `translate(${this.pointX}px, ${this.pointY}px)`;
     }
   }
-
   openModal(): void {
     this.isModalOpen = true;
   }
@@ -144,9 +163,9 @@ export class ImageInfComponent implements OnInit, AfterViewInit {
     window.open(this.imageUrl, '_blank');
   }
 
-  doPrediction(plante: any, modeleId: any): void {
+  doPrediction(modeleId: any): void {
     console.log("the model that will be send", modeleId);
-    this.router.navigate(['/admin/AnnotationDetail'], { state: { plante: plante, modeleId: modeleId } });
+    this.router.navigate([`admin/datasets/${this.datasetId}/images/${this.planteId}/models/${modeleId}/annotation-validation`]);
   }
 
   chng_img(plante: any, plantes: any): void {
@@ -156,7 +175,7 @@ export class ImageInfComponent implements OnInit, AfterViewInit {
   }
 
   info_model(id: any): void {
-    this.router.navigateByUrl(`/admin/model_inf/${id}`);
+    this.router.navigateByUrl(`/admin/models/${id}/model-library`);
   }
 
   goto(pg: number): void {

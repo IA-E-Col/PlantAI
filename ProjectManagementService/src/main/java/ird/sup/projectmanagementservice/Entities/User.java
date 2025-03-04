@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -30,13 +31,18 @@ public class User {
     @JsonIgnore
     private List<Projet> projetsCree;
 
-    @ManyToMany(mappedBy = "collaborateurs")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
     @JsonIgnore
-    private List<Projet> projetsCollab;
+    private List<Participation> participations = new ArrayList<>();
 
 
     @OneToMany(fetch=FetchType.LAZY, mappedBy="createurC", cascade = CascadeType.ALL)
     @JsonIgnore
     private List<Commentaire> commentaires;
+
+    public List<Commentaire> getCommentaires() {
+        return commentaires;
+    }
+
 }
 

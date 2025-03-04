@@ -71,7 +71,7 @@ export const routes: Routes = [
       }, // modifier
       { path: 'newprojet', component: NewprojetComponent },
       { path: 'image-inf/:catalogueCode', component: ImageInfComponent },
-      { path: 'AnnotationDetail', component: AnnotationDetailComponent },
+      { path: 'datasets/:datasetId/images/:specimenId/models/:modelId/annotation-validation', component: AnnotationDetailComponent },
       { path: 'NewModel', component: CreeModeleComponent },
       { path: 'UpdateMode', component: UpdateModeleComponent },
       { path: 'NewCollection', component: CreeCollectionComponent },

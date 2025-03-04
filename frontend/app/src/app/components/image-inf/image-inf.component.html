@@ -1,7 +1,7 @@
 <div class="container-fluid">
   <div class="row">
     <!-- Preview Overlay -->
-    <div *ngIf="isOpenPreview" class="overflow-hidden position-absolute d-flex flex-column gap-3 justify-content-center align-items-center top-0 start-0 overlay-background wh-100-vh">
+    <div *ngIf="isOpenPreview" class="z-3 overflow-hidden position-absolute d-flex flex-column gap-3 justify-content-center align-items-center top-0 start-0 overlay-background wh-100-vh">
       <div class="position-absolute pos">
         <button class="close-button" (click)="closePreview()">×</button>
       </div>
@@ -10,22 +10,12 @@
       </div>
       <div class="zoom-controls">
         <button class="btn btn-white text-dark opacity-100" (click)="zoomOut()"><i class="bi bi-zoom-out"></i></button>
-        <button class="btn btn-white texconsole.log('isOpenPreview:', isOpenPreview);
-console.log('imageUrl:', imageUrl);
-console.log('plante:', plante);
-console.log('modeles:', modeles);
-console.log('activeTab:', activeTab);
-console.log('plantes:', plantes);t-dark opacity-100" (click)="zoomIn()"><i class="bi bi-zoom-in"></i></button>
+        <button class="btn btn-white text-dark opacity-100" (click)="zoomIn()"><i class="bi bi-zoom-in"></i></button>
       </div>
     </div>
 
     <!-- Main Content -->
     <div class="Bg_Grp">
-      <!-- Zoom Controls -->
-      <div class="zoom-controls">
-        <button (click)="zoomIn()"><i class="bi bi-zoom-in"></i></button>
-        <button (click)="zoomOut()"><i class="bi bi-zoom-out"></i></button>
-      </div>
 
       <div class="Grp">
         <div class="zoom_outer">
@@ -135,12 +125,23 @@ console.log('plantes:', plantes);t-dark opacity-100" (click)="zoomIn()"><i class
               </div>
               <div class="cards">
                 <h2>Models:</h2>
-                <ul *ngFor="let m of modeles">
-                  <li><strong>{{m.name}} (version: {{m.version}})</strong></li>
-                  <li><strong>Accuracy:</strong> {{m.accuracy}}</li>
-                  <li><strong>Loss:</strong> {{m.loss}}</li>
-                </ul>
+                <div *ngFor="let m of modeles" class="d-flex justify-content-between align-items-center">
+                  <div>
+                    <div><strong>{{m.name}} (version: {{m.version}})</strong></div>
+                    <div><strong>Accuracy:</strong> {{m.accuracy}}</div>
+                    <div><strong>Loss:</strong> {{m.loss}}</div>
+                  </div>
+                  <div class="Btns">
+                    <button (click)="info_model(m.id)"  class="btn btn-green">
+                      <fa-icon [icon]="faInfoCircle"></fa-icon>
+                    </button>
+                    <button (click)="doPrediction(m.id)" class="btn btn-green">
+                      <fa-icon [icon]="faPlay"></fa-icon>
+                    </button>
+                  </div>
+                </div>
               </div>
+
             </div>
 
             <!-- Annotations Tab -->

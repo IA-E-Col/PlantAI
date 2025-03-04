@@ -22,8 +22,8 @@
             <tr *ngFor="let annotation of filteredAnnotations">
                 <td>{{ annotation.name }}</td>
                 <td>{{ annotation.submissionDate }}</td>
-                <td [ngClass]="annotation.state.toLowerCase()">
-                    {{ annotation.state }}
+                <td [ngClass]="annotation.etat.toLowerCase()">
+                    {{ annotation.etat }}
                 </td>
             </tr>
         </tbody>

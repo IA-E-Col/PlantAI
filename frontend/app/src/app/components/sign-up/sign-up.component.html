@@ -13,14 +13,18 @@
               <img src="assets/plant.svg" class="w-75 h-75 opacity-50">
           </div>
         </div>
-        <div class="col-md-6 d-md-flex flex-column justify-content-center align-items-center justify-content-center h-100">
-          <div class="mt-5 mb-5  d-flex justify-content-center align-items-center p-3">
-            <img src="assets/IRD.png" class="w-75">
+        <div class="col-md-6 mb-5 mt-5 d-md-flex flex-column justify-content-center align-items-center justify-content-center h-100">
+          <div class="d-md-none d-flex justify-content-center align-items-center mb-3 mt-5">
+            <div class="rounded-circle bg-green d-inline-block p-2">
+              <img src="assets/plant.svg" width="50" height="50">
+            </div>
+            <p class="fs-4 font-light p-0 mb-0 mt-0 ms-4">Welcome to <span class="text-green fs-4 font-light">plantAI</span></p>
           </div>
           <div class="mb-3 text-center mt-3">
             <h1 class="text-green underlined">Sign Up</h1>
           </div>
           <form [formGroup]="inscrFormGroup" (ngSubmit)="inscr()" class="form-login p-2 d-flex col-12 col-sm-12 col-md-6">
+            
             <h1>Create Account</h1>
             <div class="d-flex align-items-start flex-column mb-4 w-100">
               <label for="firstname">First Name</label>
@@ -46,6 +50,9 @@
               <label for="confirm-password">Confirm Password</label>
               <input id="confirm-password" type="password" placeholder="Confirm Password" class="form-control w-100" formControlName="password1"/>
             </div> 
+            <div class="d-flex justify-content-end">
+              <p class="fs-5 font-light text-black">Already have an account ? <span><a class="text-green fs-5 underlined font-light" [routerLink]="['/login']">Login</a></span></p> 
+            </div>
             <button  class="btn btn-green p-2 w-100" [disabled]="inscrFormGroup.invalid">Sign Up</button>
           </form>
         </div>

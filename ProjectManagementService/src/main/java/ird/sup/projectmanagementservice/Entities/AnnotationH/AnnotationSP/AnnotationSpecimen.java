@@ -5,6 +5,7 @@ import ird.sup.projectmanagementservice.Entities.AnnotationH.Annotation;
 import ird.sup.projectmanagementservice.Entities.Commentaire;
 import ird.sup.projectmanagementservice.Entities.MediaH.Media;
 import ird.sup.projectmanagementservice.Entities.Modele;
+import ird.sup.projectmanagementservice.Enums.EState;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -21,13 +22,13 @@ import java.util.List;
 public class AnnotationSpecimen extends Annotation {
 
     String modeAquisition;
-    boolean isValide=false;
+    @Enumerated(EnumType.STRING)
+    EState etat;
     @ManyToOne
     @JsonIgnore
     private Media media;
-    @OneToMany(fetch=FetchType.LAZY,mappedBy = "annotation",cascade = CascadeType.ALL)
-    @JsonIgnore
-    private List<Commentaire> commentaires = new ArrayList<>();
 
 
-}
+
+
+    }
