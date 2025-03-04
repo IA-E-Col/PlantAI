@@ -45,39 +45,30 @@ public class AnnotationModeleService {
 
 
     public List<AnnClassification> GetAnnHistory(Long userId, Long dataSetId) {
-        // Récupérer l'utilisateur connecté
         User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("Utilisateur non trouvé !"));
 
-        // Récupérer les projets où l'utilisateur est créateur
         List<Long> projetsCreeIds = projetRepository.findProjetsByCreateur(user.getId());
 
-        // Récupérer les projets où l'utilisateur est participant
         List<Long> projetsParticipantIds = projetRepository.findProjetsByParticipant(user.getId());
 
-        // Ajouter directement les projets accessibles dans une liste sans Set ni HashSet
         projetsCreeIds.addAll(projetsParticipantIds);
 
-        // Vérifier si l'utilisateur a accès à des projets
         if (projetsCreeIds.isEmpty()) {
-            return new ArrayList<>(); // Aucun projet accessible, retourner une liste vide
+            return new ArrayList<>();
         }
 
-        // Récupérer tous les datasets associés aux projets auxquels l'utilisateur a accès
         List<DataSet> accessibleDataSets = datasetRepository.findByProjetIdIn(projetsCreeIds);
 
-        // Vérifier si le dataset avec l'ID passé en paramètre est accessible
         DataSet selectedDataSet = accessibleDataSets.stream()
                 .filter(dataset -> dataset.getId().equals(dataSetId))
                 .findFirst()
                 .orElseThrow(() -> new RuntimeException("Dataset avec l'ID " + dataSetId + " non trouvé dans les projets accessibles"));
 
-        // Récupérer les annotations associées au dataset spécifique
         List<AnnClassification> annotations = annClassificationRepository.findByEtatInAndProjetIdIn(
                 List.of(EState.PENDING),
                 projetsCreeIds
         );
 
-        // Filtrer les annotations pour ne garder que celles qui sont associées au dataset spécifique
         List<AnnClassification> filteredAnnotations = annotations.stream()
                 .filter(annotation -> selectedDataSet.getSpecimens().stream()
                         .anyMatch(specimen -> specimen.getAnnotations().contains(annotation))
@@ -163,11 +154,11 @@ public class AnnotationModeleService {
         Commentaire commentaire = commentaireRepository.findById(idCommentaire).orElse(null);
 
         if (annotation == null || user == null || commentaire == null) {
-            return null; // Gérer l'erreur selon votre logique
+            return null;
         }
 
         if (!annotation.getCommentaires().contains(commentaire) || !user.getCommentaires().contains(commentaire)) {
-            return null; // Vérification que le commentaire appartient bien à l'utilisateur et à l'annotation
+            return null;
         }
 
         commentaire.setCommentaire(updatedComment.getCommentaire());

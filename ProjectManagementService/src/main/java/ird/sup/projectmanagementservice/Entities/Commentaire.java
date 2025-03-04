@@ -27,9 +27,9 @@ public class Commentaire {
     private String commentaire;
    private Date creationDate;
 
-    @ManyToOne(cascade = CascadeType.REMOVE)
+    @ManyToOne
     private User createurC;
 
-    @ManyToOne(cascade = CascadeType.REMOVE)
+    @ManyToOne
     private AnnClassification annotation;
 }

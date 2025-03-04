@@ -10,6 +10,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import Swal from 'sweetalert2';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faUserCircle } from '@fortawesome/free-solid-svg-icons';
+
 interface Commentaire {
   id: number;
   commentaire: string;
@@ -38,6 +39,10 @@ export class AnnotationDetailComponent {
 
   comments : any = [];
   /****************/
+  showModal = false;
+editedText = '';
+selectedComment: any = null;
+
   faUserCircle = faUserCircle;
   idModele: any;
   Specimen: any;
@@ -235,9 +240,30 @@ export class AnnotationDetailComponent {
       }
     );
   }
+  openEdit(comment: any) {
+    this.selectedComment = comment;
+    this.editedText = comment.commentaire;
+    this.showModal = true;
+  }
+  
+  // Fermer l'éditeur
+  closeEdit() {
+    this.showModal = false;
+    this.selectedComment = null;
+  }
+  
+  // Sauvegarder les modifications
+  saveEdit() {
+    if (this.selectedComment) {
+      this.selectedComment.commentaire = this.editedText;
+      // Ajouter ici la logique de sauvegarde
+    }
+    this.closeEdit();
+  }
 
   // Méthode pour mettre à jour un commentaire
   updateComment(idCommentaire: number, newComment: string) {
+
     console.log('Mise à jour du commentaire avec id:', idCommentaire, 'Nouveau texte:', newComment);
     
     const updatedComment = { commentaire: newComment };
@@ -345,6 +371,9 @@ export class AnnotationDetailComponent {
       }
     }
     
+    
     )
   }
+
+  
 }

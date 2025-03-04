@@ -40,9 +40,6 @@ public class User {
     @JsonIgnore
     private List<Commentaire> commentaires;
 
-    public List<Commentaire> getCommentaires() {
-        return commentaires;
-    }
 
 }
 
