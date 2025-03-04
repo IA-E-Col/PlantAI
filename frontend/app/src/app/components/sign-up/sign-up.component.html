@@ -1,150 +1,134 @@
 <div class="height-90" id="container">
-
+  <!-- Image de fond -->
+  <img src="assets/back.jpg" class="image" style="position: absolute;">
+  
   <div class="h-100">
     <div class="d-flex justify-content-center align-items-center h-100">
+      
+      <!-- Colonne gauche : Image & slogan -->
       <div class="col-md-6 d-md-block d-none col-12 bg-grad h-100">
-        <div class="d-flex h-100 flex-column h-100 align-items-center justify-content-center">
+        <div class="d-flex flex-column align-items-center justify-content-center h-100">
           <div class="text-center">
             <h1 class="text-white display-5">Welcome to PlantAI</h1>
           </div>
           <div class="mt-2 text-center">
             <p class="text-light fs-4 font-light">Your solution to managing herbaria</p>
           </div>
-            <img src="assets/plant.svg" class="w-75 h-75 opacity-50">
+          <img src="assets/plant.svg" class="w-75 h-75 opacity-50">
         </div>
       </div>
-      <div class="col-md-6 mb-5 mt-5 d-md-flex flex-column justify-content-center align-items-center justify-content-center h-100">
+      
+      <!-- Colonne droite : Formulaire d'inscription ou MFA -->
+      <div class="col-md-6 mb-5 mt-5 d-md-flex flex-column justify-content-center align-items-center h-100">
+        
+        <!-- En-tête pour mobile -->
         <div class="d-md-none d-flex justify-content-center align-items-center mb-3 mt-5">
           <div class="rounded-circle bg-green d-inline-block p-2">
             <img src="assets/plant.svg" width="50" height="50">
           </div>
-          <p class="fs-4 font-light p-0 mb-0 mt-0 ms-4">Welcome to <span class="text-green fs-4 font-light">plantAI</span></p>
+          <p class="fs-4 font-light p-0 mb-0 mt-0 ms-4">
+            Welcome to <span class="text-green fs-4 font-light">plantAI</span>
+          </p>
         </div>
+        
         <div class="mb-3 text-center mt-3">
           <h1 class="text-green underlined">Sign Up</h1>
         </div>
+        
+        <!-- Formulaire d'inscription (affiché si MFA n'est pas activé) -->
+        <div class="container" style="margin-top:160px" *ngIf="!authResponse?.mfaEnabled">
+          <div class="success-message-panel" *ngIf="message">
+            <div class="success-icon">&#10004;</div>
+            <div class="success-message">{{ message }}</div>
+          </div>
+          <h2>Register</h2>
+          <form #registerForm="ngForm" (ngSubmit)="registerUser()">
+            <div class="form-group">
+              <label for="prenom">First name</label>
+              <input required minlength="4" id="prenom" name="prenom" type="text" placeholder="First name" [(ngModel)]="signupRequest.prenom">
+            </div>
+            <div *ngIf="registerForm.controls['prenom']?.invalid && (registerForm.controls['prenom']?.dirty || registerForm.controls['prenom']?.touched)" class="text-danger mt-1">
+              <span *ngIf="registerForm.controls['prenom']?.errors?.['required']">First name is required.</span>
+              <span *ngIf="registerForm.controls['prenom']?.errors?.['minlength']">First name must be at least 4 characters long.</span>
+            </div>
 
+            <div class="form-group">
+              <label for="nom">Last name</label>
+              <input required minlength="4" id="nom" name="nom" type="text" placeholder="Last name" [(ngModel)]="signupRequest.nom">
+            </div>
+            <div *ngIf="registerForm.controls['nom']?.invalid && (registerForm.controls['nom']?.dirty || registerForm.controls['nom']?.touched)" class="text-danger mt-1">
+              <span *ngIf="registerForm.controls['nom']?.errors?.['required']">Last name is required.</span>
+              <span *ngIf="registerForm.controls['nom']?.errors?.['minlength']">Last name must be at least 4 characters long.</span>
+            </div>
 
-<div class="container" style="margin-top:160px" *ngIf="!authResponse?.mfaEnabled">
-  <div class="success-message-panel" *ngIf="message">
-    <div class="success-icon">&#10004;</div>
-    <div class="success-message">{{ message }}</div>
-  </div>
+            <div class="form-group">
+              <label for="email">Email</label>
+              <input id="email" name="email" type="text" placeholder="Email" pattern=".+@gmail\.com$" required [(ngModel)]="signupRequest.email">
+            </div>
+            <div *ngIf="registerForm.controls['email']?.invalid && (registerForm.controls['email']?.dirty || registerForm.controls['email']?.touched)" class="text-danger mt-1">
+              <span *ngIf="registerForm.controls['email']?.errors?.['pattern']">
+                Invalid email address. Must end with "gmail.com".
+              </span>
+              <span *ngIf="registerForm.controls['email']?.errors?.['required']">
+                Email is required.
+              </span>
+            </div>
 
-  <h2>Register</h2>
-  <form #registerForm="ngForm" (ngSubmit)="registerUser()">
-    <div class="form-group">
-      <label for="prenom">First name</label>
-      <input
-        required
-        minlength="4"
-        id="prenom"
-        name="prenom"
-        type="text"
-        placeholder="First name"
-        [(ngModel)]="signupRequest.prenom"
-      >
-      <div class="d-flex align-items-start flex-column mb-4 w-100"></div>
-    </div>
-    <div *ngIf="registerForm.controls['prenom']?.invalid && (registerForm.controls['prenom']?.dirty || registerForm.controls['prenom']?.touched)" class="text-danger mt-1">
-      <span *ngIf="registerForm.controls['prenom']?.errors?.['required']">First name is required.</span>
-      <span *ngIf="registerForm.controls['prenom']?.errors?.['minlength']">First name must be at least 4 characters long.</span>
-    </div>
+            <div class="form-group">
+              <label for="password">Password</label>
+              <input id="password" name="password" type="password" placeholder="Password" required minlength="8" pattern="^(?=.*\d).{8,}$" [(ngModel)]="signupRequest.password">
+            </div>
+            <div *ngIf="registerForm.controls['password']?.invalid && (registerForm.controls['password']?.dirty || registerForm.controls['password']?.touched)" class="text-danger mt-1">
+              <span *ngIf="registerForm.controls['password']?.errors?.['minlength']">
+                Password must be at least 8 characters long.
+              </span>
+              <span *ngIf="registerForm.controls['password']?.errors?.['pattern']">
+                Password must contain at least one number.
+              </span>
+              <span *ngIf="registerForm.controls['password']?.errors?.['required']">
+                Password is required.
+              </span>
+            </div>
 
-    <div class="form-group">
-      <label for="nom">Last name</label>
-      <input
-        required
-        minlength="4"
-        id="nom"
-        name="nom"
-        type="text"
-        placeholder="Last name"
-        [(ngModel)]="signupRequest.nom"
-      >
-    </div>
-    <div *ngIf="registerForm.controls['nom']?.invalid && (registerForm.controls['nom']?.dirty || registerForm.controls['nom']?.touched)" class="text-danger mt-1">
-      <span *ngIf="registerForm.controls['nom']?.errors?.['required']">Last name is required.</span>
-      <span *ngIf="registerForm.controls['nom']?.errors?.['minlength']">Last name must be at least 4 characters long.</span>
-    </div>
+            <div class="form-group">
+              <label for="role">Role:</label>
+              <select class="form-control" id="role" name="role" [(ngModel)]="signupRequest.role">
+                <option value="ADMIN">ADMIN</option>
+                <option value="Expert">Expert</option>
+                <option value="Amateur">Amateur</option>
+              </select>
+            </div>
 
-    <div class="form-group">
-      <label for="email">Email</label>
-      <input
-        id="email"
-        name="email"
-        type="text"
-        placeholder="Email"
-        pattern=".+@gmail\.com$"
-        required
-        [(ngModel)]="signupRequest.email"
-      >
-    </div>
-    <div *ngIf="registerForm.controls['email']?.invalid && (registerForm.controls['email']?.dirty || registerForm.controls['email']?.touched)" class="text-danger mt-1">
-      <span *ngIf="registerForm.controls['email']?.errors?.['pattern']">
-        Invalid email address. Must end with "gmail.com".
-      </span>
-      <span *ngIf="registerForm.controls['email']?.errors?.['required']">
-        Email is required.
-      </span>
-    </div>
-
-    <div class="form-group">
-      <label for="password">Password</label>
-      <input
-        id="password"
-        name="password"
-        type="password"
-        placeholder="Password"
-        required
-        minlength="8"
-        pattern="^(?=.*\d).{8,}$"
-        [(ngModel)]="signupRequest.password"
-      >
-    </div>
-    <div *ngIf="registerForm.controls['password']?.invalid && (registerForm.controls['password']?.dirty || registerForm.controls['password']?.touched)" class="text-danger mt-1">
-      <span *ngIf="registerForm.controls['password']?.errors?.['minlength']">
-        Password must be at least 8 characters long.
-      </span>
-      <span *ngIf="registerForm.controls['password']?.errors?.['pattern']">
-        Password must contain at least one number.
-      </span>
-      <span *ngIf="registerForm.controls['password']?.errors?.['required']">
-        Password is required.
-      </span>
-    </div>
-
-    <div class="form-group">
-      <label for="role">Role:</label>
-      <select class="form-control" id="role" name="role" [(ngModel)]="signupRequest.role">
-        <option value="ADMIN">ADMIN</option>
-        <option value="Expert">Expert</option>
-        <option value="Amateur">Amateur</option>
-      </select>
-    </div>
-
-    <div class="form-group">
-      <input id="rememberMe" name="rememberMe" type="checkbox" [(ngModel)]="signupRequest.mfaEnabled">
-      <label for="rememberMe">Enable 2FA (Two Factors Authentication)</label>
-    </div>
-
-    <button [disabled]="registerForm.invalid" type="submit">Register</button>
-    <a routerLink="/login">Login</a>
-  </form>
-</div>
-
-<div class="container" *ngIf="authResponse?.mfaEnabled">
-  <div class="success-message-panel" *ngIf="message">
-    <div class="success-icon">&#10004;</div>
-    <div class="success-message">{{ message }}</div>
-  </div>
-  <h2>Set Up Two-Factor Authentication</h2>
-  <div class="qr-code">
-    <img [src]="authResponse.secretImageUri" alt="QR Code">
-  </div>
-  <div class="form-group">
-    <label for="validationCode">Enter 6 digits Validation Code Generated by the app</label>
-    <input type="text" id="validationCode" name="validationCode" required [(ngModel)]="otpCode">
-  </div>
-  <button type="button" (click)="verifyTfa()" [class.button-disabled]="otpCode.length < 6">Verify code</button>
+            <div class="form-group">
+              <input id="rememberMe" name="rememberMe" type="checkbox" [(ngModel)]="signupRequest.mfaEnabled">
+              <label for="rememberMe">Enable 2FA (Two Factors Authentication)</label>
+            </div>
+            <button [disabled]="registerForm.invalid" type="submit">Register</button>
+            <a routerLink="/login">Login</a>
+          </form>
+        </div>
+        
+        <!-- Formulaire MFA (affiché si MFA est activé) -->
+        <div class="container" *ngIf="authResponse?.mfaEnabled">
+          <div class="success-message-panel" *ngIf="message">
+            <div class="success-icon">&#10004;</div>
+            <div class="success-message">{{ message }}</div>
+          </div>
+          <h2>Set Up Two-Factor Authentication</h2>
+          <!-- Bloc QR code -->
+          <div class="qr-code">
+            <img [src]="authResponse.secretImageUri" alt="QR Code">
+          </div>
+          <div class="form-group">
+            <label for="validationCode">Enter 6 digits Validation Code Generated by the app</label>
+            <input type="text" id="validationCode" name="validationCode" required [(ngModel)]="otpCode">
+          </div>
+          <button type="button" (click)="verifyTfa()" [class.button-disabled]="otpCode.length < 6">
+            Verify code
+          </button>
+        </div>
+        
+      </div><!-- fin colonne droite -->
+    </div><!-- fin container flex -->
+  </div><!-- fin h-100 -->
 </div>

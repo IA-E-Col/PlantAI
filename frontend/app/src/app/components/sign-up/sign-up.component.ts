@@ -39,10 +39,10 @@ export class SignUpComponent {
       next: (response) => {
         if (response) {
           this.authResponse = response;
+          console.log('authResponse:', this.authResponse);  // Affiche le contenu de authResponse
           // Si MFA est activé, l'utilisateur devra vérifier son code OTP via verifyTfa()
         } else {
-          console.log(this.signupRequest);
-          this.message = 'Account created, please check your mail to activate your account.\nYou will be redirected to the Login page in 5 seconds';
+          this.message = 'Account created, please check your mail to activate your account. You will be redirected to the Login page in 5 seconds';
           setTimeout(() => {
             this.router.navigate(['login']);
           }, 5000);
@@ -54,6 +54,7 @@ export class SignUpComponent {
       }
     });
   }
+  
 
   /**
    * Vérifie le code OTP (pour la vérification MFA).
