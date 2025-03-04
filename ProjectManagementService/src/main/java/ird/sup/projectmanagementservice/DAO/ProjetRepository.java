@@ -36,4 +36,10 @@ public interface ProjetRepository extends JpaRepository<Projet,Long> {
             "WHERE p.Id = :projectId")
     List<UserWithExpertiseDTO> findUsersInProject(@Param("projectId") Long projectId);
 
+
+    @Query("SELECT p.Id FROM Projet p WHERE p.createur.Id = :userId")
+    List<Long> findProjetsByCreateur(@Param("userId") Long userId);
+
+    @Query("SELECT p.Id FROM Projet p JOIN p.participations part WHERE part.user.Id = :userId")
+    List<Long> findProjetsByParticipant(@Param("userId") Long userId);
 }

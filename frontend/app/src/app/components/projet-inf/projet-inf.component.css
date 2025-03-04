@@ -1,4 +1,4 @@
-/* Structure principale */
+/* Styles communs avec le premier exemple */
 .custom-card {
   background-color: white;
   border: 1px solid #c5d6b0;
@@ -13,7 +13,7 @@
 }
 
 .card-header {
-  background-color: white !important;
+  background-color: white;
   border-bottom: 2px solid #c5d6b0;
   padding: 1.5rem;
   color: #7a9c59;
@@ -31,13 +31,11 @@
   gap: 2rem;
 }
 
-/* Colonne d'informations */
 .project-info {
   flex: 1;
   max-width: 60%;
 }
 
-/* Lignes d'information */
 .info-row {
   margin-bottom: 1.5rem;
   padding: 0.8rem 0;
@@ -47,7 +45,6 @@
   gap: 0.3rem;
 }
 
-/* Typographie */
 .card-title {
   color: #6b8c5a;
   font-weight: 500;
@@ -56,12 +53,11 @@
 }
 
 .text-muted {
-  color: #666666 !important;
+  color: #666666;
   font-size: 1rem;
   margin: 0;
 }
 
-/* Colonne image */
 .project-image {
   flex: 1;
   max-width: 35%;
@@ -75,35 +71,29 @@
   aspect-ratio: 1/1;
 }
 
-/* Liste des collaborateurs */
+/* Styles spécifiques aux collaborateurs */
 .collaborateurs-liste {
   padding-left: 0;
   list-style: none;
-  margin: 0.5rem 0 0 0;
+  margin-bottom: 0;
   display: flex;
   flex-wrap: wrap;
-  gap: 0.8rem;
+  gap: 1rem;
 }
 
 .collaborateur-item {
   display: flex;
   align-items: center;
-  background: #f8f8f8;
-  padding: 0.4rem 1rem;
+  gap: 0.5rem;
+  background-color: #f8f9fa;
+  padding: 0.5rem 1rem;
   border-radius: 20px;
-  font-size: 0.9rem;
-  border: 1px solid #e0e0e0;
 }
 
 .collaborateur-item img {
-  margin-right: 0.6rem;
   border-radius: 50%;
-  width: 25px;
-  height: 25px;
-  object-fit: cover;
 }
 
-/* Responsive */
 @media (max-width: 992px) {
   .card-body {
     flex-direction: column;
@@ -116,5 +106,9 @@
   
   .project-image img {
     max-width: 250px;
+  }
+  
+  .collaborateurs-liste {
+    justify-content: flex-start;
   }
 }

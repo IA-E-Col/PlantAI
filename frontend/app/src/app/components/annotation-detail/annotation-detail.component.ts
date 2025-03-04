@@ -34,9 +34,9 @@ interface Commentaire {
 })
 
 export class AnnotationDetailComponent {
-  comments: Commentaire[] = [];
+  commentss: Commentaire[] = [];
 
-  commentss : any = [];
+  comments : any = [];
   /****************/
   faUserCircle = faUserCircle;
   idModele: any;
@@ -207,7 +207,7 @@ export class AnnotationDetailComponent {
         {
           next: (newCommentaire) => {
             console.log("commentaire added", newCommentaire)
-            this.commentss = [...this.commentss,newCommentaire];
+            this.comments = [...this.comments,newCommentaire];
           },
           error: err => {
             alert("erreur recuperation model");
@@ -226,7 +226,7 @@ export class AnnotationDetailComponent {
         next: (response) => {
           console.log('Commentaire supprimé avec succès:', response);
           // Mettre à jour la liste des commentaires
-          this.comments = this.comments.filter(comment => comment.id !== idCommentaire);
+          this.comments = this.comments.filter((comment:any) => comment.id !== idCommentaire);
         },
         error: err => {
           console.error('Erreur lors de la suppression du commentaire:', err);
@@ -247,7 +247,7 @@ export class AnnotationDetailComponent {
         next: (updatedCommentaire) => {
           console.log('Commentaire mis à jour avec succès:', updatedCommentaire);
           // Mettre à jour la liste des commentaires avec le commentaire mis à jour
-          this.comments = this.comments.map(comment => 
+          this.comments = this.comments.map((comment:any) => 
             comment.id === idCommentaire ? { ...comment, commentaire: updatedCommentaire.commentaire } : comment
           );
         },

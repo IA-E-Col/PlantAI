@@ -2,15 +2,12 @@ package ird.sup.projectmanagementservice.Services;
 
 import ird.sup.projectmanagementservice.DAO.*;
 import ird.sup.projectmanagementservice.DTO.Evaluation;
+import ird.sup.projectmanagementservice.Entities.*;
 import ird.sup.projectmanagementservice.Entities.AnnotationH.AnnotationMDL.AnnotationModele;
 import ird.sup.projectmanagementservice.Entities.AnnotationH.AnnotationMDL.ClasseAnnotation;
 import ird.sup.projectmanagementservice.Entities.AnnotationH.AnnotationSP.AnnClassification;
 import ird.sup.projectmanagementservice.Entities.AnnotationH.AnnotationSP.AnnotationSpecimen;
-import ird.sup.projectmanagementservice.Entities.Commentaire;
-import ird.sup.projectmanagementservice.Entities.Modele;
-import ird.sup.projectmanagementservice.Entities.Vote;
 
-import ird.sup.projectmanagementservice.Entities.User;
 import ird.sup.projectmanagementservice.Enums.EState;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,8 +38,54 @@ public class AnnotationModeleService {
     private AnnotationRepository annotationRepository;
     @Autowired
     AnnClassificationRepository annClassificationRepository;
+    @Autowired
+    private ProjetRepository projetRepository;
+    @Autowired
+    private DataSetRepository datasetRepository;
 
-    //public List<AnnClassification> GetAnnHistory
+
+    public List<AnnClassification> GetAnnHistory(Long userId, Long dataSetId) {
+        // Récupérer l'utilisateur connecté
+        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("Utilisateur non trouvé !"));
+
+        // Récupérer les projets où l'utilisateur est créateur
+        List<Long> projetsCreeIds = projetRepository.findProjetsByCreateur(user.getId());
+
+        // Récupérer les projets où l'utilisateur est participant
+        List<Long> projetsParticipantIds = projetRepository.findProjetsByParticipant(user.getId());
+
+        // Ajouter directement les projets accessibles dans une liste sans Set ni HashSet
+        projetsCreeIds.addAll(projetsParticipantIds);
+
+        // Vérifier si l'utilisateur a accès à des projets
+        if (projetsCreeIds.isEmpty()) {
+            return new ArrayList<>(); // Aucun projet accessible, retourner une liste vide
+        }
+
+        // Récupérer tous les datasets associés aux projets auxquels l'utilisateur a accès
+        List<DataSet> accessibleDataSets = datasetRepository.findByProjetIdIn(projetsCreeIds);
+
+        // Vérifier si le dataset avec l'ID passé en paramètre est accessible
+        DataSet selectedDataSet = accessibleDataSets.stream()
+                .filter(dataset -> dataset.getId().equals(dataSetId))
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("Dataset avec l'ID " + dataSetId + " non trouvé dans les projets accessibles"));
+
+        // Récupérer les annotations associées au dataset spécifique
+        List<AnnClassification> annotations = annClassificationRepository.findByEtatInAndProjetIdIn(
+                List.of(EState.PENDING),
+                projetsCreeIds
+        );
+
+        // Filtrer les annotations pour ne garder que celles qui sont associées au dataset spécifique
+        List<AnnClassification> filteredAnnotations = annotations.stream()
+                .filter(annotation -> selectedDataSet.getSpecimens().stream()
+                        .anyMatch(specimen -> specimen.getAnnotations().contains(annotation))
+                )
+                .collect(Collectors.toList());
+
+        return filteredAnnotations;
+    }
 
     public List<AnnotationModele> getAllModels() {
         return annModeleRepository.findAll();
@@ -88,7 +131,7 @@ public class AnnotationModeleService {
         User u = userRepository.findById(idUser).get();
         u.getCommentaires().add(commentaire);
         a.getCommentaires().add(commentaire);
-       // commentaire.setCreationDate(new Date());
+        commentaire.setCreationDate(new Date());
         commentaire.setAnnotation(a);
         commentaire.setCreateurC(u);
         return commentaireRepository.save(commentaire);
