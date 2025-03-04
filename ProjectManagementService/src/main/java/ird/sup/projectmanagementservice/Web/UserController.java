@@ -6,9 +6,15 @@ import ird.sup.projectmanagementservice.Entities.User;
 import ird.sup.projectmanagementservice.Services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.sql.rowset.serial.SerialException;
+import java.io.IOException;
+import java.sql.Blob;
+import java.sql.SQLException;
 import java.util.List;
 
 @RestController
@@ -76,6 +82,31 @@ public class UserController {
             return ResponseEntity.notFound().build();
         }
     }
+    @PostMapping("/{id}/uploadImage")
+    public ResponseEntity<String> uploadUserImage(@PathVariable Long id, @RequestParam("files") MultipartFile file) {
+        try {
+            byte[] bytes = file.getBytes();
+            Blob blob = new javax.sql.rowset.serial.SerialBlob(bytes);
+            userService.saveUserImage(id, blob);
+            System.out.println("✅ Image uploaded successfully for user ID: " + id);
+            return ResponseEntity.ok("Image uploaded successfully");
+        } catch (IOException e) {
+            System.err.println("❌ Failed to upload image: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to upload image");
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @GetMapping("/{id}/image")
+    public ResponseEntity<byte[]> getUserImage(@PathVariable Long id) throws SQLException {
+        byte[] imageData = userService.getUserImage(id);
+        if (imageData != null) {
+            return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(imageData);
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+    }
+
 }
 
 

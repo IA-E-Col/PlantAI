@@ -10,6 +10,7 @@
   width: 120px;
   height: 120px;
   border-radius: 10px;
+<<<<<<< HEAD
 }
 
 .badge-green {
@@ -114,6 +115,274 @@ h5{
   background-color: #86A786;
   color: white;
 }
+=======
+}
+.custom-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  z-index: 1001;
+  width: 90%;
+  max-width: 500px;
+  border-radius: 8px;
+  box-shadow: 0 0 15px rgba(0,0,0,0.2);
+}
+
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.5);
+  z-index: 1000;
+}
+
+.modal-content {
+  padding: 20px;
+}
+/* Taille des boutons */
+.btn-sm {
+  padding: 0.5rem 1rem !important;
+  font-size: 1rem !important;
+  min-width: 80px;
+}
+
+/* Ajustements avatar */
+.annotation-card img {
+  width: 60px !important;
+  height: 60px !important;
+  object-fit: cover;
+}
+
+/* Hover boutons */
+.btn-danger:hover {
+  background-color: #dc3545e6 !important;
+}
+
+.btn-green:hover {
+  background-color: #6a8b6a !important;
+}
+
+/* Alignement texte modale */
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.btn-close {
+  font-size: 1.5rem;
+  line-height: 1;
+  opacity: 0.8;
+}
+
+/* Adaptation responsive */
+@media (max-width: 576px) {
+  .annotation-card {
+    padding: 1rem !important;
+  }
+  
+  .comment-text {
+    font-size: 0.9rem;
+  }
+  
+  .btn-sm {
+    min-width: 70px;
+    padding: 0.4rem 0.8rem !important;
+  }
+}
+.custom-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  z-index: 1001;
+  width: 90%;
+  max-width: 500px;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -45%);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+  }
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px;
+  background-color: #86A786;
+  color: white;
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+}
+
+.modal-body {
+  padding: 20px;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: space-between;
+  padding: 15px;
+  border-bottom-left-radius: 12px;
+  border-bottom-right-radius: 12px;
+}
+
+.modal-footer button {
+  padding: 10px 20px;
+  border-radius: 8px;
+}
+
+.modal-footer .validate {
+  background-color: #86A786;
+  color: white;
+}
+
+.modal-footer .validate:hover {
+  background-color: #6a8b6a;
+}
+
+.modal-footer .decline {
+  background-color: #848441;
+  color: white;
+}
+
+.modal-footer .decline:hover {
+  background-color: #6a6a41;
+}
+
+textarea {
+  width: 100%;
+  min-height: 120px;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  resize: none;
+}
+
+.btn-close {
+  border: none;
+  background: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+.badge-green {
+  background-color:#86A786;
+  color: white;
+}
+.hft{
+  height: fit-content;
+}
+button {
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.validate {
+  color: white;
+}
+
+.validate:hover {
+  background-color: rgb(101, 134, 101);
+}
+.decline{
+  color : white;
+}
+
+.decline:hover {
+  background-color: rgb(101, 134, 101);
+}
+
+.annotation-form {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+textarea, select {
+  padding: 8px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+.progress-bar {
+  height: 30px;
+  border-radius: 15px;
+}
+
+.progress-bar.favor {
+  background: #86A786;
+}
+.bg-gray{
+  background-color: #D9D9D9;
+}
+.progress-bar.against {
+  background: #86A786;
+}
+
+.comment {
+  display: flex;
+  align-items: center;
+  margin-top: 15px;
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  background: #F5F5DC;
+}
+h5{
+  margin-bottom: 0 !important;
+}
+.comment img {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  margin-right: 15px;
+}
+
+.comment-text {
+  flex: 1;
+}
+.bg-green{
+  background-color: #86A786;
+}
+.text-green{
+  color: #86A786;
+}
+.bg-fawn{
+  background-color: #848441;
+}
+.text-fawn{
+  color : #848441;
+}
+.rounded-lg{
+  border-radius:1rem;
+}
+.spartan-bold{
+  font-family: SpartanBold !important;
+}
+.btn-green{
+  background-color: #86A786;
+  color: white;
+}
+>>>>>>> be99445863f02e21ea9da6174469aa49c3523908
 .text-gold{
   color:#848441;
 }

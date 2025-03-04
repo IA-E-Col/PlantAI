@@ -46,12 +46,16 @@
             <button class="btn btn-green" (click)="addComment()" [disabled]="newComment.length === 0">Add Comment</button>
           
           </div>
+<<<<<<< HEAD
           <div *ngFor="let comment of comments">
             <p>{{ comment.commentaire }}</p>
             <button class="btn btn-danger" (click)="deleteComment(comment.id)">Delete</button>
             <input [(ngModel)]="newComment" placeholder="Edit comment">
             <button class="btn btn-warning" (click)="updateComment(comment.id, newComment)">Update</button>
           </div>
+=======
+          
+>>>>>>> be99445863f02e21ea9da6174469aa49c3523908
           
 
         </div>
@@ -86,6 +90,7 @@
   </div>
   </div>
   <div class="annotation-card mt-4 p-3">
+<<<<<<< HEAD
   <div class="comments">
     <h3 class="text-start text-fawn spartan-bold">Survey Status</h3>
     <div *ngFor="let comment of comments" class="comment d-flex flex-column align-items-start">
@@ -106,6 +111,66 @@
       </div>
     </div>
   </div>
+=======
+    <div class="comments">
+      <h3 class="text-start text-fawn spartan-bold">Survey Status</h3>
+      <div *ngFor="let comment of comments" class="annotation-card comment position-relative p-3 mb-4">
+    
+        <!-- Contenu principal à gauche -->
+        <div class="d-flex gap-3 align-items-center w-100">
+          <!-- Avatar -->
+          <ng-container *ngIf="comment.avatar; else defaultAvatar">
+            <img [src]="comment.avatar" alt="Avatar" class="rounded-circle">
+          </ng-container>
+          <ng-template #defaultAvatar>
+            <fa-icon [icon]="faUserCircle" class="fs-1 text-gold"></fa-icon>
+          </ng-template>
+    
+          <!-- Texte du commentaire -->
+          <div class="comment-text text-start">
+            <h5 class="text-fawn spartan-bold mb-2">
+              {{ comment.createurC.prenom }} {{ comment.createurC.nom }}
+            </h5>
+            <p class="m-0">{{ comment.commentaire }}</p>
+          </div>
+        </div>
+    
+        <!-- Boutons agrandis à droite -->
+        <div class="d-flex flex-column gap-2 position-absolute top-0 end-0 mt-2 me-2">
+          <button class="btn btn-sm btn-danger py-2 px-3" 
+                  (click)="deleteComment(comment.id)">
+            Delete
+          </button>
+          <button class="btn btn-sm btn-green py-2 px-3" 
+                  (click)="openEdit(comment)">
+            Edit
+          </button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Modale personnalisée -->
+    <div class="modal-backdrop" *ngIf="showModal"></div>
+    <div class="custom-modal annotation-card" *ngIf="showModal">
+      <div class="modal-content">
+        <div class="modal-header bg-green text-white rounded-top">
+          <h4 class="spartan-bold m-0">Modifier le commentaire</h4>
+          <button class="btn-close text-white" (click)="closeEdit()">×</button>
+        </div>
+        <div class="modal-body">
+          <textarea [(ngModel)]="editedText" 
+                    class="form-control rounded-lg border-fawn" 
+                    rows="4"
+                    style="min-height: 120px"></textarea>
+        </div>
+        <div class="modal-footer ">
+          <button class="btn btn-secondary decline" (click)="closeEdit()">Annuler</button>
+          <button class="btn btn-primary validate bg-green" (click)="saveEdit()">Sauvegarder</button>
+        </div>
+      </div>
+    </div>
+    
+>>>>>>> be99445863f02e21ea9da6174469aa49c3523908
   </div>
 </div>
 <ng-template #showSpinner>

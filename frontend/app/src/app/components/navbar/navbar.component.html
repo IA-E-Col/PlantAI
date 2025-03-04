@@ -4,8 +4,16 @@
           <fa-icon [icon]="faLeaf"></fa-icon> PlantAI
       </div>
       <div class="user d-flex align-items-center dropdown position-relative" [class.show]="isDropdownOpen">
+<<<<<<< HEAD
           <fa-icon [icon]="faUserCircle" class="user-icon"></fa-icon>
           <span class="username">{{ username }}</span>
+=======
+          <!-- ✅ Afficher l'image si elle est disponible -->
+          <img *ngIf="userImage" [src]="userImage" class="user-avatar" alt="User Image" />
+          <!-- ✅ Sinon, afficher l'icône par défaut -->
+          <fa-icon *ngIf="!userImage" [icon]="faUserCircle" class="user-icon"></fa-icon>
+          <span class="username">{{ firstName | titlecase }}</span>
+>>>>>>> be99445863f02e21ea9da6174469aa49c3523908
           <fa-icon [icon]="faChevronDown" class="ms-2 cursor-pointer text-white fs-4"
                    (click)="toggleDropdown()"></fa-icon>
           <ul class="dropdown-menu dropdown-menu-end position-absolute fix-positions" [class.show]="isDropdownOpen">
@@ -14,4 +22,8 @@
           </ul>
       </div>
   </div>
+<<<<<<< HEAD
 </nav>
+=======
+</nav>
+>>>>>>> be99445863f02e21ea9da6174469aa49c3523908

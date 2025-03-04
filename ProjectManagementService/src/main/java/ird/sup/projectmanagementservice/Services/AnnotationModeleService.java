@@ -2,15 +2,23 @@ package ird.sup.projectmanagementservice.Services;
 
 import ird.sup.projectmanagementservice.DAO.*;
 import ird.sup.projectmanagementservice.DTO.Evaluation;
+<<<<<<< HEAD
+=======
+import ird.sup.projectmanagementservice.Entities.*;
+>>>>>>> be99445863f02e21ea9da6174469aa49c3523908
 import ird.sup.projectmanagementservice.Entities.AnnotationH.AnnotationMDL.AnnotationModele;
 import ird.sup.projectmanagementservice.Entities.AnnotationH.AnnotationMDL.ClasseAnnotation;
 import ird.sup.projectmanagementservice.Entities.AnnotationH.AnnotationSP.AnnClassification;
 import ird.sup.projectmanagementservice.Entities.AnnotationH.AnnotationSP.AnnotationSpecimen;
+<<<<<<< HEAD
 import ird.sup.projectmanagementservice.Entities.Commentaire;
 import ird.sup.projectmanagementservice.Entities.Modele;
 import ird.sup.projectmanagementservice.Entities.Vote;
 
 import ird.sup.projectmanagementservice.Entities.User;
+=======
+
+>>>>>>> be99445863f02e21ea9da6174469aa49c3523908
 import ird.sup.projectmanagementservice.Enums.EState;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,8 +49,50 @@ public class AnnotationModeleService {
     private AnnotationRepository annotationRepository;
     @Autowired
     AnnClassificationRepository annClassificationRepository;
+<<<<<<< HEAD
 
     //public List<AnnClassification> GetAnnHistory
+=======
+    @Autowired
+    private ProjetRepository projetRepository;
+    @Autowired
+    private DataSetRepository datasetRepository;
+
+
+    public List<AnnClassification> GetAnnHistory(Long userId, Long dataSetId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("Utilisateur non trouvé !"));
+
+        List<Long> projetsCreeIds = projetRepository.findProjetsByCreateur(user.getId());
+
+        List<Long> projetsParticipantIds = projetRepository.findProjetsByParticipant(user.getId());
+
+        projetsCreeIds.addAll(projetsParticipantIds);
+
+        if (projetsCreeIds.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        List<DataSet> accessibleDataSets = datasetRepository.findByProjetIdIn(projetsCreeIds);
+
+        DataSet selectedDataSet = accessibleDataSets.stream()
+                .filter(dataset -> dataset.getId().equals(dataSetId))
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("Dataset avec l'ID " + dataSetId + " non trouvé dans les projets accessibles"));
+
+        List<AnnClassification> annotations = annClassificationRepository.findByEtatInAndProjetIdIn(
+                List.of(EState.PENDING),
+                projetsCreeIds
+        );
+
+        List<AnnClassification> filteredAnnotations = annotations.stream()
+                .filter(annotation -> selectedDataSet.getSpecimens().stream()
+                        .anyMatch(specimen -> specimen.getAnnotations().contains(annotation))
+                )
+                .collect(Collectors.toList());
+
+        return filteredAnnotations;
+    }
+>>>>>>> be99445863f02e21ea9da6174469aa49c3523908
 
     public List<AnnotationModele> getAllModels() {
         return annModeleRepository.findAll();
@@ -88,7 +138,11 @@ public class AnnotationModeleService {
         User u = userRepository.findById(idUser).get();
         u.getCommentaires().add(commentaire);
         a.getCommentaires().add(commentaire);
+<<<<<<< HEAD
        // commentaire.setCreationDate(new Date());
+=======
+        commentaire.setCreationDate(new Date());
+>>>>>>> be99445863f02e21ea9da6174469aa49c3523908
         commentaire.setAnnotation(a);
         commentaire.setCreateurC(u);
         return commentaireRepository.save(commentaire);
@@ -120,11 +174,19 @@ public class AnnotationModeleService {
         Commentaire commentaire = commentaireRepository.findById(idCommentaire).orElse(null);
 
         if (annotation == null || user == null || commentaire == null) {
+<<<<<<< HEAD
             return null; // Gérer l'erreur selon votre logique
         }
 
         if (!annotation.getCommentaires().contains(commentaire) || !user.getCommentaires().contains(commentaire)) {
             return null; // Vérification que le commentaire appartient bien à l'utilisateur et à l'annotation
+=======
+            return null;
+        }
+
+        if (!annotation.getCommentaires().contains(commentaire) || !user.getCommentaires().contains(commentaire)) {
+            return null;
+>>>>>>> be99445863f02e21ea9da6174469aa49c3523908
         }
 
         commentaire.setCommentaire(updatedComment.getCommentaire());

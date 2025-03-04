@@ -37,6 +37,14 @@ public class AnnotationModeleController {
     private VoteRepository voteRepository;
     @Autowired
     private UserRepository userRepository;
+<<<<<<< HEAD
+=======
+
+    @GetMapping("/history/{userId}/{dataSetId}")
+    public List<AnnClassification> getAnnHistory(@PathVariable Long userId, @PathVariable Long dataSetId) {
+        return annotationModeleService.GetAnnHistory(userId, dataSetId);
+    }
+>>>>>>> be99445863f02e21ea9da6174469aa49c3523908
 
     @GetMapping("/getAllClasse")
     public List<ClasseAnnotation> getAllclasses() {

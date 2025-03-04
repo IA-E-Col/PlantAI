@@ -14,7 +14,7 @@ import java.util.List;
 @NoArgsConstructor
 @DiscriminatorValue("modele")
 public class AnnotationModele extends Annotation {
-    @OneToMany(fetch= FetchType.LAZY, mappedBy="annotationModele", cascade = CascadeType.ALL)
+    @OneToMany(fetch= FetchType.EAGER, mappedBy="annotationModele", cascade = CascadeType.ALL)
     @JsonIgnore
     private List<ClasseAnnotation> classeAnnotationS= new ArrayList<>();
 }

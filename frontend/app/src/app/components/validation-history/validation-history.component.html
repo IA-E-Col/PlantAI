@@ -12,13 +12,17 @@
 
     <table class="validation-table">
         <thead>
-            <tr>
-                <th (click)="sortBy('name')">Annotation <span class="sort-icons">⬆⬇</span></th>
-                <th (click)="sortBy('submissionDate')">Date of Submission <span class="sort-icons">⬆⬇</span></th>
-                <th (click)="sortBy('state')">State <span class="sort-icons">⬆⬇</span></th>
-            </tr>
+          <tr>
+            <th (click)="sortBy('libelle')">Annotation <span class="sort-icons">⬆⬇</span></th>
+            <th (click)="sortBy('etat')">Etat <span class="sort-icons">⬆⬇</span></th>
+
+            <th (click)="sortBy('modelName')">Model <span class="sort-icons">⬆⬇</span></th>
+            <th (click)="sortBy('modelcat')">Model <span class="sort-icons">⬆⬇</span></th>
+
+        </tr>
         </thead>
         <tbody>
+<<<<<<< HEAD
             <tr *ngFor="let annotation of filteredAnnotations">
                 <td>{{ annotation.name }}</td>
                 <td>{{ annotation.submissionDate }}</td>
@@ -26,6 +30,18 @@
                     {{ annotation.etat }}
                 </td>
             </tr>
+=======
+          <tr *ngFor="let annotation of filteredAnnotations">
+            <td>{{ annotation.libelle }}</td>
+            <td [ngClass]="annotation.etat.toLowerCase()">
+                {{ annotation.etat }}
+              </td>
+            <td>{{ annotation.modelName }}</td>
+            <td>{{ annotation.modelcat }}</td>
+
+          </tr>
+>>>>>>> be99445863f02e21ea9da6174469aa49c3523908
         </tbody>
-    </table>
+      </table>
+      
 </div>
