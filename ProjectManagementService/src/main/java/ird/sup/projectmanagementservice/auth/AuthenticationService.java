@@ -199,13 +199,19 @@ public class AuthenticationService {
 
       public AuthenticationResponse authenticate(AuthenticationRequest request) {
     	    // 1) Authentifie l'utilisateur via Spring Security
-    	  System.out.println("hola");
-    	    authenticationManager.authenticate(
-    	        new UsernamePasswordAuthenticationToken(
-    	            request.getEmail(),
-    	            request.getPassword()
-    	        )
-    	    );
+    	  System.out.println(request.getEmail()+ request.getPassword());
+    	  System.out.println(request.getPassword());
+    	    try {
+    	        authenticationManager.authenticate(
+    	            new UsernamePasswordAuthenticationToken(
+    	                request.getEmail(),
+    	                request.getPassword()
+    	            )
+    	        );
+    	    } catch (Exception ex) {
+    	        System.err.println("Erreur durant l'authentification : " + ex.getMessage());
+    	        throw ex; // ou gérer l'erreur selon vos besoins
+    	    }
     	    System.out.println("hola2");
     	    // 2) Recherche l'utilisateur en base
     	    var user = repository.findByEmaill(request.getEmail())
@@ -230,13 +236,14 @@ public class AuthenticationService {
 
     	    // 6) Enregistre le nouveau token dans la base
     	    saveUserToken(user, jwtToken);
-
+    	    System.out.println("mrigl");
     	    // 7) Retourne la réponse d'authentification
     	    return AuthenticationResponse.builder()
     	            .accessToken(jwtToken)
     	            .refreshToken(refreshToken)
     	            .mfaEnabled(false)
     	            .build();
+    	   
     	}
 
 

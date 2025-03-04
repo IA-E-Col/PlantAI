@@ -1,3 +1,30 @@
+<div class="height-90" id="container">
+
+  <div class="h-100">
+    <div class="d-flex justify-content-center align-items-center h-100">
+      <div class="col-md-6 d-md-block d-none col-12 bg-grad h-100">
+        <div class="d-flex h-100 flex-column h-100 align-items-center justify-content-center">
+          <div class="text-center">
+            <h1 class="text-white display-5">Welcome to PlantAI</h1>
+          </div>
+          <div class="mt-2 text-center">
+            <p class="text-light fs-4 font-light">Your solution to managing herbaria</p>
+          </div>
+            <img src="assets/plant.svg" class="w-75 h-75 opacity-50">
+        </div>
+      </div>
+      <div class="col-md-6 mb-5 mt-5 d-md-flex flex-column justify-content-center align-items-center justify-content-center h-100">
+        <div class="d-md-none d-flex justify-content-center align-items-center mb-3 mt-5">
+          <div class="rounded-circle bg-green d-inline-block p-2">
+            <img src="assets/plant.svg" width="50" height="50">
+          </div>
+          <p class="fs-4 font-light p-0 mb-0 mt-0 ms-4">Welcome to <span class="text-green fs-4 font-light">plantAI</span></p>
+        </div>
+        <div class="mb-3 text-center mt-3">
+          <h1 class="text-green underlined">Sign Up</h1>
+        </div>
+
+
 <div class="container" style="margin-top:160px" *ngIf="!authResponse?.mfaEnabled">
   <div class="success-message-panel" *ngIf="message">
     <div class="success-icon">&#10004;</div>
@@ -17,6 +44,7 @@
         placeholder="First name"
         [(ngModel)]="signupRequest.prenom"
       >
+      <div class="d-flex align-items-start flex-column mb-4 w-100"></div>
     </div>
     <div *ngIf="registerForm.controls['prenom']?.invalid && (registerForm.controls['prenom']?.dirty || registerForm.controls['prenom']?.touched)" class="text-danger mt-1">
       <span *ngIf="registerForm.controls['prenom']?.errors?.['required']">First name is required.</span>

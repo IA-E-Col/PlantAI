@@ -3,7 +3,7 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
 import { Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
-import { FormsModule } from '@angular/forms';  // Ajoutez FormsModule ici
+import { FormsModule } from '@angular/forms';
 import Swal from 'sweetalert2';
 import { AuthenticationRequest } from '../../model/authentication-request';
 import { AuthenticationResponse } from '../../model/authentication-response';
@@ -47,7 +47,6 @@ export class LoginComponent implements OnInit {
         this.authResponse = response;
         if (!this.authResponse.mfaEnabled) {
           localStorage.setItem('token', response.accessToken as string);
-          // Utilisation de l'opérateur "!" pour affirmer que l'email n'est pas undefined
           this.userService.getUserID(this.authRequest.email!).subscribe({
             next: (id: number) => {
               localStorage.setItem('userID', id.toString());

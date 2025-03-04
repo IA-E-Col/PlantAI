@@ -13,7 +13,7 @@ import { SignupRequest } from '../../model/signup-request';
   standalone: true,
   imports: [CommonModule, FormsModule, RouterLink], // Ajoutez FormsModule ici
   templateUrl: './sign-up.component.html',
-  styleUrls: ['./sign-up.component.scss']
+  styleUrls: ['./sign-up.component.css']
 })
 export class SignUpComponent {
 

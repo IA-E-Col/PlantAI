@@ -114,7 +114,7 @@ public class UserService {
      */
     public void changePassword(ChangePasswordRequest request, Principal connectedUser) {
         // Récupère l'utilisateur connecté en utilisant l'email fourni par le Principal via Guava Optional
-        com.google.common.base.Optional<User> userOptional = userRepository.findByEmail(connectedUser.getName());
+        Optional<User> userOptional = userRepository.findByEmail(connectedUser.getName());
         if (!userOptional.isPresent()) {
             throw new UsernameNotFoundException("User not found with email: " + connectedUser.getName());
         }
@@ -156,7 +156,7 @@ public class UserService {
      * @throws UsernameNotFoundException si l'utilisateur n'est pas trouvé.
      */
     public User retrieveUserbyemail(String email) {
-        com.google.common.base.Optional<User> userOptional = userRepository.findByEmail(email);
+        Optional<User> userOptional = userRepository.findByEmail(email);
         if (!userOptional.isPresent()) {
             throw new UsernameNotFoundException("User not found with email: " + email);
         }
