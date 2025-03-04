@@ -147,4 +147,6 @@ public class AnnotationModeleController {
         }
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new Message("Unmatching state value!"));
     }
+
+    @PostMapping("/{id}")
 }

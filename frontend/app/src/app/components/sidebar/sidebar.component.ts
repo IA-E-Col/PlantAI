@@ -57,6 +57,7 @@ export class SidebarComponent implements OnDestroy, OnInit{
             { name: 'Images', icon: faImage, path: `/admin/datasets/${this.itemId}/images` },
             { name: 'Dashboard', icon: faTachometerAlt, path: `/admin/datasets/${this.itemId}/dashboard` },
             { name: 'Models', icon: faMicrochip, path: `/admin/datasets/${this.itemId}/models`},
+            { name: 'Validation History', icon: faHistory, path: `/admin/datasets/${this.itemId}/validation_history`},
             { name: 'Settings', icon: faGear, path: `/admin/datasets/${this.itemId}/edit`},
           ]
           

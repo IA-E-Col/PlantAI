@@ -36,7 +36,7 @@ export class ValidationHistoryComponent implements OnInit {
   private user!: any;
   userId!: any;
   userString!: any;
-  datasetId: number | null = null;  // Déclare une variable pour stocker l'ID du dataset
+  datasetId: string | null = null;  // Déclare une variable pour stocker l'ID du dataset
 
 
 
@@ -48,13 +48,10 @@ export class ValidationHistoryComponent implements OnInit {
 
     if (this.userString) {
       this.user = JSON.parse(this.userString);
-      this.userId = this.user.user.id; // Récupération de l'ID utilisateur
-
-      // Récupérer l'ID du dataset depuis l'URL
-      this.route.paramMap.subscribe((params) => {
-        this.datasetId = +params.get('datasetId')!; // Récupérer et convertir l'ID du dataset
-
-        // Appeler la méthode avec userId et datasetId
+      this.userId = this.user.user.id; 
+      
+      this.route.parent?.paramMap.subscribe((params) => {
+        this.datasetId = params.get('id');
         this.projetService.getAnnHistory(this.userId, this.datasetId!).subscribe((data) => {
           this.annotations = data;
           this.filteredAnnotations = data;

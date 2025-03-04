@@ -296,7 +296,7 @@ export class ProjetService {
   addCommentToAnnotation(idAnnotation: number, idUser: number, commentaire: any): Observable<any> {
     return this.http.post<any>(`http://127.0.0.1:8080/api/annotationModele/${idAnnotation}/${idUser}/addComment`, commentaire);
   }
-  getAnnHistory(idUser: number , idDataset:number): Observable<Annotation[]> {
+  getAnnHistory(idUser:string , idDataset:string): Observable<Annotation[]> {
     return this.http.get<any[]>(`http://localhost:8080/api/annotationModele/history/${idUser}/${idDataset}`).pipe(
       map(annotations => 
         annotations.map(ann => ({

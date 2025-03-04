@@ -5,8 +5,8 @@
     </div>
 
     <div class="filters">
-        <input type="text" [(ngModel)]="filterText" (input)="filterAnnotations()" placeholder="🔍 Search by annotation name">
-        <input type="text" [(ngModel)]="filterState" (input)="filterAnnotations()" placeholder="🔍 Search by state">
+        <input type="text" [(ngModel)]="filterText" (input)="filterAnnotations()" placeholder="Search by annotation name">
+        <input type="text" [(ngModel)]="filterState" (input)="filterAnnotations()" placeholder="Search by state">
         <input type="date" [(ngModel)]="filterDate" (input)="filterAnnotations()" placeholder="Filter by date">
     </div>
 
@@ -25,7 +25,7 @@
           <tr *ngFor="let annotation of filteredAnnotations">
             <td>{{ annotation.libelle }}</td>
             <td [ngClass]="annotation.etat.toLowerCase()">
-                {{ annotation.etat }}
+                <span class="badge badge-green text-light p-2">{{ annotation.etat }}</span>
               </td>
             <td>{{ annotation.modelName }}</td>
             <td>{{ annotation.modelcat }}</td>
