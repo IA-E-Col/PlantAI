@@ -1,6 +1,9 @@
 package ird.sup.projectmanagementservice.DTO;
 import ird.sup.projectmanagementservice.Entities.Expertise;
 import lombok.*;
+
+import java.sql.Blob;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -12,7 +15,7 @@ public class UserWithExpertiseDTO {
     String email;
     String tel;
     String departement;
-    byte[] image;
+    Blob image;
     Expertise e;
 
 

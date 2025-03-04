@@ -85,7 +85,6 @@ export const routes: Routes = [
           { path: 'edit', component: GererprojetComponent },
           { path: 'collaborators', component: AjouterCollabComponent },
           { path: 'supprcollab/:id', component: SupprimerCollabComponent },
-          { path: 'validation-history', component: ValidationHistoryComponent }, // ✅ Ajout ici
           { path: '', component: ProjetInfComponent },
         ]
       },
@@ -125,6 +124,7 @@ export const routes: Routes = [
           { path: 'details', component: DatasetInfComponent },
           { path: 'models', component: DatasetModelComponent },
           { path: 'edit', component: GererDatasetComponent },
+          { path: 'validation_history', component: ValidationHistoryComponent },
           { path: 'images/:catalogueCode', component: ImageInfComponent },
           {
             path: 'datasetPrediction/:modelId', component: DatasetPredictionComponent,
