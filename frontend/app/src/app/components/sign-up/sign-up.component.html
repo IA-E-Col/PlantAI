@@ -50,6 +50,12 @@
               <label for="confirm-password">Confirm Password</label>
               <input id="confirm-password" type="password" placeholder="Confirm Password" class="form-control w-100" formControlName="password1"/>
             </div> 
+
+            <div class="d-flex align-items-start flex-column mb-4 w-100">
+              <label for="image">Profile Image</label>
+              <input id="image" type="file"  aria-describedby="inputGroupFileAddon04" aria-label="Upload"class="form-control w-100" (change)="onFileSelected($event)"/>
+            </div>
+            
             <div class="d-flex justify-content-end">
               <p class="fs-5 font-light text-black">Already have an account ? <span><a class="text-green fs-5 underlined font-light" [routerLink]="['/login']">Login</a></span></p> 
             </div>
