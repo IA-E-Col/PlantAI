@@ -8,27 +8,28 @@ import ird.sup.projectmanagementservice.Entities.AnnotationH.AnnotationSP.Annota
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Generated;
 import lombok.NoArgsConstructor;
-
 import java.util.Date;
 
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
+
 public class Commentaire {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
 
-    //Date creationDate;
+
     private Long id;
 
     private String commentaire;
+   private Date creationDate;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     private User createurC;
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JsonIgnore
+    @ManyToOne
     private AnnClassification annotation;
 }

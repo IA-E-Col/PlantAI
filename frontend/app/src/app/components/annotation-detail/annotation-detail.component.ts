@@ -10,6 +10,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import Swal from 'sweetalert2';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faUserCircle } from '@fortawesome/free-solid-svg-icons';
+
 interface Commentaire {
   id: number;
   commentaire: string;
@@ -34,10 +35,14 @@ interface Commentaire {
 })
 
 export class AnnotationDetailComponent {
-  comments: Commentaire[] = [];
+  commentss: Commentaire[] = [];
 
-  commentss : any = [];
+  comments : any = [];
   /****************/
+  showModal = false;
+editedText = '';
+selectedComment: any = null;
+
   faUserCircle = faUserCircle;
   idModele: any;
   Specimen: any;
@@ -207,7 +212,7 @@ export class AnnotationDetailComponent {
         {
           next: (newCommentaire) => {
             console.log("commentaire added", newCommentaire)
-            this.commentss = [...this.commentss,newCommentaire];
+            this.comments = [...this.comments,newCommentaire];
           },
           error: err => {
             alert("erreur recuperation model");
@@ -226,7 +231,7 @@ export class AnnotationDetailComponent {
         next: (response) => {
           console.log('Commentaire supprimé avec succès:', response);
           // Mettre à jour la liste des commentaires
-          this.comments = this.comments.filter(comment => comment.id !== idCommentaire);
+          this.comments = this.comments.filter((comment:any) => comment.id !== idCommentaire);
         },
         error: err => {
           console.error('Erreur lors de la suppression du commentaire:', err);
@@ -235,9 +240,30 @@ export class AnnotationDetailComponent {
       }
     );
   }
+  openEdit(comment: any) {
+    this.selectedComment = comment;
+    this.editedText = comment.commentaire;
+    this.showModal = true;
+  }
+  
+  // Fermer l'éditeur
+  closeEdit() {
+    this.showModal = false;
+    this.selectedComment = null;
+  }
+  
+  // Sauvegarder les modifications
+  saveEdit() {
+    if (this.selectedComment) {
+      this.selectedComment.commentaire = this.editedText;
+      // Ajouter ici la logique de sauvegarde
+    }
+    this.closeEdit();
+  }
 
   // Méthode pour mettre à jour un commentaire
   updateComment(idCommentaire: number, newComment: string) {
+
     console.log('Mise à jour du commentaire avec id:', idCommentaire, 'Nouveau texte:', newComment);
     
     const updatedComment = { commentaire: newComment };
@@ -247,7 +273,7 @@ export class AnnotationDetailComponent {
         next: (updatedCommentaire) => {
           console.log('Commentaire mis à jour avec succès:', updatedCommentaire);
           // Mettre à jour la liste des commentaires avec le commentaire mis à jour
-          this.comments = this.comments.map(comment => 
+          this.comments = this.comments.map((comment:any) => 
             comment.id === idCommentaire ? { ...comment, commentaire: updatedCommentaire.commentaire } : comment
           );
         },
@@ -345,6 +371,9 @@ export class AnnotationDetailComponent {
       }
     }
     
+    
     )
   }
+
+  
 }

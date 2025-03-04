@@ -4,7 +4,23 @@ import {HttpClient, HttpHeaders, HttpParams} from "@angular/common/http";
 import {LoginService} from "./login.service";
 import {LinkedList} from "ngx-bootstrap/utils";
 
-
+interface Model {
+  id: number;
+  name: string;
+  description: string;
+  urlModele: string;
+  categorie: string;
+}
+interface Annotation {
+  id: number;
+  libelle: string;
+  state: string;
+  etat: string;
+  valeurPredite: string;
+  ann_specification: string;
+  modelName: string;
+  modelcat: string;
+}
 export interface Specimen {
   id: number;
   baseDEnregistrement: string;
@@ -280,7 +296,23 @@ export class ProjetService {
   addCommentToAnnotation(idAnnotation: number, idUser: number, commentaire: any): Observable<any> {
     return this.http.post<any>(`http://127.0.0.1:8080/api/annotationModele/${idAnnotation}/${idUser}/addComment`, commentaire);
   }
-
+  getAnnHistory(idUser: number , idDataset:number): Observable<Annotation[]> {
+    return this.http.get<any[]>(`http://localhost:8080/api/annotationModele/history/${idUser}/${idDataset}`).pipe(
+      map(annotations => 
+        annotations.map(ann => ({
+          id: ann.id,
+          libelle: ann.libelle,
+          state: ann.state,
+          etat: ann.etat,
+          valeurPredite: ann.valeurPredite,
+          ann_specification: ann.ann_specification,
+          modelName: ann.model.name,  // Assure-toi que 'model' contient bien un objet avec la propriété 'name'
+          modelcat: ann.model.categorie  // Même chose pour 'categorie'
+        }))
+      )
+    );
+  }
+  
 
   deleteCommentFromAnnotation(idAnnotation: number, idUser: number, idCommentaire: number): Observable<any> {
     return this.http.delete<any>(`http://127.0.0.1:8080/api/annotationModele/${idUser}/${idAnnotation}/${idCommentaire}/deleteComment`);
@@ -308,4 +340,9 @@ export class ProjetService {
   func_supp_modele(id: any) {
     return this.http.delete(`/api/models/${id}`);
   }
+
+
+
+
+
 }
