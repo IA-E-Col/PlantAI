@@ -127,6 +127,7 @@ export const routes: Routes = [
           { path: 'edit', component: GererDatasetComponent },
           { path: 'validation_history', component: ValidationHistoryComponent },
           { path: 'images/:catalogueCode', component: ImageInfComponent },
+          { path: 'import_export_annotation', component: ExportannotationComponent },
           {
             path: 'datasetPrediction/:modelId', component: DatasetPredictionComponent,
             children: [
@@ -137,7 +138,7 @@ export const routes: Routes = [
       },
       { path: 'annotation_validation', component: AnnotationValidationComponent },
       { path: 'scores', component: ScoresComponent },
-      { path: 'exportannotation', component: ExportannotationComponent },
+      
 
     ]
   },  

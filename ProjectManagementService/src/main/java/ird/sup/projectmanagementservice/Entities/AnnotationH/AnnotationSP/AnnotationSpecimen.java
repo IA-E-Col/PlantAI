@@ -7,6 +7,7 @@ import ird.sup.projectmanagementservice.Entities.MediaH.Media;
 import ird.sup.projectmanagementservice.Entities.Modele;
 import ird.sup.projectmanagementservice.Enums.EState;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -16,19 +17,15 @@ import java.util.List;
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "type_annotation", discriminatorType = DiscriminatorType.STRING)
-@Data
 @NoArgsConstructor
+@AllArgsConstructor
+@Data
 @DiscriminatorValue("Specimen")
 public class AnnotationSpecimen extends Annotation {
-
-    String modeAquisition;
+    protected String modeAquisition;
     @Enumerated(EnumType.STRING)
-    EState etat;
+    protected EState etat;
     @ManyToOne
-    @JsonIgnore
-    private Media media;
-
-
-
+    protected Media media;
 
     }

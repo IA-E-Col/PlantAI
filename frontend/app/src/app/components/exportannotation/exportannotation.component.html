@@ -2,25 +2,37 @@
 <div class="big-card">
     <!-- Title -->
     <div class="header">
-        <h2>Export Annotations</h2>
-    
+        <div class="d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center">
+                <h2>Export Annotations</h2>
+            </div>
+            <div class="d-flex gap-3">
+                <button class="btn btn-green" (click)="exportSelected()">Export</button>
+                <button class="btn btn-green" (click)="importAnnotations()">Import</button>
+            </div>
+        </div>
+        <div class="filters mt-3">
+            <div class="form-outline" style="width: 100%;">
+              <input type="search" id="form1" class="form-control input__field" placeholder=" "
+                aria-label="search">
+              <label for="form1" class="input__label"><fa-icon [icon]="faSearch"></fa-icon> Search by name</label>
+            </div>
+          </div>
 
 
-  <!-- Buttons aligned to the right -->
-    <div class="button-container">
-        <button class="btn export-btn" (click)="exportSelected()">Export</button>
-        <button class="btn import-btn" (click)="importAnnotations()">Import</button>
-    </div>
-    <!-- Table for Annotations -->
-    <div class="table-container">
+    <div class="table-responsive">
         <table class="table">
             <thead>
                 <tr>
                     <th>
                         <input type="checkbox" (change)="toggleAllSelection($event)" />
                     </th>
-                    <th>Image</th>
                     <th>Description</th>
+                    <th>Applied Model Name</th>
+                    <th>Dataset Name</th>
+                    <th>Acquisition Mode</th>
+                    <th>Predicted Value</th>
+                    <th>State</th>
                 </tr>
             </thead>
             <tbody>
@@ -28,8 +40,12 @@
                     <td>
                         <input type="checkbox" [(ngModel)]="annotation.selected" />
                     </td>
-                    <td><img [src]="annotation.imgSrc" class="annotation-img" /></td>
-                    <td><strong>{{ annotation.description }}</strong></td>
+                    <td><strong>{{ annotation.libelle }}</strong></td>
+                    <td><strong>{{ annotation.model.name }}</strong></td>
+                    <td><strong>{{ annotation.dataset.name }}</strong></td>
+                    <td><strong>{{ annotation.modeAquisition }}</strong></td>
+                    <td><strong><span class="badge badge-gold p-2">{{ annotation.classe }}</span></strong></td>
+                    <td><strong><span class="badge badge-green p-2">{{ annotation.etat }}</span></strong></td>
                 </tr>
             </tbody>
         </table>

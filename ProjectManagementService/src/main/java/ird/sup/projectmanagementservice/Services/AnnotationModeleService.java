@@ -193,4 +193,7 @@ public class AnnotationModeleService {
     }
 
 
+    public List<AnnClassification> getPendingAnnotations(Long userId, Long dataSetId) {
+        return projetRepository.findPendingAnnotationByDataset(dataSetId);
+    }
 }

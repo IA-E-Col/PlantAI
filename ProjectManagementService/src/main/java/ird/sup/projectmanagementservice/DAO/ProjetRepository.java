@@ -1,6 +1,7 @@
 package ird.sup.projectmanagementservice.DAO;
 
 import ird.sup.projectmanagementservice.DTO.UserWithExpertiseDTO;
+import ird.sup.projectmanagementservice.Entities.AnnotationH.AnnotationSP.AnnClassification;
 import ird.sup.projectmanagementservice.Entities.Projet;
 import ird.sup.projectmanagementservice.Entities.User;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -42,4 +43,7 @@ public interface ProjetRepository extends JpaRepository<Projet,Long> {
 
     @Query("SELECT p.Id FROM Projet p JOIN p.participations part WHERE part.user.Id = :userId")
     List<Long> findProjetsByParticipant(@Param("userId") Long userId);
+
+    @Query("select a from AnnClassification a where a.dataset.id = :datasetId and a.etat = 'PENDING'")
+    List<AnnClassification> findPendingAnnotationByDataset(@Param("datasetId") Long datasetId);
 }

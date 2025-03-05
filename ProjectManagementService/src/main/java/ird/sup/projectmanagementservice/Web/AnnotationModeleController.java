@@ -148,5 +148,8 @@ public class AnnotationModeleController {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new Message("Unmatching state value!"));
     }
 
-    @PostMapping("/{id}")
+    @GetMapping("/annotations/{userId}/{dataSetId}")
+    public List<AnnClassification> getPendingAnnotations(@PathVariable Long userId, @PathVariable Long dataSetId) {
+        return annotationModeleService.getPendingAnnotations(userId, dataSetId);
+    }
 }

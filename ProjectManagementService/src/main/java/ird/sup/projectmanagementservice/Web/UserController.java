@@ -2,6 +2,7 @@ package ird.sup.projectmanagementservice.Web;
 
 
 
+import ird.sup.projectmanagementservice.DTO.Message;
 import ird.sup.projectmanagementservice.Entities.User;
 import ird.sup.projectmanagementservice.Services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -83,16 +84,16 @@ public class UserController {
         }
     }
     @PostMapping("/{id}/uploadImage")
-    public ResponseEntity<String> uploadUserImage(@PathVariable Long id, @RequestParam("files") MultipartFile file) {
+    public ResponseEntity<Message> uploadUserImage(@PathVariable Long id, @RequestParam("files") MultipartFile file) {
         try {
             byte[] bytes = file.getBytes();
             Blob blob = new javax.sql.rowset.serial.SerialBlob(bytes);
             userService.saveUserImage(id, blob);
             System.out.println("✅ Image uploaded successfully for user ID: " + id);
-            return ResponseEntity.ok("Image uploaded successfully");
+            return ResponseEntity.ok(new Message("Image uploaded successfully"));
         } catch (IOException e) {
             System.err.println("❌ Failed to upload image: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to upload image");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new Message("Failed to upload image"));
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
