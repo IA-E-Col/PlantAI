@@ -1,0 +1,11 @@
+[
+    {
+      "annSpecification": "classi",
+      "libelle": "elliptique",
+      "valeurPrecision": 0,
+      "valeurPredite": 1,
+      "mediaId": 35395,
+      "modelInferenceId": 8,
+      "datasetId": 5
+    }
+  ]

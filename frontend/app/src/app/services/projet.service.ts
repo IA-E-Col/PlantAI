@@ -14,7 +14,6 @@ interface Model {
 interface Annotation {
   id: number;
   libelle: string;
-  state: string;
   etat: string;
   valeurPredite: string;
   ann_specification: string;
@@ -265,7 +264,7 @@ export class ProjetService {
   importCsv(file: File, idCollection: any): Observable<string> {
     const formData = new FormData();
     formData.append('file', file);
-    return this.http.post<string>(`http://127.0.0.1:8080/import-csv/${idCollection}`, formData);
+    return this.http.post<string>(`http://127.0.0.1:8080/api/import/import-csv/${idCollection}`, formData);
   }
   addClasse(classe: any): Observable<any> {
     return this.http.post<any>('http://127.0.0.1:8080/api/annotationModele/addClasse', classe);

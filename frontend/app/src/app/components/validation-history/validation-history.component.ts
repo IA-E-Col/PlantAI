@@ -10,7 +10,6 @@ import { faSearch } from '@fortawesome/free-solid-svg-icons';
 interface Annotation {
   id: number;
   libelle: string;
-  //state: string;
   etat: string;
   valeurPredite: string;
   modelcat: string;

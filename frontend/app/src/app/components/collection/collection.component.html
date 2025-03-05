@@ -144,10 +144,10 @@
             <td>{{ c.name }}</td>
             <td [title]="c.description">{{ c.description.length > 148 ? (c.description | slice:0:148) + '...' : c.description }}</td>
             <td>
-              <button class="info-btn text-white" (click)="onFinishClicked(c)">
+              <button class="btn btn-green me-2" (click)="onFinishClicked(c)">
                 <fa-icon [icon]="faEdit"></fa-icon>
               </button>
-              <button class="play-btn" (click)="func_inf_C(c)">
+              <button class="btn btn-green" (click)="func_inf_C(c)">
                 <fa-icon [icon]="faTrash"></fa-icon>
               </button>
             </td>
