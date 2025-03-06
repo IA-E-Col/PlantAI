@@ -11,13 +11,19 @@ import ird.sup.projectmanagementservice.Entities.TokenType;
 import ird.sup.projectmanagementservice.Entities.User;
 import ird.sup.projectmanagementservice.tfa.TwoFactorAuthenticationService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import io.swagger.v3.oas.models.Paths;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.persistence.criteria.Path;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+
+import org.apache.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -26,13 +32,26 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import javax.mail.MessagingException;
-import java.io.IOException;
-import java.security.SecureRandom;
-import java.time.LocalDateTime;
-import java.util.NoSuchElementException;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.security.SecureRandom;
+import java.sql.Blob;
+import java.sql.SQLException;
+import java.time.LocalDateTime;
+import java.util.Base64;
+import java.util.NoSuchElementException;
+import java.util.Optional;
+import java.nio.file.Files;
+import java.util.Base64;
 /**
  * Service centralisant la logique d'authentification et d'inscription, incluant la génération de tokens JWT,
  * la gestion des tokens d'activation par email et l'authentification à double facteur (2FA).
@@ -57,14 +76,52 @@ public class AuthenticationService {
     public AuthenticationResponse register(RegisterRequest request)
             throws MessagingException, jakarta.mail.MessagingException {
 
-        // 1) Crée un nouvel utilisateur
+    	// 1) Si le champ image est au format Base64, on enregistre le fichier en local.
+    	if (request.getImage() != null && request.getImage().startsWith("data:image")) {
+    	    try {
+    	        int commaIndex = request.getImage().indexOf(",");
+    	        if (commaIndex > 0) {
+    	            // Récupérer la partie "base64" (après la virgule)
+    	            String base64Data = request.getImage().substring(commaIndex + 1);
+    	            byte[] imageBytes = Base64.getDecoder().decode(base64Data);
+
+    	            // Générer un nom de fichier unique (ex: 1678123456789_profile.png)
+    	            String fileName = System.currentTimeMillis() + "_profile.png";
+
+    	            // Définir le dossier cible : "../frontend/src/assets/uploads/"
+    	            // (Hypothèse : le backend et le frontend sont au même niveau)
+    	            String uploadDir = "../frontend/app/src/assets/uploads/";
+    	            File directory = new File(uploadDir);
+    	            if (!directory.exists()) {
+    	                directory.mkdirs();
+    	            }
+
+    	            // Écrire le fichier sur le disque
+    	            File file = new File(directory, fileName);
+    	            try (FileOutputStream fos = new FileOutputStream(file)) {
+    	                fos.write(imageBytes);
+    	            }
+
+    	            // Stocker un chemin relatif pour que le front (Angular) puisse y accéder :
+    	            // Par exemple "assets/uploads/1678123456789_profile.png"
+    	            request.setImage("assets/uploads/" + fileName);
+    	        }
+    	    } catch (IOException e) {
+    	        throw new RuntimeException("Failed to process base64 image: " + e.getMessage(), e);
+    	    }
+    	}
+
+
+        // 2) Créer l'utilisateur
         var user = User.builder()
                 .prenom(request.getPrenom())
                 .nom(request.getNom())
                 .email(request.getEmail())
+                .departement(request.getDepartement())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .role(request.getRole())
-                .mfaEnabled(request.isMfaEnabled()) // <-- On récupère la valeur de la case 2FA
+                .mfaEnabled(request.isMfaEnabled())
+                .image(request.getImage())  // Stocke "uploads/xxx.png"
                 .build();
 
         // 2) Génère et assigne un secret si 2FA est activé
@@ -85,18 +142,19 @@ public class AuthenticationService {
         // 6) Enregistre le token JWT dans la base
         saveUserToken(savedUser, jwtToken);
 
-        // 7) Construit et renvoie la réponse
-        //    Remplacez "user.isEnabled()" par "user.isMfaEnabled()" !
+        // 7) Construire la réponse
         return AuthenticationResponse.builder()
-                // Ne génère le QR code que si l'utilisateur a coché la 2FA
                 .secretImageUri(
                     user.isMfaEnabled() ? tfaService.generateQrCodeImageUri(user.getSecret()) : null
                 )
                 .accessToken(jwtToken)
                 .refreshToken(refreshToken)
-                .mfaEnabled(user.isMfaEnabled()) // <-- Correction ici
+                .mfaEnabled(user.isMfaEnabled())
+                .profileImageUrl(user.getImage())  // Permettre au front de connaître le chemin
+                .secretImageUri(user.isMfaEnabled() ? tfaService.generateQrCodeImageUri(user.getSecret()) : null)
                 .build();
     }
+    
 
     private void sendValidationEmail(User user)
             throws MessagingException, jakarta.mail.MessagingException {
@@ -162,6 +220,11 @@ public class AuthenticationService {
         tokenRepository.save(token);
     }
 
+    /**
+     * Authentification standard.
+     * - Si MFA activé, renvoie un accessToken vide => forcer verifyCode().
+     * - Sinon, renvoie token + refresh + info sur l'image.
+     */
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
         try {
             authenticationManager.authenticate(
@@ -177,16 +240,16 @@ public class AuthenticationService {
         var user = repository.findByEmaill(request.getEmail())
                 .orElseThrow(() -> new NoSuchElementException("No user with the provided email"));
 
-        // Si l'utilisateur a activé la 2FA, on renvoie un accessToken vide pour forcer la vérification
+        // Si l'utilisateur a activé la 2FA => renvoie un token vide pour forcer la saisie OTP.
         if (user.isMfaEnabled()) {
             return AuthenticationResponse.builder()
-                    .accessToken("")
+                    .accessToken("")    // Forcer la saisie OTP
                     .refreshToken("")
                     .mfaEnabled(true)
                     .build();
         }
 
-        // Sinon, on génère les tokens d'accès
+        // Sinon, 2FA non activé => on génère directement les tokens
         var jwtToken = jwtService.generateToken(user);
         var refreshToken = jwtService.generateRefreshToken(user);
 
@@ -197,8 +260,13 @@ public class AuthenticationService {
                 .accessToken(jwtToken)
                 .refreshToken(refreshToken)
                 .mfaEnabled(false)
+                .profileImageUrl(user.getImage())
+                .nom(user.getNom())
+                .prenom(user.getPrenom())
+                .userId(user.getId())
                 .build();
     }
+
 
     private void revokeAllUserTokens(User user) {
         var validUserTokens = tokenRepository.findAllValidTokenByUser(user.getId());
@@ -272,4 +340,11 @@ public class AuthenticationService {
         savedToken.setValidatedAt(LocalDateTime.now());
         emailtokenRepository.save(savedToken);
     }
+    
+    public Optional<User> getUserByEmail(String email) {
+        // Remarquez que votre repository utilise la méthode findByEmaill (avec deux 'l')
+        return repository.findByEmaill(email);
+    }
+
+
 }

@@ -1,6 +1,10 @@
 export interface AuthenticationResponse {
-    accessToken?: string;
-    mfaEnabled?: string;
-    secretImageUri?: string;
-  }
-  
+  accessToken?: string;
+  refreshToken?: string;
+  userId?: number;
+  mfaEnabled?: boolean;
+  secretImageUri?: string;
+  profileImageUrl?: string; // URL de l'image de profil
+  nom?: string;            // Nom de l'utilisateur
+  prenom?: string;         // Prénom de l'utilisateur
+}

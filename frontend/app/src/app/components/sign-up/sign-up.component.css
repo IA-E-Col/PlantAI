@@ -32,7 +32,7 @@ p {
   font-weight: 100;
   line-height: 20px;
   letter-spacing: 0.5px;
-  margin: 20px 0 30px;
+  margin: 10px 0 20px;
 }
 
 span {
@@ -83,9 +83,9 @@ button.ghost {
   position: relative;
   overflow: hidden;
   width: 768px;
-  max-width: 100%;
-  min-height: 480px;
-  margin-top: 13% !important ;
+  max-width: 70%;
+  min-height: 460px;
+  margin-top: 5% !important ;
 }
 
 .form-container {
@@ -218,4 +218,222 @@ button.ghost {
   margin: 0 5px;
   height: 40px;
   width: 40px;
+}
+/* Styles généraux */
+.text-green {
+  color: #86A786;
+}
+
+.underlined {
+  text-decoration: underline;
+}
+
+.bg-green {
+  background-color: #86A786;
+}
+
+.bg-grad {
+  background: rgb(163, 177, 138);
+  background: linear-gradient(90deg, rgba(163, 177, 138, 1) 27%, rgba(134, 167, 134, 1) 63%);
+}
+
+h1 {
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+h2 {
+  text-align: center;
+  margin-bottom: 15px;
+}
+
+p {
+  font-size: 14px;
+  font-weight: 100;
+  line-height: 20px;
+  letter-spacing: 0.5px;
+  margin: 20px 0 30px;
+}
+
+a {
+  color: #333;
+  font-size: 14px;
+  text-decoration: none;
+  margin-top: 10px;
+}
+
+a:hover {
+  color: #86A786;
+  text-decoration: underline;
+}
+
+/* Container principal */
+.container {
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  position: relative;
+  width: 768px;
+  max-width: 100%;
+  min-height: 500px;
+  padding: 10px;
+  margin-top: 0% !important;
+  margin-bottom: auto
+}
+
+/* Formulaire */
+.form-login {
+  background-color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px;
+  text-align: center;
+  width: 90%;
+}
+
+.form-group {
+  width: 100%;
+  margin-bottom: 15px;
+  text-align: left;
+}
+
+label {
+  font-weight: 600;
+  margin-bottom: 2px;
+  display: block;
+  color: #4a4a4a;
+}
+
+input,
+select {
+  width: 100%;
+  padding: 1px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-sizing: border-box;
+  transition: border 0.3s ease-in-out;
+}
+
+input:focus,
+select:focus {
+  border: 1px solid #86A786;
+  outline: none;
+  box-shadow: 0 0 5px rgba(134, 167, 134, 0.5);
+}
+
+/* Boutons */
+button {
+  background-color: #86A786;
+  color: white;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  width: 100%;
+  transition: background-color 0.3s;
+}
+
+button:hover {
+  background-color: #6f8d6f;
+}
+
+button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+/* Image de profil */
+input[type="file"] {
+  padding: 5px;
+  border: none;
+  background-color: #f9f9f9;
+}
+
+input[type="file"]:hover {
+  background-color: #e6e6e6;
+}
+
+/* Bouton de validation du MFA */
+.button-disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+/* Ajout de messages d'erreur */
+.text-danger {
+  font-size: 12px;
+  color: red;
+  margin-top: 5px;
+}
+
+.success-message-panel {
+  background-color: #e9f5e9;
+  color: #4caf50;
+  padding: 10px;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+}
+
+.success-icon {
+  font-size: 18px;
+  margin-right: 10px;
+}
+
+/* Responsive */
+@media screen and (max-width: 1000px) {
+  .container {
+    width: 95%;
+    padding: 20px;
+  }
+
+  button {
+    font-size: 14px;
+  }
+}
+
+.image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: -1;
+  opacity: 0.8;
+}
+
+.qr-code img {
+  width: 200px;
+  height: 200px;
+  margin: 0 auto;
+  display: block;
+}
+
+/* Styles pour l'aperçu de l'image de profil */
+.image-preview {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  border: 2px solid #86A786;
+  object-fit: cover;
+  margin-top: 10px;
+  transition: transform 0.3s ease;
+}
+
+.image-preview:hover {
+  transform: scale(1.1);
+}
+
+.success-message-panel {
+  background-color: #d4edda;
+  color: #155724;
+  padding: 10px;
+  border-radius: 4px;
+  margin-bottom: 15px;
+  text-align: center;
+}
+
+.success-icon {
+  font-size: 24px;
 }

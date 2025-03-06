@@ -1,6 +1,10 @@
 export enum Role {
-    Admin,
-    // Ajoutez plus de catégories ici si nécessaire
+  ADMIN,
+  Expert,
+  Avance,
+  Intermediaire,
+  Debutant,
+  Amateur,
   }
   export class User {
     constructor(
@@ -10,6 +14,9 @@ export enum Role {
       public email?: string,
       public password?: string,
       public role?: Role,
+      public departement?: string,
+      public image?: string,
     ) {}
   }
+  
   

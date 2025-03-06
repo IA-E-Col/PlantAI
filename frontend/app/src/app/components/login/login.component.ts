@@ -5,9 +5,11 @@ import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import Swal from 'sweetalert2';
+
 import { AuthenticationRequest } from '../../model/authentication-request';
 import { AuthenticationResponse } from '../../model/authentication-response';
 import { VerificationRequest } from '../../model/verification-request';
+
 import { LoginService } from '../../services/login.service';
 import { UserService } from '../../services/user.service';
 
@@ -40,13 +42,36 @@ export class LoginComponent implements OnInit {
     });
   }
 
-  authenticate() {
+  /**
+   * Authentification "classique" (sans MFA ou alors MFA activé mais encore inconnu).
+   */
+  authenticate(): void {
     this.authRequest = this.loginFormGroup.value;
     this.authService.login(this.authRequest).subscribe({
       next: (response: AuthenticationResponse) => {
         this.authResponse = response;
+  
+        // Si le MFA n'est pas activé, l'utilisateur est déjà logué.
         if (!this.authResponse.mfaEnabled) {
-          localStorage.setItem('token', response.accessToken as string);
+          // Stockage du token
+          localStorage.setItem('token', this.authResponse.accessToken as string);
+  
+          // Stockage de l'URL de l'image de profil (si renvoyée)
+          if (this.authResponse.profileImageUrl) {
+            localStorage.setItem('profileImageUrl', this.authResponse.profileImageUrl);
+            console.log("zebi"+ this.authResponse.profileImageUrl);
+          }
+  
+          // Stockage du nom et du prénom
+          if (this.authResponse.nom) {
+            localStorage.setItem('nom', this.authResponse.nom);
+            console.log("zebi"+ this.authResponse.nom);
+          }
+          if (this.authResponse.prenom) {
+            localStorage.setItem('prenom', this.authResponse.prenom);
+          }
+  
+          // Facultatif : stockage de l'ID utilisateur
           this.userService.getUserID(this.authRequest.email!).subscribe({
             next: (id: number) => {
               localStorage.setItem('userID', id.toString());
@@ -57,6 +82,7 @@ export class LoginComponent implements OnInit {
             }
           });
         }
+        // Sinon, si le MFA est activé, la suite se fera dans verifyCode()
       },
       error: (err: any) => {
         this.errorMessage = 'Email or password incorrect.';
@@ -66,14 +92,27 @@ export class LoginComponent implements OnInit {
     });
   }
   
-  verifyCode() {
+  
+  /**
+   * Vérification du code MFA (OTP).
+   */
+  verifyCode(): void {
     const verifyRequest: VerificationRequest = {
       email: this.authRequest.email,
       code: this.otpCode
     };
+
     this.authService.verifyCode(verifyRequest).subscribe({
       next: (response: AuthenticationResponse) => {
+        // 1) Stocker le nouveau token
         localStorage.setItem('token', response.accessToken as string);
+
+        // 2) Stocker l'URL de l'image de profil (si renvoyée après vérification)
+        if (response.profileImageUrl) {
+          localStorage.setItem('profileImageUrl', response.profileImageUrl);
+        }
+
+        // 3) Redirection
         this.fetchUserDetailsAndNavigate();
       },
       error: (err: any) => {
@@ -83,7 +122,12 @@ export class LoginComponent implements OnInit {
     });
   }
 
-  fetchUserDetailsAndNavigate() {
+  /**
+   * Exemple de méthode pour la redirection finale
+   * après récupération d'infos utilisateur.
+   */
+  fetchUserDetailsAndNavigate(): void {
+    // Naviguer vers la page d'accueil ou dashboard ...
     this.router.navigateByUrl('/admin/corpus');
   }
 }

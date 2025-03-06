@@ -1,50 +1,86 @@
+/* Navbar de base */
 .navbar {
-    background-color: #A3B18A;
-    color: #fff;
-    padding: 1rem 2rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    position: relative;
-  }
-  .logo i {
-    margin-right: 0.5rem;
-    font-size: 1.8rem; 
-  }
-  
-  .user-icon {
-    font-size: 1.5rem;  /* Increase the icon size */
-    margin-right: 0.5rem;  /* Spacing between the icon and username */
-  }
-  
-  .username {
-    font-size: 1.5rem;  /* Increase the username size */
-    font-weight: bold;  /* Optionally, make the username bold */
-  }
-  
-  .logo {
-    font-size: 1.5rem;
-    font-weight: bold;
-  }
-  
-  .nav-links {
-    list-style: none;
-    display: flex;
-    gap: 1rem;
-    margin: 0;
-    padding: 0;
-    transition: all 0.3s ease-in-out;
-  }
-  
-  /* Links Style */
-  .nav-links li a {
-    text-decoration: none;
-    color: #fff;
-    font-size: 1rem;
-    transition: color 0.2s ease-in-out;
-  }
-  
-  .nav-links li a:hover {
-    color: #f0a500;
-  }
-  
+  background-color: #A3B18A;
+  color: #fff;
+  padding: 0 2rem;
+  position: relative;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+}
+
+/* Conteneur interne */
+.navbar-container {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Logo */
+.logo {
+  font-size: 1.8rem;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+}
+
+/* Section utilisateur */
+.user-section {
+  display: flex;
+  align-items: center;
+}
+
+/* Infos utilisateur : avatar et nom complet */
+.user-info {
+  display: flex;
+  align-items: center;
+  margin-right: 1rem;
+}
+
+.user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  object-fit: cover;
+  margin-right: 0.5rem;
+}
+
+.user-name {
+  font-size: 1rem;
+  font-weight: bold;
+  color: black;
+}
+
+/* Dropdown minimal */
+.dropdown {
+  position: relative;
+}
+
+.dropdown-toggle {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 0.5rem;
+  min-width: 120px;
+  background-color: #fff;
+  border: none;
+  border-radius: 0.25rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  padding: 0.5rem 0;
+  color: #333;
+}

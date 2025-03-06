@@ -1,6 +1,7 @@
 package ird.sup.projectmanagementservice.Entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -8,12 +9,14 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.nio.charset.StandardCharsets;
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
 @Data
-@Builder  // Ajoutez cette annotation pour générer le builder
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
@@ -41,9 +44,8 @@ public class User implements UserDetails {
     @JsonIgnore
     String password;
 
-    @Column(nullable = true)
-    @Lob
-    byte[] image;
+    // Stocke l'URL de l'image ou une représentation textuelle
+    String image;
 
     @Enumerated(EnumType.STRING)
     Role role;
@@ -51,11 +53,11 @@ public class User implements UserDetails {
     boolean enabled;
     private String secret;      // pour stocker le secret du 2FA
     private boolean mfaEnabled; // pour indiquer si le 2FA est activé
+
     @OneToMany(mappedBy = "user")
     @JsonIgnore
     List<Token> tokens;
 
-    // Les relations avec d'autres entités
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "createur", cascade = CascadeType.ALL)
     @JsonIgnore
     private List<Projet> projetsCree;
@@ -89,7 +91,7 @@ public class User implements UserDetails {
     }
 
     public String getfullNname() {
-        return nom+" "+prenom;
+        return nom + " " + prenom;
     }
     
     public String getPrenom() {
@@ -99,6 +101,16 @@ public class User implements UserDetails {
     public String getNom() {
         return nom;
     }
+
+    // Méthode pour obtenir les octets de l'URL stockée dans le champ image
+    @JsonProperty("image")
+    public byte[] getImageAsByteArray() {
+        if (image != null) {
+            return image.getBytes(StandardCharsets.UTF_8);
+        }
+        return null;
+    }
+    
     @Override
     @JsonIgnore
     public boolean isAccountNonExpired() {

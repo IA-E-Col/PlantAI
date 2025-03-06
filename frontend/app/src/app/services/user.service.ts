@@ -1,15 +1,15 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { User } from '../model/user'; // Assurez-vous que le chemin est correct
-import { Observable, throwError } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
+import { User } from '../model/user'; // Vérifiez que le chemin est correct
+import { Observable, throwError, of } from 'rxjs';
+import { catchError, switchMap } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UserService {
   // Base URL de l'API backend pour les utilisateurs
-  private baseUrl = 'http://localhost:8080/api/users';
+  private baseUrl = 'http://localhost:8080/api/v1/auth';
   private ajouterUrl = `${this.baseUrl}/add`;
   private listUrl = `${this.baseUrl}/all`;
   private modifierUrl = `${this.baseUrl}/update`;
@@ -40,7 +40,6 @@ export class UserService {
         })
       };
     } else {
-      // Vous pouvez gérer ici le cas où le token n'existe pas, par exemple en redirigeant l'utilisateur
       throw new Error('Token not found');
     }
   }
@@ -52,7 +51,10 @@ export class UserService {
     const url = `${this.baseUrl}/getidbyemail/${email}`;
     return this.http.get<number>(url, this.getHttpOptions())
       .pipe(
-        catchError((error: any) => throwError('Erreur lors de la récupération des détails de l\'utilisateur'))
+        catchError((error: any) => {
+          console.error('Erreur lors de la récupération des détails de l\'utilisateur', error);
+          return throwError(() => new Error('Erreur lors de la récupération des détails de l\'utilisateur'));
+        })
       );
   }
 
@@ -62,7 +64,10 @@ export class UserService {
   ajouterUser(user: User): Observable<User> {
     return this.http.post<User>(this.ajouterUrl, user, this.getHttpOptions())
       .pipe(
-        catchError((error: any) => throwError('Erreur lors de l\'ajout de l\'utilisateur'))
+        catchError((error: any) => {
+          console.error('Erreur lors de l\'ajout de l\'utilisateur', error);
+          return throwError(() => new Error('Erreur lors de l\'ajout de l\'utilisateur'));
+        })
       );
   }
 
@@ -72,7 +77,10 @@ export class UserService {
   listUser(): Observable<User[]> {
     return this.http.get<User[]>(this.listUrl, this.getHttpOptions())
       .pipe(
-        catchError((error: any) => throwError('Erreur lors de la récupération de la liste des utilisateurs'))
+        catchError((error: any) => {
+          console.error('Erreur lors de la récupération de la liste des utilisateurs', error);
+          return throwError(() => new Error('Erreur lors de la récupération de la liste des utilisateurs'));
+        })
       );
   }
 
@@ -83,7 +91,10 @@ export class UserService {
     const url = `${this.deleteUrl}/${id}`;
     return this.http.delete<void>(url, this.getHttpOptions())
       .pipe(
-        catchError((error: any) => throwError('Erreur lors de la suppression de l\'utilisateur'))
+        catchError((error: any) => {
+          console.error('Erreur lors de la suppression de l\'utilisateur', error);
+          return throwError(() => new Error('Erreur lors de la suppression de l\'utilisateur'));
+        })
       );
   }
 
@@ -94,7 +105,10 @@ export class UserService {
     const url = `${this.modifierUrl}/${id}`;
     return this.http.put<User>(url, user, this.getHttpOptions())
       .pipe(
-        catchError((error: any) => throwError('Erreur lors de la modification de l\'utilisateur'))
+        catchError((error: any) => {
+          console.error('Erreur lors de la modification de l\'utilisateur', error);
+          return throwError(() => new Error('Erreur lors de la modification de l\'utilisateur'));
+        })
       );
   }
 
@@ -105,7 +119,10 @@ export class UserService {
     const url = `${this.baseUrl}/getbyemail/${email}`;
     return this.http.get<User>(url, this.getHttpOptions())
       .pipe(
-        catchError((error: any) => throwError('Erreur lors de la récupération des détails de l\'utilisateur'))
+        catchError((error: any) => {
+          console.error('Erreur lors de la récupération des détails de l\'utilisateur', error);
+          return throwError(() => new Error('Erreur lors de la récupération des détails de l\'utilisateur'));
+        })
       );
   }
 
@@ -116,7 +133,10 @@ export class UserService {
     const url = `${this.baseUrl}/get/${id}`;
     return this.http.get<User>(url, this.getHttpOptions())
       .pipe(
-        catchError((error: any) => throwError('Erreur lors de la récupération de l\'utilisateur'))
+        catchError((error: any) => {
+          console.error('Erreur lors de la récupération de l\'utilisateur', error);
+          return throwError(() => new Error('Erreur lors de la récupération de l\'utilisateur'));
+        })
       );
   }
 
@@ -127,7 +147,57 @@ export class UserService {
     const url = `${this.searchUrl}?keyword=${keyword}`;
     return this.http.get<User[]>(url, this.getHttpOptions())
       .pipe(
-        catchError((error: any) => throwError('Erreur lors de la recherche d\'utilisateurs'))
+        catchError((error: any) => {
+          console.error('Erreur lors de la recherche d\'utilisateurs', error);
+          return throwError(() => new Error('Erreur lors de la recherche d\'utilisateurs'));
+        })
       );
   }
+
+  /**
+   * Récupère l'URL de l'image de profil d'un utilisateur via son email.
+   * NB: Assurez-vous que le backend expose un endpoint GET correspondant.
+   */
+  getUserImageByEmail(email: string): Observable<string | null> {
+    const url = `${this.baseUrl}/getUserImageByEmail/${email}`;
+    return this.http.get(url, { responseType: 'blob' }).pipe(
+      switchMap((blob: Blob) => {
+        return new Observable<string>(observer => {
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            // On obtient la base64
+            observer.next(reader.result as string);
+            observer.complete();
+          };
+          reader.onerror = err => observer.error(err);
+          reader.readAsDataURL(blob);
+        });
+      }),
+      catchError(() => of(null))
+    );
+  
+  }
+  
+  uploadUserImage(file: File): Observable<string> {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    // Récupération du token JWT
+    const token = localStorage.getItem('token');
+    const headers = token ? new HttpHeaders().set('Authorization', `Bearer ${token}`) : new HttpHeaders();
+
+    return this.http.post<string>(`${this.baseUrl}/uploadImage`, formData, { headers }).pipe(
+      catchError((error) => {
+        console.error('Image upload error:', error);
+        return throwError(() => new Error('Error uploading image'));
+      })
+    );
+  }
+// Par exemple dans user.service.ts
+public getUserImageUrlByEmail(email: string): Observable<string | null> {
+  return this.http.get<string>(`${this.baseUrl}/getUserImageUrlByEmail/${email}`).pipe(
+    catchError(() => of(null))
+  );
+}
+
 }

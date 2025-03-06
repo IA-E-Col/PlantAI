@@ -12,10 +12,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class RegisterRequest {
 
-  private String prenom;
-  private String nom;
-  private String email;
-  private String password;
-  private Role role;
-  private boolean mfaEnabled;
+	private String prenom;
+    private String nom;
+    private String email;
+    private String password;
+    private String departement;
+    private Role role;
+    private boolean mfaEnabled;
+    private String image; // URL de l'image de profil
 }
