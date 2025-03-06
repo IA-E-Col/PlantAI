@@ -304,22 +304,27 @@ public class AuthenticationService {
         }
     }
 
-    public AuthenticationResponse verifyCode(VerificationRequest verificationRequest) {
+    public AuthenticationResponse verifyCode(
+            VerificationRequest verificationRequest
+    ) {
         User user = repository
                 .findByEmaill(verificationRequest.getEmail())
                 .orElseThrow(() -> new EntityNotFoundException(
                         String.format("No user found with %S", verificationRequest.getEmail()))
                 );
-
         if (tfaService.isOtpNotValid(user.getSecret(), verificationRequest.getCode())) {
+
             throw new BadCredentialsException("Code is not correct");
         }
-
-        // Si le code est correct, on génère un nouveau token
         var jwtToken = jwtService.generateToken(user);
         return AuthenticationResponse.builder()
                 .accessToken(jwtToken)
                 .mfaEnabled(user.isMfaEnabled())
+                .profileImageUrl(user.getImage())
+                .nom(user.getNom())
+                .prenom(user.getPrenom())
+                .userId(user.getId())
+                .profileImageUrl(user.getImage())
                 .build();
     }
 

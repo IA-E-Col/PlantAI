@@ -5,12 +5,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.annotations.NaturalId;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.nio.charset.StandardCharsets;
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -30,7 +30,8 @@ public class User implements UserDetails {
     String username;
     String nom;
     String prenom;
-    
+
+    @NaturalId(mutable = true)
     @Column(nullable = false, unique = true)
     String email;
 
@@ -51,8 +52,8 @@ public class User implements UserDetails {
     Role role;
 
     boolean enabled;
-    private String secret;      // pour stocker le secret du 2FA
-    private boolean mfaEnabled; // pour indiquer si le 2FA est activé
+    String secret;      // pour stocker le secret du 2FA
+    boolean mfaEnabled; // pour indiquer si le 2FA est activé
 
     @OneToMany(mappedBy = "user")
     @JsonIgnore
@@ -60,15 +61,15 @@ public class User implements UserDetails {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "createur", cascade = CascadeType.ALL)
     @JsonIgnore
-    private List<Projet> projetsCree;
+    List<Projet> projetsCree;
 
     @ManyToMany(mappedBy = "collaborateurs")
     @JsonIgnore
-    private List<Projet> projetsCollab;
+    List<Projet> projetsCollab;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "createurC", cascade = CascadeType.ALL)
     @JsonIgnore
-    private List<Commentaire> commentaires;
+    List<Commentaire> commentaires;
 
     @Override
     @JsonIgnore
@@ -90,7 +91,7 @@ public class User implements UserDetails {
         return password;
     }
 
-    public String getfullNname() {
+    public String getFullName() {
         return nom + " " + prenom;
     }
     

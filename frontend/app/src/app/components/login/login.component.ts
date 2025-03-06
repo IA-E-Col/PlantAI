@@ -33,7 +33,7 @@ export class LoginComponent implements OnInit {
     private authService: LoginService,
     private router: Router,
     private userService: UserService
-  ) { }
+  ) {}
 
   ngOnInit(): void {
     this.loginFormGroup = this.fb.group({
@@ -43,35 +43,33 @@ export class LoginComponent implements OnInit {
   }
 
   /**
-   * Authentification "classique" (sans MFA ou alors MFA activé mais encore inconnu).
+   * Authentification classique (sans MFA ou avec MFA activé, mais non vérifié).
    */
   authenticate(): void {
     this.authRequest = this.loginFormGroup.value;
     this.authService.login(this.authRequest).subscribe({
       next: (response: AuthenticationResponse) => {
         this.authResponse = response;
-  
-        // Si le MFA n'est pas activé, l'utilisateur est déjà logué.
+
+        // Stockage commun : image, nom, prénom et état du MFA
+        if (this.authResponse.profileImageUrl) {
+          localStorage.setItem('profileImageUrl', this.authResponse.profileImageUrl);
+          console.log("Profile image URL stored: " + this.authResponse.profileImageUrl);
+        }
+        if (this.authResponse.nom) {
+          localStorage.setItem('nom', this.authResponse.nom);
+          console.log("Nom stored: " + this.authResponse.nom);
+        }
+        if (this.authResponse.prenom) {
+          localStorage.setItem('prenom', this.authResponse.prenom);
+          console.log("Prenom stored: " + this.authResponse.prenom);
+        }
+        localStorage.setItem('mfaEnabled', JSON.stringify(this.authResponse.mfaEnabled));
+
+        // Si MFA n'est pas activé, l'utilisateur est connecté immédiatement
         if (!this.authResponse.mfaEnabled) {
-          // Stockage du token
           localStorage.setItem('token', this.authResponse.accessToken as string);
-  
-          // Stockage de l'URL de l'image de profil (si renvoyée)
-          if (this.authResponse.profileImageUrl) {
-            localStorage.setItem('profileImageUrl', this.authResponse.profileImageUrl);
-            console.log("zebi"+ this.authResponse.profileImageUrl);
-          }
-  
-          // Stockage du nom et du prénom
-          if (this.authResponse.nom) {
-            localStorage.setItem('nom', this.authResponse.nom);
-            console.log("zebi"+ this.authResponse.nom);
-          }
-          if (this.authResponse.prenom) {
-            localStorage.setItem('prenom', this.authResponse.prenom);
-          }
-  
-          // Facultatif : stockage de l'ID utilisateur
+          // Stockage de l'ID utilisateur via service
           this.userService.getUserID(this.authRequest.email!).subscribe({
             next: (id: number) => {
               localStorage.setItem('userID', id.toString());
@@ -82,7 +80,7 @@ export class LoginComponent implements OnInit {
             }
           });
         }
-        // Sinon, si le MFA est activé, la suite se fera dans verifyCode()
+        // Sinon, la vérification MFA devra être effectuée par verifyCode()
       },
       error: (err: any) => {
         this.errorMessage = 'Email or password incorrect.';
@@ -91,8 +89,7 @@ export class LoginComponent implements OnInit {
       }
     });
   }
-  
-  
+
   /**
    * Vérification du code MFA (OTP).
    */
@@ -104,16 +101,34 @@ export class LoginComponent implements OnInit {
 
     this.authService.verifyCode(verifyRequest).subscribe({
       next: (response: AuthenticationResponse) => {
-        // 1) Stocker le nouveau token
+        // Stocker le nouveau token
         localStorage.setItem('token', response.accessToken as string);
 
-        // 2) Stocker l'URL de l'image de profil (si renvoyée après vérification)
+        // Stocker l'URL de l'image de profil
         if (response.profileImageUrl) {
           localStorage.setItem('profileImageUrl', response.profileImageUrl);
+          console.log("Profile image URL stored: " + response.profileImageUrl);
+        }
+        // Stocker le nom et le prénom
+        if (response.nom) {
+          localStorage.setItem('nom', response.nom);
+          console.log("Nom stored: " + response.nom);
+        }
+        if (response.prenom) {
+          localStorage.setItem('prenom', response.prenom);
+          console.log("Prenom stored: " + response.prenom);
         }
 
-        // 3) Redirection
-        this.fetchUserDetailsAndNavigate();
+        // Stockage facultatif de l'ID utilisateur
+        this.userService.getUserID(this.authRequest.email!).subscribe({
+          next: (id: number) => {
+            localStorage.setItem('userID', id.toString());
+            this.fetchUserDetailsAndNavigate();
+          },
+          error: (error: any) => {
+            console.error('Error getting user ID:', error);
+          }
+        });
       },
       error: (err: any) => {
         console.error('Invalid verification code', err);
@@ -123,11 +138,9 @@ export class LoginComponent implements OnInit {
   }
 
   /**
-   * Exemple de méthode pour la redirection finale
-   * après récupération d'infos utilisateur.
+   * Méthode de redirection après authentification réussie.
    */
   fetchUserDetailsAndNavigate(): void {
-    // Naviguer vers la page d'accueil ou dashboard ...
     this.router.navigateByUrl('/admin/corpus');
   }
 }

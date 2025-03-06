@@ -77,24 +77,22 @@ export class SignUpComponent {
   /**
    * Vérifie le code OTP (MFA).
    */
-  verifyTfa(): void {
+  verifyTfa() {
     this.message = '';
     const verifyRequest: VerificationRequest = {
       email: this.signupRequest.email,
       code: this.otpCode
     };
-    this.authService.verifyCode(verifyRequest).subscribe({
-      next: (response) => {
-        this.message = 'Account created successfully. Redirecting to login...';
-        setTimeout(() => {
-          localStorage.setItem('token', response.accessToken as string);
-          this.router.navigate(['login']);
-        }, 3000);
-      },
-      error: (err) => {
-        console.error('Verification error:', err);
-        this.message = 'Invalid verification code';
-      }
-    });
+    this.authService.verifyCode(verifyRequest)
+      .subscribe({
+        next: (response) => {
+          this.message = 'Account created successfully\nYou will be redirected to the Welcome page in 3 seconds';
+          setTimeout(() => {
+            localStorage.setItem('token', response.accessToken as string);
+
+            this.router.navigate(['login']);
+          }, 3000);
+        }
+      });
   }
 }

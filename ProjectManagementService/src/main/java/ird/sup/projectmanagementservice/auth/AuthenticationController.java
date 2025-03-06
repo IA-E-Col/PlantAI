@@ -52,8 +52,11 @@ public class AuthenticationController {
     }
 
     @PostMapping("/verify")
-    public ResponseEntity<?> verifyCode(@RequestBody VerificationRequest verificationRequest) {
-        return ResponseEntity.ok(service.verifyCode(verificationRequest));
+    public ResponseEntity<?> verifyCode(
+            @RequestBody VerificationRequest verificationRequest
+    )
+    {
+      return ResponseEntity.ok(service.verifyCode(verificationRequest));
     }
 
     @GetMapping("/activate-account")
@@ -63,39 +66,6 @@ public class AuthenticationController {
     }
     
 
-    private static final String UPLOAD_DIR = "uploads/";
-
-    @PostMapping("/uploadImage")
-    public ResponseEntity<String> uploadUserImage(@RequestParam("file") MultipartFile file) {
-        try {
-            // 1) Vérifier que le fichier n'est pas vide
-            if (file.isEmpty()) {
-                return ResponseEntity.badRequest().body("File is empty or missing.");
-            }
-            // 2) Vérifier/créer le dossier "uploads"
-            Path uploadPath = Paths.get(UPLOAD_DIR);
-            if (!Files.exists(uploadPath)) {
-                Files.createDirectories(uploadPath);
-            }
-            // 3) Générer un nom unique
-            String originalName = file.getOriginalFilename();
-            String fileName = System.currentTimeMillis() + "_" + (originalName != null ? originalName : "file");
-            Path filePath = uploadPath.resolve(fileName);
-
-            // 4) Écriture du fichier
-            file.transferTo(filePath.toFile());
-
-            // 5) Générer l'URL (exemple fictif)
-            String fileUrl = "http://localhost:8080/uploads/" + fileName;
-            return ResponseEntity.ok(fileUrl);
-
-        } catch (IOException e) {
-            e.printStackTrace();
-            return ResponseEntity
-                    .status(HttpStatus.SC_INTERNAL_SERVER_ERROR)
-                    .body("Error uploading image: " + e.getMessage());
-        }
-    }
 
     @GetMapping("/getidbyemail/{email}")
     public ResponseEntity<Long> getUserIdByEmail(@PathVariable String email) {
