@@ -18,7 +18,7 @@ public class Evaluation {
     String email;
     String tel;
     String departement;
-    Blob image;
+    String image;
     Expertise e;
     boolean vote;
 }

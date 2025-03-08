@@ -47,7 +47,7 @@ export class ValidationHistoryComponent implements OnInit {
 
     if (this.userString) {
       this.user = JSON.parse(this.userString);
-      this.userId = this.user.user.id; 
+      this.userId = this.user.id; 
       
       this.route.parent?.paramMap.subscribe((params) => {
         this.datasetId = params.get('id');

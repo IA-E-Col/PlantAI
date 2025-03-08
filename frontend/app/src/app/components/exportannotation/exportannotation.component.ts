@@ -44,9 +44,8 @@ export class ExportannotationComponent implements OnInit{
        this.datasetId = params.get('id');
        const authUser : string | null = localStorage.getItem('authUser');
        if (authUser){
-        const user = JSON.parse(authUser).user;
-        if (user)
-          this.userId = user.id;
+        const user = JSON.parse(authUser);
+        this.userId = user.id;
         if (this.datasetId && this.userId){
           this.annotationService.getAnnotationsByDataset(this.datasetId, this.userId).subscribe(
             annotations => {

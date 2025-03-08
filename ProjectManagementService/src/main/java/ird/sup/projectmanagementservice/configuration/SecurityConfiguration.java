@@ -33,8 +33,7 @@ public class SecurityConfiguration {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-            .cors().configurationSource(corsConfigurationSource()) // Configuration CORS
+        http.cors().configurationSource(corsConfigurationSource()) // Configuration CORS
             .and()
             .csrf().disable()
             .authorizeHttpRequests(auth -> auth
@@ -46,6 +45,8 @@ public class SecurityConfiguration {
 
                 // Autoriser les autres endpoints sous /api/v1/auth/
                 .requestMatchers("/api/v1/auth/**").permitAll()
+                    .requestMatchers("/api/**").permitAll()
+                    .requestMatchers("/**").permitAll()
 
                 // Exiger une authentification pour toute autre requête
                 .anyRequest().authenticated()

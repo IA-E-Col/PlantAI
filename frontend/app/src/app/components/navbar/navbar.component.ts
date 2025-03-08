@@ -1,7 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { Router } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faLeaf, faUserCircle } from '@fortawesome/free-solid-svg-icons';
+import { faChevronDown, faLeaf, faUserCircle } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-navbar',
@@ -17,6 +17,7 @@ export class NavbarComponent implements OnInit {
   faLeaf = faLeaf;
   faUserCircle = faUserCircle;
 
+  faChevronDown = faChevronDown
   // Image de profil par défaut
   userImageUrl: string = 'assets/user.png';
 
@@ -32,7 +33,7 @@ export class NavbarComponent implements OnInit {
     if (storedProfile) {
       const userProfile = JSON.parse(storedProfile);
       this.userImageUrl = (userProfile.profileImageUrl && userProfile.profileImageUrl.trim() !== '')
-        ? userProfile.profileImageUrl
+        ? "/" + userProfile.profileImageUrl
         : 'assets/user.png';
 
       // Si le username n'est pas déjà défini, le composer à partir de prenom et nom
@@ -56,9 +57,7 @@ export class NavbarComponent implements OnInit {
   // Déconnexion : suppression des informations stockées et redirection vers la page de connexion
   logout(): void {
     localStorage.removeItem('token');
-    localStorage.removeItem('userID');
     localStorage.removeItem('authUser');
-    localStorage.removeItem('mfaEnabled');
     this.router.navigate(['login']);
   }
 }

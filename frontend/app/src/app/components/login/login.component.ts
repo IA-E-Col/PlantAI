@@ -73,7 +73,7 @@ export class LoginComponent implements OnInit {
             next: (id: number) => {
               // Mettre à jour l'objet authUser avec l'ID utilisateur
               const storedUser = JSON.parse(localStorage.getItem('authUser') || '{}');
-              storedUser.userID = id;
+              storedUser.id = id;
               localStorage.setItem('authUser', JSON.stringify(storedUser));
               this.fetchUserDetailsAndNavigate();
             },
@@ -121,7 +121,7 @@ export class LoginComponent implements OnInit {
         this.userService.getUserID(this.authRequest.email!).subscribe({
           next: (id: number) => {
             const storedUser = JSON.parse(localStorage.getItem('authUser') || '{}');
-            storedUser.userID = id;
+            storedUser.id = id;
             localStorage.setItem('authUser', JSON.stringify(storedUser));
             this.fetchUserDetailsAndNavigate();
           },

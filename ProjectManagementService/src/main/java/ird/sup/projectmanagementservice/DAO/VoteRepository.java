@@ -15,12 +15,12 @@ import java.util.List;
 @Repository
 public interface VoteRepository extends JpaRepository<Vote, Long> {
     Vote findByAnnotationAndUser(AnnClassification annotation, User user);
-    @Query("SELECT new ird.sup.projectmanagementservice.DTO.Evaluation(u.Id, u.username,u.nom, u.prenom, u.email," +
-            "u.Tel,u.Departement,u.image, part.expertise, v.value)" +
+    @Query("SELECT new ird.sup.projectmanagementservice.DTO.Evaluation(u.id, u.username,u.nom, u.prenom, u.email," +
+            "u.tel,u.departement,u.image, part.expertise, v.value)" +
             "FROM User u " +
-            "JOIN Participation part ON part.user.Id = u.Id " +
+            "JOIN Participation part ON part.user.id = u.id " +
             "JOIN part.projet p " +
-            "JOIN Vote v ON v.user.Id = u.Id " +
+            "JOIN Vote v ON v.user.id = u.id " +
             "WHERE p.Id = :projectId AND v.annotation.id = :annotationId")
     List<Evaluation> findEvaluationByAnnotation(@Param("annotationId") Long annotationId,@Param("projectId") Long projetId);
 }
