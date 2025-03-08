@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, Input, OnChanges, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faCircleInfo, faTachometerAlt, faGear, faDatabase, faMicrochip, faBars, faDiagramProject, faFile, faInfoCircle, faImage, faUserCircle, faRobot, faBrain, faHistory, faNetworkWired, faBook } from '@fortawesome/free-solid-svg-icons';
+import { faCircleInfo, faTachometerAlt, faGear, faDatabase, faMicrochip, faBars, faDiagramProject, faFile, faInfoCircle, faImage, faUserCircle, faRobot, faBrain, faHistory, faNetworkWired, faBook, faFileImport } from '@fortawesome/free-solid-svg-icons';
 import { filter, Subscription } from 'rxjs';
 import { RouterLink } from '@angular/router';
 import { SharedServiceService } from '../../services/shared-service.service';
@@ -44,7 +44,6 @@ export class SidebarComponent implements OnDestroy, OnInit{
             { name: 'Datasets', icon: faDatabase, path: `/admin/projects/${this.itemId}/datasets` },
             { name: 'Dashboard', icon: faTachometerAlt, path: `/admin/projects/${this.itemId}/dashboard` },
             { name: 'Collaborators', icon: faUserCircle, path: `/admin/projects/${this.itemId}/collaborators`},
-            { name: 'Validation History', icon: faHistory, path: `/admin/projects/${this.itemId}/validation-history`},
             { name: 'Settings', icon: faGear, path: `/admin/projects/${this.itemId}/edit`},
           ],
           models :  [
@@ -57,6 +56,8 @@ export class SidebarComponent implements OnDestroy, OnInit{
             { name: 'Images', icon: faImage, path: `/admin/datasets/${this.itemId}/images` },
             { name: 'Dashboard', icon: faTachometerAlt, path: `/admin/datasets/${this.itemId}/dashboard` },
             { name: 'Models', icon: faMicrochip, path: `/admin/datasets/${this.itemId}/models`},
+            { name: 'Validation History', icon: faHistory, path: `/admin/datasets/${this.itemId}/validation_history`},
+            { name: 'Import/Export Annotations', icon: faFileImport, path: `/admin/datasets/${this.itemId}/import_export_annotation`},
             { name: 'Settings', icon: faGear, path: `/admin/datasets/${this.itemId}/edit`},
           ]
           

@@ -19,6 +19,7 @@
         <th>Full Name</th>
         <th>Email</th>
         <th>Department</th>
+        <th>Expertise</th>
         <th>Actions</th>
       </tr>
     </thead>
@@ -27,6 +28,7 @@
         <td>{{ u.prenom }} {{ u.nom }}</td>
         <td>{{ u.email }}</td>
         <td>{{ u.departement }}</td>
+        <td><span class="badge badge-green p-2">{{ u.e.level }}</span></td>
         <td>
           <button class="play-btn" (click)="delete_collaborator(u.id)"><fa-icon [icon]="faTrash"></fa-icon></button>
         </td>

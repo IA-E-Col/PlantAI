@@ -1,5 +1,10 @@
 package ird.sup.projectmanagementservice.Web;
 
+
+
+
+import ird.sup.projectmanagementservice.DTO.Message;
+
 import ird.sup.projectmanagementservice.Entities.User;
 import ird.sup.projectmanagementservice.Services.UserService;
 import ird.sup.projectmanagementservice.Entities.ChangePasswordRequest;
@@ -9,8 +14,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
 
 @RestController
 @CrossOrigin(origins = "*")
@@ -78,6 +86,7 @@ public class UserController {
             return ResponseEntity.notFound().build();
         }
     }
+
 
     // -------------------- Endpoints supplémentaires --------------------
 

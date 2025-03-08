@@ -28,8 +28,10 @@
         <td>
           <button class="info-btn text-white" (click)="func_inf_m(m.id)"><fa-icon [icon]="faCircleInfo"></fa-icon></button>
           <button class="play-btn" (click)="func_update_m(m)"><fa-icon [icon]="faEdit"></fa-icon></button>
-          <button class="play-btn"><fa-icon [icon]="faTrash"></fa-icon></button>
-
+          <button class="play-btn" (click)="func_delete_m(m.id)">
+            <fa-icon [icon]="faTrash"></fa-icon>
+        </button>
+        
         </td>
       </tr>
     </tbody>

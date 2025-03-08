@@ -9,13 +9,18 @@
                 <form (submit)="addCollaborator()">
                     <label for="collaborator">Collaborator</label>
                     <select class="form-select form-select-lg mb-3" aria-label=".form-select-lg example" name="collaborator" [(ngModel)]="selectedCollaboratorId">
-                        <option value="-1" disabled hidden selected>Choose a collaborator</option>
                         <option *ngFor="let collaborator of collaborators" [value]="collaborator.id">
                             {{ collaborator.prenom }} {{ collaborator.nom }}
                           </option>
                     </select>
+                    <label for="level">Level</label>
+                    <select class="form-select form-select-lg mb-3" aria-label=".form-select-lg example" name="collaborator" [(ngModel)]="selectedExpertiseId">
+                        <option *ngFor="let expertise of expertises" [value]="expertise.id">
+                            {{ expertise.level }}
+                          </option>
+                    </select>
                     <div class="w-100 d-flex justify-content-center align-items-center gap-2">
-                        <button class="btn btn-green" type="submit">Add</button>
+                        <button class="btn btn-green" [disabled]="selectedExpertiseId == null || selectedCollaboratorId == null" type="submit">Add</button>
                         <button class="btn btn-secondary" type="button" (click)="goBack()">Back</button>
                     </div>
                     

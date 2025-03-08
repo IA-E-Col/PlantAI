@@ -1,0 +1,47 @@
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card p-4">
+                <h2 class="text-center mb-4">
+                    <span class="border-bottom-green pb-1">Import an annotation</span>
+                </h2>
+
+                <!-- Form -->
+                <form [formGroup]="annotationFormGroup" (ngSubmit)="import_annotations()">
+                    <div class="mb-3">
+                        <label for="format" class="form-label fw-bold">Format:</label>
+                        <select class="form-select form-select-lg mb-3" aria-label=".form-select-lg example" name="format" formControlName="selectedFormatName">
+                            <option *ngFor="let format of formats" [value]="format.name">
+                                {{ format.name }}
+                              </option>
+                        </select>
+                        <small
+                            *ngIf="annotationFormGroup.controls['selectedFormatName'].errors && annotationFormGroup.controls['selectedFormatName'].touched"
+                            class="text-danger">
+                            Annotation format is required.
+                        </small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="annotationFileUpload" class="form-label fw-bold">Upload Annotations File:</label>
+                        <div class="custom-file">
+                            <input type="file" class="form-control" id="annotationFileUpload" formControlName="annotationFile"  (change)="onFileSelect($event)">
+                            <label class="custom-file-label" for="fileUpload"></label>
+                        </div>
+                        <small
+                            *ngIf="annotationFormGroup.controls['annotationFile'].errors && annotationFormGroup.controls['annotationFile'].touched"
+                            class="text-danger">
+                            A file is required.
+                        </small>
+                    </div>
+
+                    <div style="text-align: center;">
+                        <button [disabled]="annotationFormGroup.invalid" type="submit" class="btn btn-green">Import Annotations</button>
+                        <button type="button" (click)="closeDialog()" class="btn btn-secondary"
+                            style="margin-left: 10px;">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

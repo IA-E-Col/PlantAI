@@ -8,8 +8,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.security.Principal;
+
+
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -137,6 +140,7 @@ public class UserService {
     }
 
     // ----------------- Méthodes supplémentaires -----------------
+
 
     /**
      * Ajoute un utilisateur dans la base (similaire à saveUser).

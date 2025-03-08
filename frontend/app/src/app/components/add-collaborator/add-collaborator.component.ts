@@ -16,10 +16,12 @@ import Swal from 'sweetalert2';
 export class AddCollaboratorComponent {
  is_active: boolean = true;
   collectionFormGroup!: FormGroup
+  selectedExpertiseId!: number | null;
   file!: File ;
   collaborators : any;
+  expertises: any;
   projectId!: number;
-  selectedCollaboratorId : number = -1;
+  selectedCollaboratorId!: number | null;
   constructor(private dialogRef: MatDialogRef<AddCollaboratorComponent>,private route: ActivatedRoute,
     private router: Router,
     private fb: FormBuilder,
@@ -38,13 +40,22 @@ export class AddCollaboratorComponent {
             console.error(err);
           }
         });
-  
+        this.projetServ.getExpertises().subscribe({
+          next: (expertises) => {
+            this.expertises = expertises;
+            console.log("coll",expertises);
+            
+          },
+          error: (err) => {
+            console.error(err);
+          }
+        });
       }
   }
 
 
   addCollaborator(){
-    this.projetServ.func_ajout_collab(this.projectId, this.selectedCollaboratorId).subscribe({
+    this.projetServ.func_ajout_collab(this.projectId, this.selectedCollaboratorId,this.selectedExpertiseId).subscribe({
       next: (res) => {
         Swal.fire('Success', 'Collaborator added successfully', 'success').then(() => {
           this.dialogRef.close();
@@ -56,6 +67,8 @@ export class AddCollaboratorComponent {
     });
   }
   goBack(){
+    this.selectedCollaboratorId = null;
+    this.selectedExpertiseId = null;
     this.dialogRef.close();
   }
 

@@ -4,7 +4,22 @@ import {HttpClient, HttpHeaders, HttpParams} from "@angular/common/http";
 import {LoginService} from "./login.service";
 import {LinkedList} from "ngx-bootstrap/utils";
 
-
+interface Model {
+  id: number;
+  name: string;
+  description: string;
+  urlModele: string;
+  categorie: string;
+}
+interface Annotation {
+  id: number;
+  libelle: string;
+  etat: string;
+  valeurPredite: string;
+  ann_specification: string;
+  modelName: string;
+  modelcat: string;
+}
 export interface Specimen {
   id: number;
   baseDEnregistrement: string;
@@ -74,9 +89,9 @@ export class ProjetService {
     );
   }
 
-  func_predict(s: any,modeleId :any): Observable<any> {
+  func_predict(s: any,modeleId :any, datasetId : any): Observable<any> {
     console.log(s, modeleId)
-    return this.http.get<any>(`http://localhost:8080/api/models/predict/${s}/${modeleId}`);
+    return this.http.get<any>(`http://localhost:8080/api/models/predict/${datasetId}/${s}/${modeleId}`);
   }
 
   func_predict_dataset(datasetId:any): Observable<any> {
@@ -126,8 +141,8 @@ export class ProjetService {
     return this.http.put<any>(`http://localhost:8080/api/projets/update/${projectId}`,Vprojet);
   }
 
-  func_ajout_collab(IdP:any, IdC:any): Observable<any>{
-    return this.http.put<any>(`http://localhost:8080/api/projets/${IdP}/addCollab/${IdC}`,null);
+  func_ajout_collab(IdP:any, IdC:any,IdE: any): Observable<any>{
+    return this.http.put<any>(`http://localhost:8080/api/projets/${IdP}/addCollab/${IdC}/${IdE}`,null);
   }
 
   func_suppr_collab(IdP:any, IdC:any): Observable<any>{
@@ -249,7 +264,7 @@ export class ProjetService {
   importCsv(file: File, idCollection: any): Observable<string> {
     const formData = new FormData();
     formData.append('file', file);
-    return this.http.post<string>(`http://127.0.0.1:8080/import-csv/${idCollection}`, formData);
+    return this.http.post<string>(`http://127.0.0.1:8080/api/import/import-csv/${idCollection}`, formData);
   }
   addClasse(classe: any): Observable<any> {
     return this.http.post<any>('http://127.0.0.1:8080/api/annotationModele/addClasse', classe);
@@ -280,4 +295,53 @@ export class ProjetService {
   addCommentToAnnotation(idAnnotation: number, idUser: number, commentaire: any): Observable<any> {
     return this.http.post<any>(`http://127.0.0.1:8080/api/annotationModele/${idAnnotation}/${idUser}/addComment`, commentaire);
   }
+  getAnnHistory(idUser:string , idDataset:string): Observable<Annotation[]> {
+    return this.http.get<any[]>(`http://localhost:8080/api/annotationModele/history/${idUser}/${idDataset}`).pipe(
+      map(annotations => 
+        annotations.map(ann => ({
+          id: ann.id,
+          libelle: ann.libelle,
+          state: ann.state,
+          etat: ann.etat,
+          valeurPredite: ann.valeurPredite,
+          ann_specification: ann.ann_specification,
+          modelName: ann.model.name,  // Assure-toi que 'model' contient bien un objet avec la propriété 'name'
+          modelcat: ann.model.categorie  // Même chose pour 'categorie'
+        }))
+      )
+    );
+  }
+  
+
+  deleteCommentFromAnnotation(idAnnotation: number, idUser: number, idCommentaire: number): Observable<any> {
+    return this.http.delete<any>(`http://127.0.0.1:8080/api/annotationModele/${idUser}/${idAnnotation}/${idCommentaire}/deleteComment`);
+  }
+
+  updateCommentOnAnnotation(idAnnotation: number, idUser: number, idCommentaire: number, commentaire: any): Observable<any> {
+    return this.http.put<any>(`http://127.0.0.1:8080/api/annotationModele/${idUser}/${idAnnotation}/${idCommentaire}/updateComment`, commentaire);
+  }
+  
+
+  getExpertises() : Observable<any>{
+    return this.http.get<any>(`http://127.0.0.1:8080/api/expertises/`)
+  }
+
+  submitVote(idAnnotation : number, idUser: number, value: boolean): Observable<any>{
+    return this.http.put<any>(`http://127.0.0.1:8080/api/annotationModele/${idAnnotation}/${idUser}/vote`,{value})
+  }
+
+  getEvaluations(idAnnotation : number): Observable<any>{
+    return this.http.get<any>(`http://127.0.0.1:8080/api/annotationModele/${idAnnotation}/evaluation`)
+  }
+  updateAnnotationState(idAnnotation : number, newState: string){
+    return this.http.get<any>(`http://127.0.0.1:8080/api/annotationModele/${idAnnotation}/state?state=${newState}`)
+  }
+  func_supp_modele(id: any) {
+    return this.http.delete(`/api/models/${id}`);
+  }
+
+
+
+
+
 }

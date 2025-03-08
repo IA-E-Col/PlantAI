@@ -21,12 +21,8 @@ public class Projet {
     String nomProjet;
     String Description;
     Date dateCreation ;
-    @ManyToMany
-    @JoinTable(
-            name = "projet_collaboration",
-            joinColumns = @JoinColumn(name = "projet_id"),
-            inverseJoinColumns = @JoinColumn(name = "user_id"))
-    private List<User> collaborateurs;
+    @OneToMany(mappedBy = "projet", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<Participation> participations = new ArrayList<>();
 
     @ManyToMany
     @JoinTable(

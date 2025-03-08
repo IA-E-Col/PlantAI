@@ -13,6 +13,7 @@ import ird.sup.projectmanagementservice.Entities.Modele;
 import ird.sup.projectmanagementservice.Entities.Specimen;
 
 
+import ird.sup.projectmanagementservice.Enums.EState;
 import ird.sup.projectmanagementservice.response.classificationResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
@@ -144,7 +145,7 @@ public class ModelService {
             List<Specimen> specimens = dataset.getSpecimens(); // Supposons que Dataset a une méthode getImageUrls()
             Annotation annotation;
             for (Specimen specimen : specimens) {
-                annotation = predictImage(modeleId, specimen.getId());
+                annotation = predictImage(modeleId, specimen.getId(), datasetId);
                 if (annotation != null) {
                     resultat.add(annotation);
 
@@ -162,8 +163,9 @@ public class ModelService {
 
     }
 
-    public AnnClassification predictImage(Long modeleId, Long s) {
+    public AnnClassification predictImage(Long datasetId, Long modeleId, Long s) {
        // System.out.println("Predict image with ID: " + s + " and modele ID: " + modeleId);
+        Optional<DataSet> datasetOptional = dataSetRepository.findById(datasetId);
         Optional<Modele> modeleOptional = modelRepository.findById(modeleId);
         Specimen specimen = specimenRepository.findById(s).get();
         //System.out.println("number of media of this specimen: " + specimen.getMedias().size());
@@ -189,20 +191,25 @@ public class ModelService {
             classificationResponse response = restTemplate.postForObject(url, request, classificationResponse.class);
             AnnClassification u = new AnnClassification();
             u.setLibelle(modeleOptional.get().getUrlModele());
+            if (datasetOptional.isPresent())
+                u.setDataset(datasetOptional.get());
             u.setType("");
             u.setModeAquisition("Inference");
             u.setValeurPredite(response.getPredictionValue());
             u.setValeurPrecision(response.getPrecision());
+            u.setEtat(EState.PENDING);
             //System.out.println("before");
            // System.out.println("after");
         u =annClassificationRepository.save(u);
           //  System.out.println(u.getId());
             u.setModelInference(modeleOptional.get());
+
             modeleOptional.get().getAnnClassifications().add(u);
 
             u.setMedia(specimen.getImage());
             specimen.getImage().getAnnotationSpecimens().add(u);
-
+            if (u.getDataset() == null)
+                return u;
             return annClassificationRepository.save(u);
 
 

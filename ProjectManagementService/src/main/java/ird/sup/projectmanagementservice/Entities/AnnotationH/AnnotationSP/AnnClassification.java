@@ -3,11 +3,16 @@ package ird.sup.projectmanagementservice.Entities.AnnotationH.AnnotationSP;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import ird.sup.projectmanagementservice.Entities.AnnotationH.Annotation;
 import ird.sup.projectmanagementservice.Entities.AnnotationH.AnnotationMDL.ClasseAnnotation;
+import ird.sup.projectmanagementservice.Entities.Commentaire;
+import ird.sup.projectmanagementservice.Entities.DataSet;
+import ird.sup.projectmanagementservice.Entities.MediaH.Media;
 import ird.sup.projectmanagementservice.Entities.Modele;
+import ird.sup.projectmanagementservice.Entities.Specimen;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+
+import java.util.Collection;
+import java.util.List;
 
 @Entity
 @AllArgsConstructor
@@ -15,12 +20,21 @@ import lombok.NoArgsConstructor;
 @DiscriminatorValue("classi")
 @Data
 public class AnnClassification extends AnnotationSpecimen {
-    String valeurPredite;
-    float valeurPrecision;
-    String valeurCorrecte;
+    private String valeurPredite;
+    private float valeurPrecision;
+    private String valeurCorrecte;
     @ManyToOne
     @JsonIgnore
     private Modele modelInference;
+
+    public AnnClassification(String libelle, float valeurPrecision, String valeurPredite, Media media, Modele modelInference, DataSet dataset) {
+        this.libelle = libelle;
+        this.valeurPredite = valeurPredite;
+        this.valeurPrecision = valeurPrecision;
+        this.modelInference = modelInference;
+        this.dataset = dataset;
+        this.media = media;
+    }
 
     public Modele getModel() {
         return this.modelInference;
@@ -36,4 +50,10 @@ public class AnnClassification extends AnnotationSpecimen {
         }
         return null;
     }
+    @OneToMany(fetch=FetchType.EAGER,mappedBy = "annotation",cascade = CascadeType.ALL)
+    @JsonIgnore
+    private List<Commentaire> commentaires ;
+
+
+
 }

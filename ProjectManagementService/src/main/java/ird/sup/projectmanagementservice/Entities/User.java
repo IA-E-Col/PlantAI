@@ -2,6 +2,7 @@ package ird.sup.projectmanagementservice.Entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -13,6 +14,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Collections;
+
 import java.util.List;
 
 @Data
@@ -56,6 +58,7 @@ public class User implements UserDetails {
     boolean mfaEnabled; // pour indiquer si le 2FA est activé
 
     @OneToMany(mappedBy = "user")
+
     @JsonIgnore
     List<Token> tokens;
 
@@ -63,9 +66,11 @@ public class User implements UserDetails {
     @JsonIgnore
     List<Projet> projetsCree;
 
-    @ManyToMany(mappedBy = "collaborateurs")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
     @JsonIgnore
     List<Projet> projetsCollab;
+
+    private List<Participation> participations = new ArrayList<>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "createurC", cascade = CascadeType.ALL)
     @JsonIgnore
@@ -117,6 +122,7 @@ public class User implements UserDetails {
     public boolean isAccountNonExpired() {
         return true;
     }
+
 
     @Override
     @JsonIgnore
