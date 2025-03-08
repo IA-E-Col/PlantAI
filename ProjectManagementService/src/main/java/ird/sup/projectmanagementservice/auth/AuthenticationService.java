@@ -76,6 +76,12 @@ public class AuthenticationService {
     public AuthenticationResponse register(RegisterRequest request)
             throws MessagingException, jakarta.mail.MessagingException {
 
+    	
+    	  // Vérifier si un utilisateur avec cet email existe déjà
+        if (repository.findByEmaill(request.getEmail()).isPresent()) {
+            // On peut renvoyer une exception avec un message explicite
+            throw new IllegalArgumentException("L'email " + request.getEmail() + " existe déjà.");
+        }
     	// 1) Si le champ image est au format Base64, on enregistre le fichier en local.
     	if (request.getImage() != null && request.getImage().startsWith("data:image")) {
     	    try {
@@ -119,7 +125,6 @@ public class AuthenticationService {
                 .email(request.getEmail())
                 .departement(request.getDepartement())
                 .password(passwordEncoder.encode(request.getPassword()))
-                .role(request.getRole())
                 .mfaEnabled(request.isMfaEnabled())
                 .image(request.getImage())  // Stocke "uploads/xxx.png"
                 .build();
@@ -129,11 +134,14 @@ public class AuthenticationService {
             user.setSecret(tfaService.generateNewSecret());
         }
 
-        // 3) Enregistre l'utilisateur (non encore "enabled")
+     // 3) Enregistre l'utilisateur (non encore "enabled")
         var savedUser = repository.save(user);
 
-        // 4) Envoie un email de validation
-        sendValidationEmail(savedUser);
+        // 4) Envoie l'email de validation uniquement si MFA n'est pas activé
+        if (!user.isMfaEnabled()) {
+            sendValidationEmail(savedUser);
+        }
+
 
         // 5) Génère les tokens JWT
         var jwtToken = jwtService.generateToken(savedUser);
@@ -264,6 +272,9 @@ public class AuthenticationService {
                 .nom(user.getNom())
                 .prenom(user.getPrenom())
                 .userId(user.getId())
+                .email(user.getEmail())
+                .departement(user.getDepartement())
+                .userId(user.getId())
                 .build();
     }
 
@@ -304,29 +315,34 @@ public class AuthenticationService {
         }
     }
 
-    public AuthenticationResponse verifyCode(
-            VerificationRequest verificationRequest
-    ) {
-        User user = repository
-                .findByEmaill(verificationRequest.getEmail())
-                .orElseThrow(() -> new EntityNotFoundException(
-                        String.format("No user found with %S", verificationRequest.getEmail()))
-                );
+    public AuthenticationResponse verifyCode(VerificationRequest verificationRequest) throws MessagingException, jakarta.mail.MessagingException {
+        User user = repository.findByEmaill(verificationRequest.getEmail())
+            .orElseThrow(() -> new EntityNotFoundException(
+                String.format("No user found with %s", verificationRequest.getEmail()))
+            );
+        
         if (tfaService.isOtpNotValid(user.getSecret(), verificationRequest.getCode())) {
-
             throw new BadCredentialsException("Code is not correct");
         }
+        
+        // Si l'utilisateur utilise la 2FA et n'est pas activé, envoyer l'e-mail d'activation
+        if (user.isMfaEnabled() && !user.isEnabled()) {
+            sendValidationEmail(user);
+        }
+        
         var jwtToken = jwtService.generateToken(user);
         return AuthenticationResponse.builder()
-                .accessToken(jwtToken)
-                .mfaEnabled(user.isMfaEnabled())
-                .profileImageUrl(user.getImage())
-                .nom(user.getNom())
-                .prenom(user.getPrenom())
-                .userId(user.getId())
-                .profileImageUrl(user.getImage())
-                .build();
+            .accessToken(jwtToken)
+            .mfaEnabled(user.isMfaEnabled())
+            .profileImageUrl(user.getImage())
+            .nom(user.getNom())
+            .prenom(user.getPrenom())
+            .userId(user.getId())
+            .email(user.getEmail())
+            .departement(user.getDepartement())
+            .build();
     }
+
 
     public void activateAccount(String token) throws MessagingException, jakarta.mail.MessagingException {
         EmailToken savedToken = emailtokenRepository.findByEmailToken(token)
@@ -349,6 +365,36 @@ public class AuthenticationService {
     public Optional<User> getUserByEmail(String email) {
         // Remarquez que votre repository utilise la méthode findByEmaill (avec deux 'l')
         return repository.findByEmaill(email);
+    }
+
+    public User modifierProfile(ProfileUpdateRequest request) {
+        // Récupérer l'utilisateur par son ID
+        User user = repository.findByEmaill(request.getEmail())
+                .orElseThrow(() -> new UsernameNotFoundException("Utilisateur non trouvé"));
+
+        // Mettre à jour les informations de base
+        user.setNom(request.getNom());
+        user.setPrenom(request.getPrenom());
+        user.setEmail(request.getEmail());
+        user.setTel(request.getTel());
+        user.setDepartement(request.getDepartement());
+        
+        // Si l'utilisateur souhaite modifier son mot de passe
+        if (request.getPasswordAncien() != null && request.getPasswordNouveau() != null) {
+            // Vérifier que l'ancien mot de passe est correct
+            if (!passwordEncoder.matches(request.getPasswordAncien(), user.getPassword())) {
+                throw new BadCredentialsException("Ancien mot de passe incorrect");
+            }
+            // Vérifier que le nouveau mot de passe est différent de l'ancien
+            if (passwordEncoder.matches(request.getPasswordNouveau(), user.getPassword())) {
+                throw new IllegalArgumentException("Le nouveau mot de passe doit être différent de l'ancien");
+            }
+            // Mettre à jour le mot de passe
+            user.setPassword(passwordEncoder.encode(request.getPasswordNouveau()));
+        }
+        
+        // Sauvegarder et retourner l'utilisateur mis à jour
+        return repository.save(user);
     }
 
 

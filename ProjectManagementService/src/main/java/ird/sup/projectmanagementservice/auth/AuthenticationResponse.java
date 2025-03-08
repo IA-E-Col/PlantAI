@@ -21,4 +21,6 @@ public class AuthenticationResponse {
 	    private String profileImageUrl; // URL de l'image de profil
 	    private String nom;             // Nom de l'utilisateur
 	    private String prenom;          // Prénom de l'utilisateur
+	    private String email;   
+	    private String departement;   
 }

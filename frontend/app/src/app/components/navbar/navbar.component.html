@@ -9,11 +9,11 @@
     <div class="user-section">
       <!-- Infos utilisateur cliquables (avatar + nom) -->
       <div class="user-info" (click)="navigateToProfile()" style="cursor: pointer;">
-        <img [src]="userImageUrl" alt="User Avatar" class="user-avatar" />
+        <img [src]="userImageUrl" alt="Avatar utilisateur" class="user-avatar" />
         <span class="user-name">{{ username }}</span>
       </div>
       
-      <!-- Dropdown minimal pour Modifier Profil et Logout -->
+      <!-- Dropdown minimal pour Modifier Profil et Déconnexion -->
       <div class="dropdown">
         <button class="dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
           <i class="fa fa-caret-down"></i>
@@ -29,7 +29,7 @@
           <li>
             <a class="dropdown-item" (click)="logout()">
               <i class="bx bx-power-off me-2"></i>
-              Log Out
+              Déconnexion
             </a>
           </li>
         </ul>

@@ -44,6 +44,7 @@ export class LoginComponent implements OnInit {
 
   /**
    * Authentification classique (sans MFA ou avec MFA activé, mais non vérifié).
+   * Enregistre dans le localStorage toutes les infos de l'utilisateur, sauf le mot de passe.
    */
   authenticate(): void {
     this.authRequest = this.loginFormGroup.value;
@@ -51,41 +52,42 @@ export class LoginComponent implements OnInit {
       next: (response: AuthenticationResponse) => {
         this.authResponse = response;
 
-        // Stockage commun : image, nom, prénom et état du MFA
-        if (this.authResponse.profileImageUrl) {
-          localStorage.setItem('profileImageUrl', this.authResponse.profileImageUrl);
-          console.log("Profile image URL stored: " + this.authResponse.profileImageUrl);
-        }
-        if (this.authResponse.nom) {
-          localStorage.setItem('nom', this.authResponse.nom);
-          console.log("Nom stored: " + this.authResponse.nom);
-        }
-        if (this.authResponse.prenom) {
-          localStorage.setItem('prenom', this.authResponse.prenom);
-          console.log("Prenom stored: " + this.authResponse.prenom);
-        }
-        localStorage.setItem('mfaEnabled', JSON.stringify(this.authResponse.mfaEnabled));
+        // Créer un objet profil sans le mot de passe
+        const userProfile = {
+          nom: response.nom,
+          prenom: response.prenom,
+          email: response.email,
+          departement: response.departement,
+          profileImageUrl: response.profileImageUrl,
+          mfaEnabled: response.mfaEnabled
+        };
 
-        // Si MFA n'est pas activé, l'utilisateur est connecté immédiatement
-        if (!this.authResponse.mfaEnabled) {
-          localStorage.setItem('token', this.authResponse.accessToken as string);
-          // Stockage de l'ID utilisateur via service
+        // Stocker l'objet profil dans le localStorage sous "authUser"
+        localStorage.setItem('authUser', JSON.stringify(userProfile));
+        localStorage.setItem('mfaEnabled', JSON.stringify(response.mfaEnabled));
+
+        // Si MFA n'est pas activé, stocker le token et récupérer l'ID utilisateur
+        if (!response.mfaEnabled) {
+          localStorage.setItem('token', response.accessToken as string);
           this.userService.getUserID(this.authRequest.email!).subscribe({
             next: (id: number) => {
-              localStorage.setItem('userID', id.toString());
+              // Mettre à jour l'objet authUser avec l'ID utilisateur
+              const storedUser = JSON.parse(localStorage.getItem('authUser') || '{}');
+              storedUser.userID = id;
+              localStorage.setItem('authUser', JSON.stringify(storedUser));
               this.fetchUserDetailsAndNavigate();
             },
             error: (error: any) => {
-              console.error('Error getting user ID:', error);
+              console.error('Erreur lors de la récupération de l\'ID utilisateur :', error);
             }
           });
         }
-        // Sinon, la vérification MFA devra être effectuée par verifyCode()
+        // En cas de MFA activé, l'utilisateur devra passer par verifyCode()
       },
       error: (err: any) => {
-        this.errorMessage = 'Email or password incorrect.';
+        this.errorMessage = 'Email ou mot de passe incorrect.';
         console.error(err);
-        Swal.fire('Error', 'User does not exist', 'error');
+        Swal.fire('Erreur', 'L\'utilisateur n\'existe pas', 'error');
       }
     });
   }
@@ -101,44 +103,42 @@ export class LoginComponent implements OnInit {
 
     this.authService.verifyCode(verifyRequest).subscribe({
       next: (response: AuthenticationResponse) => {
-        // Stocker le nouveau token
+        // Mettre à jour le token
         localStorage.setItem('token', response.accessToken as string);
 
-        // Stocker l'URL de l'image de profil
-        if (response.profileImageUrl) {
-          localStorage.setItem('profileImageUrl', response.profileImageUrl);
-          console.log("Profile image URL stored: " + response.profileImageUrl);
-        }
-        // Stocker le nom et le prénom
-        if (response.nom) {
-          localStorage.setItem('nom', response.nom);
-          console.log("Nom stored: " + response.nom);
-        }
-        if (response.prenom) {
-          localStorage.setItem('prenom', response.prenom);
-          console.log("Prenom stored: " + response.prenom);
-        }
+        // Mettre à jour l'objet authUser avec les informations de la réponse
+        const userProfile = {
+          nom: response.nom,
+          prenom: response.prenom,
+          email: response.email,
+          departement: response.departement,
+          profileImageUrl: response.profileImageUrl,
+          mfaEnabled: response.mfaEnabled
+        };
+        localStorage.setItem('authUser', JSON.stringify(userProfile));
 
-        // Stockage facultatif de l'ID utilisateur
+        // Récupérer l'ID utilisateur et l'ajouter à l'objet authUser
         this.userService.getUserID(this.authRequest.email!).subscribe({
           next: (id: number) => {
-            localStorage.setItem('userID', id.toString());
+            const storedUser = JSON.parse(localStorage.getItem('authUser') || '{}');
+            storedUser.userID = id;
+            localStorage.setItem('authUser', JSON.stringify(storedUser));
             this.fetchUserDetailsAndNavigate();
           },
           error: (error: any) => {
-            console.error('Error getting user ID:', error);
+            console.error('Erreur lors de la récupération de l\'ID utilisateur :', error);
           }
         });
       },
       error: (err: any) => {
-        console.error('Invalid verification code', err);
-        Swal.fire('Error', 'Invalid verification code', 'error');
+        console.error('Code de vérification invalide', err);
+        Swal.fire('Erreur', 'Code de vérification invalide', 'error');
       }
     });
   }
 
   /**
-   * Méthode de redirection après authentification réussie.
+   * Redirige l'utilisateur après une authentification réussie.
    */
   fetchUserDetailsAndNavigate(): void {
     this.router.navigateByUrl('/admin/corpus');

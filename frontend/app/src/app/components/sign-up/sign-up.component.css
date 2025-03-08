@@ -290,6 +290,8 @@ a:hover {
   padding: 10px;
   text-align: center;
   width: 90%;
+  margin-top: 0% !important;
+  margin-bottom: auto
 }
 
 .form-group {
@@ -436,4 +438,68 @@ input[type="file"]:hover {
 
 .success-icon {
   font-size: 24px;
+}
+.loader-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.7);
+  z-index: 9999;
+}
+
+.spinner {
+  border: 8px solid #f3f3f3;
+  border-top: 8px solid #3498db;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  animation: spin 1s linear infinite;
+}
+/* Message panels */
+.error-message-panel {
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+  padding: 10px;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.error-message-panel .message-icon {
+  font-size: 20px;
+  margin-right: 10px;
+}
+
+.success-message-panel {
+  background-color: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+  padding: 10px;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.success-message-panel .message-icon {
+  font-size: 20px;
+  margin-right: 10px;
+}
+
+.message-text {
+  flex: 1;
+}
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+
+
+  
 }

@@ -8,6 +8,9 @@ import org.apache.tomcat.util.http.parser.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import ird.sup.projectmanagementservice.Entities.User;
+
 import javax.mail.MessagingException;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -54,7 +57,7 @@ public class AuthenticationController {
     @PostMapping("/verify")
     public ResponseEntity<?> verifyCode(
             @RequestBody VerificationRequest verificationRequest
-    )
+    ) throws MessagingException, jakarta.mail.MessagingException
     {
       return ResponseEntity.ok(service.verifyCode(verificationRequest));
     }
@@ -73,6 +76,22 @@ public class AuthenticationController {
                 .map(user -> ResponseEntity.ok(user.getId()))
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
+    
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<String> handleIllegalArgumentException(IllegalArgumentException ex) {
+        return ResponseEntity
+                .badRequest()
+                .header("Content-Type", "text/plain")
+                .body(ex.getMessage());
+    }
+
+    @PutMapping("/modifieruser")
+    public ResponseEntity<User> modifierUser(@RequestBody ProfileUpdateRequest request) {
+        User updatedUser = service.modifierProfile(request);
+        return ResponseEntity.ok(updatedUser);
+    }
+
+
 
     }
 

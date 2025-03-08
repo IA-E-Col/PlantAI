@@ -17,12 +17,26 @@ import { SignupRequest } from '../../model/signup-request';
 })
 export class SignUpComponent {
 
+  // Pour alimenter la liste déroulante des départements
+  public departments: string[] = [
+    'Biologie',
+    'Botanique',
+    'Ecologie',
+    'Zoologie',
+    'Chimie',
+    'Géologie',
+    'Microbiologie'
+  ];
+
   signupRequest: SignupRequest = {} as SignupRequest;
   authResponse: AuthenticationResponse = {} as AuthenticationResponse;
   message = '';
+  isError: boolean = false; // Indique si le message est une erreur ou un succès
   otpCode = '';
   selectedFile: File | null = null;
   previewImage: string | null = null;
+  confirmPassword: string = '';
+  isLoading: boolean = false;
 
   constructor(
     private authService: LoginService,
@@ -40,8 +54,7 @@ export class SignUpComponent {
       const reader = new FileReader();
       reader.readAsDataURL(file);
       reader.onload = () => {
-        this.previewImage = reader.result as string; // Aperçu local de l'image
-        // Affecter la chaîne Base64 à la propriété image pour l'envoi vers le backend
+        this.previewImage = reader.result as string;
         this.signupRequest.image = this.previewImage;
       };
     }
@@ -52,47 +65,76 @@ export class SignUpComponent {
    */
   registerUser(): void {
     this.message = '';
+    this.isError = false;
+  
+    // Vérifie la correspondance des mots de passe
+    if (this.signupRequest.password !== this.confirmPassword) {
+      this.message = 'Les mots de passe ne correspondent pas.';
+      this.isError = true;
+      return;
+    }
+    
+    this.isLoading = true;
+  
     this.authService.register(this.signupRequest).subscribe({
       next: (response) => {
+        this.isLoading = false;
+        this.isError = false;
         if (response) {
           this.authResponse = response;
           console.log('authResponse:', this.authResponse);
-          // Si MFA est activé, l'utilisateur devra renseigner son code (verifyTfa()).
         } else {
-          // Réponse renvoyée avec un body vide (202 Accepted) si MFA n'est pas activé.
-          this.message = 'Account created, please check your mail to activate your account. ' +
-                         'You will be redirected to the Login page in 5 seconds.';
+          this.message = 'Compte créé, veuillez vérifier votre e-mail pour activer votre compte. ' +
+                         'Vous serez redirigé vers la page de connexion dans 5 secondes.';
           setTimeout(() => {
             this.router.navigate(['login']);
           }, 5000);
         }
       },
       error: (err) => {
-        console.error('Registration error:', err);
-        this.message = 'Failed to create user';
+        this.isLoading = false;
+        console.error('Erreur lors de l\'inscription:', err);
+        this.isError = true;
+        if (err.error) {
+          this.message = typeof err.error === 'string'
+            ? err.error
+            : err.error.message || JSON.stringify(err.error);
+        } else {
+          this.message = 'Un compte avec le même mail existe déjà.';
+        }
       }
     });
   }
-
+  
   /**
    * Vérifie le code OTP (MFA).
    */
   verifyTfa() {
     this.message = '';
+    this.isError = false;
+    this.isLoading = true;
+    
     const verifyRequest: VerificationRequest = {
       email: this.signupRequest.email,
       code: this.otpCode
     };
-    this.authService.verifyCode(verifyRequest)
-      .subscribe({
-        next: (response) => {
-          this.message = 'Account created successfully\nYou will be redirected to the Welcome page in 3 seconds';
-          setTimeout(() => {
-            localStorage.setItem('token', response.accessToken as string);
-
-            this.router.navigate(['login']);
-          }, 3000);
-        }
-      });
+    
+    this.authService.verifyCode(verifyRequest).subscribe({
+      next: (response) => {
+        this.isLoading = false;
+        this.isError = false;
+        this.message = 'Compte créé avec succès. Vous serez redirigé vers la page d\'accueil dans 3 secondes.';
+        setTimeout(() => {
+          localStorage.setItem('token', response.accessToken as string);
+          this.router.navigate(['login']);
+        }, 3000);
+      },
+      error: (err) => {
+        this.isLoading = false;
+        console.error('Erreur lors de la vérification:', err);
+        this.isError = true;
+        this.message = 'Échec de la vérification';
+      }
+    });
   }
 }

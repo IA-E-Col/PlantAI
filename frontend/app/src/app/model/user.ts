@@ -13,7 +13,6 @@ export enum Role {
       public nom?: string,
       public email?: string,
       public password?: string,
-      public role?: Role,
       public departement?: string,
       public image?: string,
     ) {}

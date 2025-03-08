@@ -27,30 +27,38 @@ export class NavbarComponent implements OnInit {
   constructor(private router: Router) {}
 
   ngOnInit(): void {
-    // Récupération de l'image de profil depuis le localStorage
-    const storedImage = localStorage.getItem('profileImageUrl');
-    this.userImageUrl = storedImage ? storedImage : 'assets/user.png';
-    console.log('Image utilisateur chargée :', this.userImageUrl);
+    // Récupérer l'objet utilisateur stocké dans localStorage sous "authUser"
+    const storedProfile = localStorage.getItem('authUser');
+    if (storedProfile) {
+      const userProfile = JSON.parse(storedProfile);
+      this.userImageUrl = (userProfile.profileImageUrl && userProfile.profileImageUrl.trim() !== '')
+        ? userProfile.profileImageUrl
+        : 'assets/user.png';
 
-    // Récupération du prénom et du nom depuis le localStorage, si la propriété username n'est pas déjà passée
-    if (!this.username || this.username.trim() === '') {
-      const prenom = localStorage.getItem('prenom') || '';
-      const nom = localStorage.getItem('nom') || '';
-      this.username = `${prenom} ${nom}`.trim();
+      // Si le username n'est pas déjà défini, le composer à partir de prenom et nom
+      if (!this.username || this.username.trim() === '') {
+        const prenom = userProfile.prenom || '';
+        const nom = userProfile.nom || '';
+        this.username = `${prenom} ${nom}`.trim();
+      }
+    } else {
+      this.userImageUrl = 'assets/user.png';
     }
+
+    console.log('Image utilisateur chargée :', this.userImageUrl);
   }
 
-  // Redirige vers le profil
+  // Redirige vers la page de profil
   navigateToProfile(): void {
     this.router.navigate(['admin/profile']);
   }
 
+  // Déconnexion : suppression des informations stockées et redirection vers la page de connexion
   logout(): void {
     localStorage.removeItem('token');
     localStorage.removeItem('userID');
-    localStorage.removeItem('profileImageUrl');
-    localStorage.removeItem('prenom');
-    localStorage.removeItem('nom');
+    localStorage.removeItem('authUser');
+    localStorage.removeItem('mfaEnabled');
     this.router.navigate(['login']);
   }
 }
