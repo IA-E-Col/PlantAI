@@ -8,14 +8,14 @@ import java.sql.Blob;
 @Setter
 @AllArgsConstructor
 public class UserWithExpertiseDTO {
-    Long Id ;
+    Long id ;
     String username;
     String nom;
     String prenom;
     String email;
     String tel;
     String departement;
-    Blob image;
+    String image;
     Expertise e;
 
 

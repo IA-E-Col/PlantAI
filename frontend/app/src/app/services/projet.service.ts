@@ -75,7 +75,7 @@ export class ProjetService {
     const userString = localStorage.getItem("authUser");
     if (userString !== null) {
       const user = JSON.parse(userString);
-      let userId = user.user.id; // recuperer aussi les projets collab
+      let userId = user.id; // recuperer aussi les projets collab
       return  this.http.get<any>(`http://localhost:8080/api/projets/list/PCR/${userId}`);
     }
     return of([]);
@@ -117,7 +117,7 @@ export class ProjetService {
     const userString = localStorage.getItem("authUser");
     if (userString !== null) {
       const user = JSON.parse(userString);
-      let userId = user.user.id;
+      let userId = user.id;
       this.http.post<any>(`http://localhost:8080/api/projets/add/${userId}/${cID}`,p).subscribe({
         next : (data)=>{
           console.log(data);
@@ -157,13 +157,6 @@ export class ProjetService {
     return this.http.delete<any>(`http://localhost:8080/api/projets/delete/${IdP}`);
   }
 
-  func_get_username(){
-    const userString = localStorage.getItem("authUser");
-    if (userString !== null) {
-      const user = JSON.parse(userString);
-      return  user.user.username;
-    }
-  }
 
   func_get_users(): Observable<any[]> {
     return this.http.get<any[]>('http://localhost:8080/api/users/');
@@ -211,7 +204,7 @@ export class ProjetService {
     const userString = localStorage.getItem("authUser");
     if (userString !== null) {
       const user = JSON.parse(userString);
-      let userId = user.user.id; // recuperer aussi les projets collab
+      let userId = user.id; // recuperer aussi les projets collab
       return  this.http.get<any>(`http://localhost:8080/api/projets/list/PCR/${userId}`);
     }
     return of([]);
@@ -220,7 +213,7 @@ export class ProjetService {
     const userString = localStorage.getItem("authUser");
     if (userString !== null) {
       const user = JSON.parse(userString);
-      let userId = user.user.id; // recuperer aussi les projets collab
+      let userId = user.id; // recuperer aussi les projets collab
       return  this.http.get<any>(`http://localhost:8080/api/projets/list/user/${userId}`);
     }
     return of([]);
@@ -230,7 +223,7 @@ export class ProjetService {
     const userString = localStorage.getItem("authUser");
     if (userString !== null) {
       const user = JSON.parse(userString);
-      let userId = user.user.id; // recuperer aussi les projets collab
+      let userId = user.id; // recuperer aussi les projets collab
       return  this.http.get<any>(`http://localhost:8080/api/projets/list/PCO/${userId}`);
     }
     return of([]);

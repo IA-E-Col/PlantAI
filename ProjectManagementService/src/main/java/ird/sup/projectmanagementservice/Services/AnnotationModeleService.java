@@ -65,7 +65,7 @@ public class AnnotationModeleService {
                 .orElseThrow(() -> new RuntimeException("Dataset avec l'ID " + dataSetId + " non trouvé dans les projets accessibles"));
 
         List<AnnClassification> annotations = annClassificationRepository.findByEtatInAndProjetIdIn(
-                List.of(EState.PENDING),
+                List.of(EState.APPROVED,EState.REJECTED),
                 projetsCreeIds
         );
 

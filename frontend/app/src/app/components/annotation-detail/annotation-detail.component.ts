@@ -76,7 +76,7 @@ selectedComment: any = null;
   constructor(private dialog: MatDialog, private route: ActivatedRoute, private router: Router, private projetservice: ProjetService, private imageService: ImageService) {
     this.userString = localStorage.getItem("authUser");
     this.user = JSON.parse(this.userString);
-    this.userId = this.user.user.id; // recuperer aussi les projets collab
+    this.userId = this.user.id; // recuperer aussi les projets collab
     this.descriptionsVisible = Array(8).fill(false)
   }
 
