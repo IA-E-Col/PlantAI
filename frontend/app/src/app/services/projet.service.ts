@@ -196,7 +196,7 @@ export class ProjetService {
     return this.http.post<any[]>(`http://localhost:8080/api/collections/addCollection`,col);
   }
   func_modifer_profile(user:any):Observable<any>{
-    return this.http.put<any>(`http://localhost:8080/api/users/modifier`,user);
+    return this.http.put<any>(`http://localhost:8080/api/v1/auth/modifieruser`,user);
   }
 
   func_delete_collection(id:any):Observable<any>{

@@ -1,52 +1,64 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Component, OnInit, Input } from '@angular/core';
+import { Router } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faChevronDown, faLeaf, faUserCircle } from '@fortawesome/free-solid-svg-icons';
-import { LoginService } from "../../services/login.service";
-import { CommonModule } from '@angular/common';
-
+import { faLeaf, faUserCircle } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [FontAwesomeModule, RouterLink,CommonModule],
+  imports: [FontAwesomeModule],
   templateUrl: './navbar.component.html',
-  styleUrl: './navbar.component.css'
+  styleUrls: ['./navbar.component.css']
 })
-
 export class NavbarComponent implements OnInit {
-  firstName: string = "";
-  userImage: string | null = null; // Stocker l'image de l'utilisateur
+
+  @Input() username: string = '';  // Nom complet (prénom + nom)
 
   faLeaf = faLeaf;
   faUserCircle = faUserCircle;
-  faChevronDown = faChevronDown;
 
-  isDropdownOpen: boolean = false;
+  // Image de profil par défaut
+  userImageUrl: string = 'assets/user.png';
 
-  constructor(private loginServ: LoginService) {}
+  // Dimensions pour l'affichage de l'image
+  imageWidth: number = 40;
+  imageHeight: number = 40;
 
-  ngOnInit() {
-    // Récupérer les infos du user connecté
-    const authUser : string | null = localStorage.getItem("authUser");
-    if (authUser != null)
-    {    
-      const user = JSON.parse(authUser).user;
-      if (user.id) {
-        this.firstName = user.prenom || "User";
-        this.loginServ.getUserImage(user.id).subscribe(image => {
-          this.userImage = image; // Stocke l'image en Base64
-        });
-      
+  constructor(private router: Router) {}
+
+  ngOnInit(): void {
+    // Récupérer l'objet utilisateur stocké dans localStorage sous "authUser"
+    const storedProfile = localStorage.getItem('authUser');
+    if (storedProfile) {
+      const userProfile = JSON.parse(storedProfile);
+      this.userImageUrl = (userProfile.profileImageUrl && userProfile.profileImageUrl.trim() !== '')
+        ? userProfile.profileImageUrl
+        : 'assets/user.png';
+
+      // Si le username n'est pas déjà défini, le composer à partir de prenom et nom
+      if (!this.username || this.username.trim() === '') {
+        const prenom = userProfile.prenom || '';
+        const nom = userProfile.nom || '';
+        this.username = `${prenom} ${nom}`.trim();
+      }
+    } else {
+      this.userImageUrl = 'assets/user.png';
     }
-      
-    }
-   
 
-
+    console.log('Image utilisateur chargée :', this.userImageUrl);
   }
 
-  toggleDropdown() {
-    this.isDropdownOpen = !this.isDropdownOpen;
+  // Redirige vers la page de profil
+  navigateToProfile(): void {
+    this.router.navigate(['admin/profile']);
+  }
+
+  // Déconnexion : suppression des informations stockées et redirection vers la page de connexion
+  logout(): void {
+    localStorage.removeItem('token');
+    localStorage.removeItem('userID');
+    localStorage.removeItem('authUser');
+    localStorage.removeItem('mfaEnabled');
+    this.router.navigate(['login']);
   }
 }

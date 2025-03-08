@@ -1,73 +1,139 @@
-import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from "@angular/forms";
-import { LoginService } from "../../services/login.service";
-import { Router, RouterLink } from "@angular/router";
-import Swal from 'sweetalert2';
+import { Component, Inject } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { Router, RouterLink } from '@angular/router';
+import { AuthenticationResponse } from '../../model/authentication-response';
+import { LoginService } from '../../services/login.service';
+import { VerificationRequest } from '../../model/verification-request';
+import { UserService } from '../../services/user.service';
+import { SignupRequest } from '../../model/signup-request';
 
 @Component({
-  selector: 'app-signup',
+  selector: 'app-register',
   standalone: true,
-  imports: [
-    ReactiveFormsModule,
-    RouterLink
-  ],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './sign-up.component.html',
-  styleUrl: './sign-up.component.css'
+  styleUrls: ['./sign-up.component.css']
 })
-export class SignUpComponent implements OnInit {
+export class SignUpComponent {
 
-  inscrFormGroup!: FormGroup;
+  // Pour alimenter la liste déroulante des départements
+  public departments: string[] = [
+    'Biologie',
+    'Botanique',
+    'Ecologie',
+    'Zoologie',
+    'Chimie',
+    'Géologie',
+    'Microbiologie'
+  ];
+
+  signupRequest: SignupRequest = {} as SignupRequest;
+  authResponse: AuthenticationResponse = {} as AuthenticationResponse;
+  message = '';
+  isError: boolean = false; // Indique si le message est une erreur ou un succès
+  otpCode = '';
   selectedFile: File | null = null;
+  previewImage: string | null = null;
+  confirmPassword: string = '';
+  isLoading: boolean = false;
 
-  constructor(private fb: FormBuilder, private loginServ: LoginService, private router: Router) {}
+  constructor(
+    private authService: LoginService,
+    private router: Router,
+    @Inject(UserService) private userService: UserService
+  ) {}
 
-  ngOnInit(): void {
-    this.inscrFormGroup = this.fb.group({
-      username: this.fb.control("test", [Validators.required]),
-      nom: this.fb.control(null, [Validators.required]),
-      prenom: this.fb.control(null, [Validators.required]),
-      email: this.fb.control(null, [Validators.required]),
-      tel: null,
-      departement: this.fb.control(null, [Validators.required]),
-      password: this.fb.control(null, [Validators.required]),
-      password1: this.fb.control(null, [Validators.required])
-    });
+  /**
+   * Gère la sélection d'un fichier et affiche un aperçu + conversion en Base64.
+   */
+  onFileSelected(event: any): void {
+    const file = event.target.files[0];
+    if (file) {
+      this.selectedFile = file;
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => {
+        this.previewImage = reader.result as string;
+        this.signupRequest.image = this.previewImage;
+      };
+    }
   }
 
-  onFileSelected(event: any) {
-    this.selectedFile = event.target.files[0];
-    console.log(this.selectedFile)
-  }
-
-  inscr() {
-    let user = this.inscrFormGroup.value;
-    
-    if (user.password !== user.password1) {
-      Swal.fire('Error', 'Passwords do not match', 'error');
+  /**
+   * Enregistre un nouvel utilisateur (avec ou sans MFA).
+   */
+  registerUser(): void {
+    this.message = '';
+    this.isError = false;
+  
+    // Vérifie la correspondance des mots de passe
+    if (this.signupRequest.password !== this.confirmPassword) {
+      this.message = 'Les mots de passe ne correspondent pas.';
+      this.isError = true;
       return;
     }
-
-    delete user.password1;
-
-    this.loginServ.inscr(user).subscribe({
-      next: (data) => {
-        console.log("✅ User Created Response:", data);
-
-        if (data && data.id && this.selectedFile) {
-          // On envoie l'image mais on ignore les erreurs
-          this.loginServ.uploadImage(data.id, this.selectedFile).subscribe({
-            next: () => console.log("✅ Image uploaded successfully"),
-            error: () => console.warn("⚠️ Image upload failed, but user is created") // Plus d'affichage d'erreur
-          });
+    
+    this.isLoading = true;
+  
+    this.authService.register(this.signupRequest).subscribe({
+      next: (response) => {
+        this.isLoading = false;
+        this.isError = false;
+        if (response) {
+          this.authResponse = response;
+          console.log('authResponse:', this.authResponse);
+        } else {
+          this.message = 'Compte créé, veuillez vérifier votre e-mail pour activer votre compte. ' +
+                         'Vous serez redirigé vers la page de connexion dans 5 secondes.';
+          setTimeout(() => {
+            this.router.navigate(['login']);
+          }, 5000);
         }
-
-        // Message de succès UNIQUEMENT pour la création du user
-        Swal.fire('Success', 'User created successfully!', 'success').then(() => {
-          this.router.navigate(['/login']);
-        });
       },
-      error: () => {
-        Swal.fire('Error', 'Failed to create user', 'error');
+      error: (err) => {
+        this.isLoading = false;
+        console.error('Erreur lors de l\'inscription:', err);
+        this.isError = true;
+        if (err.error) {
+          this.message = typeof err.error === 'string'
+            ? err.error
+            : err.error.message || JSON.stringify(err.error);
+        } else {
+          this.message = 'Un compte avec le même mail existe déjà.';
+        }
+      }
+    });
+  }
+  
+  /**
+   * Vérifie le code OTP (MFA).
+   */
+  verifyTfa() {
+    this.message = '';
+    this.isError = false;
+    this.isLoading = true;
+    
+    const verifyRequest: VerificationRequest = {
+      email: this.signupRequest.email,
+      code: this.otpCode
+    };
+    
+    this.authService.verifyCode(verifyRequest).subscribe({
+      next: (response) => {
+        this.isLoading = false;
+        this.isError = false;
+        this.message = 'Compte créé avec succès. Vous serez redirigé vers la page d\'accueil dans 3 secondes.';
+        setTimeout(() => {
+          localStorage.setItem('token', response.accessToken as string);
+          this.router.navigate(['login']);
+        }, 3000);
+      },
+      error: (err) => {
+        this.isLoading = false;
+        console.error('Erreur lors de la vérification:', err);
+        this.isError = true;
+        this.message = 'Échec de la vérification';
       }
     });
   }

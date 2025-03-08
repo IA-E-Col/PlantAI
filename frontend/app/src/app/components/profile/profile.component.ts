@@ -1,67 +1,89 @@
-import {Component, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
-import {LoginService} from "../../services/login.service";
-import {Router} from "@angular/router";
-import {ProjetService} from "../../services/projet.service";
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { Router, RouterLink } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { ProjetService } from '../../services/projet.service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [
-    ReactiveFormsModule
-  ],
+  imports: [ReactiveFormsModule, RouterLink, CommonModule],
   templateUrl: './profile.component.html',
-  styleUrl: './profile.component.css'
+  styleUrls: ['./profile.component.css']
 })
 export class ProfileComponent implements OnInit {
 
-  inscrFormGroup!: FormGroup
-  profile!: any
-  constructor(private fb: FormBuilder, private loginServ: LoginService, private router: Router, private projetService : ProjetService) {
-  }
+  profileFormGroup!: FormGroup;
+  profile: any;
+
+  constructor(
+    private fb: FormBuilder,
+    private projetService: ProjetService,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
-    const userString = localStorage.getItem("authUser");
-    if (userString !== null) {
-      const user = JSON.parse(userString);
-      this.profile = user.user;
+    // Récupérer l'objet utilisateur stocké dans le localStorage sous "authUser"
+    const userString = localStorage.getItem('authUser');
+    if (userString) {
+      this.profile = JSON.parse(userString);
+    } else {
+      // Rediriger vers la page de connexion si aucune donnée n'est trouvée
+      this.router.navigate(['login']);
+      return;
     }
-    this.inscrFormGroup = this.fb.group({
-        username: this.fb.control(this.profile?.username || "", [Validators.required]),
-        nom: this.fb.control(this.profile?.nom || "", [Validators.required]),
-        prenom: this.fb.control(this.profile?.prenom || "", [Validators.required]),
-        email: this.fb.control(this.profile?.email || "", [Validators.required]),
-        tel: this.fb.control(this.profile?.tel || "", [Validators.required]),
-        departement: this.fb.control(this.profile?.departement || "", [Validators.required]),
-        passwordAncien: this.fb.control(null, [Validators.required]),
-        passwordNouveauConfirm: this.fb.control(null, [Validators.required]),
-        passwordNouveau: this.fb.control(null, [Validators.required]),
-      }
-    );
 
+    // Initialiser le formulaire avec les données du profil (les champs de mot de passe restent vides)
+    this.profileFormGroup = this.fb.group({
+      nom: [this.profile.nom || '', Validators.required],
+      prenom: [this.profile.prenom || '', Validators.required],
+      email: [this.profile.email || '', [Validators.required, Validators.email]],
+      departement: [this.profile.departement || '', Validators.required],
+      passwordAncien: [''],
+      passwordNouveau: [''],
+      passwordNouveauConfirm: ['']
+    });
   }
 
-  onSubmit() {
-    if (this.inscrFormGroup.valid) {
-      let user = this.inscrFormGroup.value;
-      if((user.passwordNouveau == user.passwordNouveauConfirm) && (user.passwordAncien== this.profile.password) && (user.passwordAncien != user.passwordNouveau)){
-          console.log(this.profile);
-          this.profile.password = user.passwordNouveau;
-          //console.log(this.profile);
-          this.projetService.func_modifer_profile(this.profile).subscribe({
-            next:(data)=>{
-              console.log(data)
-              this.router.navigate(['login']);
-            },
-            error:(err)=>{ alert("Opération non aboutie")       }
-          })
+  onSubmitProfile(): void {
+    if (this.profileFormGroup.valid) {
+      const formValues = this.profileFormGroup.value;
+      
+      // Si l'utilisateur souhaite modifier son mot de passe, vérifier la cohérence
+      if (formValues.passwordAncien || formValues.passwordNouveau || formValues.passwordNouveauConfirm) {
+        if (formValues.passwordNouveau !== formValues.passwordNouveauConfirm) {
+          Swal.fire({ icon: 'error', title: 'Erreur', text: 'Le nouveau mot de passe et sa confirmation ne correspondent pas.' });
+          return;
+        }
       }
-      else {
-         alert("Les informations fournies sont incorrect")
-      }}
-    else {
-       console.log("Opération non aboutie")
-      alert("Le formulaire n'est pas valide !");
+      
+      // Construire l'objet profil mis à jour
+      const updatedProfile = {
+        ...this.profile,
+        nom: formValues.nom,
+        prenom: formValues.prenom,
+        email: formValues.email,
+        departement: formValues.departement,
+        passwordAncien: formValues.passwordAncien,
+        passwordNouveau: formValues.passwordNouveau
+      };
+
+      this.projetService.func_modifer_profile(updatedProfile).subscribe({
+        next: (data) => {
+          console.log(data);
+          Swal.fire({ icon: 'success', title: 'Succès', text: 'Profil modifié avec succès. Veuillez vous reconnecter.' })
+            .then(() => {
+              this.router.navigate(['login']);
+            });
+        },
+        error: (err) => {
+          console.error(err);
+          Swal.fire({ icon: 'error', title: 'Erreur', text: 'Échec de la modification du profil.' });
+        }
+      });
+    } else {
+      Swal.fire({ icon: 'error', title: 'Erreur', text: 'Le formulaire n\'est pas valide !' });
     }
   }
 }

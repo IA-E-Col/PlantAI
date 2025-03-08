@@ -2,9 +2,16 @@ package ird.sup.projectmanagementservice.Web;
 
 
 
+
 import ird.sup.projectmanagementservice.DTO.Message;
+
 import ird.sup.projectmanagementservice.Entities.User;
 import ird.sup.projectmanagementservice.Services.UserService;
+import ird.sup.projectmanagementservice.Entities.ChangePasswordRequest;
+import jakarta.servlet.http.HttpServletRequest;
+import java.security.Principal;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -12,11 +19,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.sql.rowset.serial.SerialException;
-import java.io.IOException;
-import java.sql.Blob;
-import java.sql.SQLException;
-import java.util.List;
 
 @RestController
 @CrossOrigin(origins = "*")
@@ -25,6 +27,8 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+
+    // -------------------- Endpoints existants --------------------
 
     @GetMapping("/")
     public ResponseEntity<List<User>> getAllUsers() {
@@ -54,22 +58,21 @@ public class UserController {
 
     @PostMapping("/")
     public ResponseEntity<User> createUser(@RequestBody User user) {
-        if(userService.getUserE(user.getEmail())==null){
+        if(userService.getUserE(user.getEmail()) == null) {
             User savedUser = userService.saveUser(user);
             return new ResponseEntity<>(savedUser, HttpStatus.CREATED);
-        }
-        else {
+        } else {
             return ResponseEntity.notFound().build();
         }
     }
 
     @PutMapping("/modifier")
     public ResponseEntity<User> modifierUser(@RequestBody User user) {
-        if(this.getUserByUsername(user.getUsername())!=null){
+        // Utilise getUserByUsername() pour vérifier l'existence
+        if(this.getUserByUsername(user.getUsername()).getBody() != null) {
             User savedUser = userService.saveUser(user);
             return ResponseEntity.ok(savedUser);
-        }
-        else {
+        } else {
             return ResponseEntity.notFound().build();
         }
     }
@@ -83,31 +86,73 @@ public class UserController {
             return ResponseEntity.notFound().build();
         }
     }
-    @PostMapping("/{id}/uploadImage")
-    public ResponseEntity<Message> uploadUserImage(@PathVariable Long id, @RequestParam("files") MultipartFile file) {
-        try {
-            byte[] bytes = file.getBytes();
-            Blob blob = new javax.sql.rowset.serial.SerialBlob(bytes);
-            userService.saveUserImage(id, blob);
-            System.out.println("✅ Image uploaded successfully for user ID: " + id);
-            return ResponseEntity.ok(new Message("Image uploaded successfully"));
-        } catch (IOException e) {
-            System.err.println("❌ Failed to upload image: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new Message("Failed to upload image"));
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+
+
+    // -------------------- Endpoints supplémentaires --------------------
+
+    /**
+     * Endpoint pour récupérer un utilisateur par email.
+     */
+    @GetMapping("/getbyemaill/{email}")
+    public User getByEmailL(@PathVariable("email") String email) {
+        return userService.retrieveUserbyemail(email);
     }
 
-    @GetMapping("/{id}/image")
-    public ResponseEntity<byte[]> getUserImage(@PathVariable Long id) throws SQLException {
-        byte[] imageData = userService.getUserImage(id);
-        if (imageData != null) {
-            return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(imageData);
-        }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+    /**
+     * Endpoint pour récupérer l'ID d'un utilisateur à partir de son email.
+     */
+    @GetMapping("/getidbyemail/{email}")
+    public Long getIdByEmail(@PathVariable("email") String email) {
+        return userService.retrieveidbyemail(email);
     }
 
+    /**
+     * Endpoint pour rechercher des utilisateurs par mot-clé.
+     */
+    @GetMapping("/searchUser")
+    public List<User> searchUser(@RequestParam(value = "keyword") String keyword) {
+        List<User> allUsers = userService.retrieveAllUsers();
+        return allUsers.stream()
+                .filter(user ->
+                        user.getPrenom().toLowerCase().contains(keyword.toLowerCase()) ||
+                        user.getNom().toLowerCase().contains(keyword.toLowerCase()))
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Endpoint pour mettre à jour un utilisateur par son ID.
+     */
+    @PutMapping("/update/{id-User}")
+    public User updateUser(@RequestBody User user, @PathVariable("id-User") Long numUser) {
+        return userService.updateUser(user, numUser);
+    }
+
+    /**
+     * Endpoint pour récupérer un utilisateur par son ID.
+     */
+    @GetMapping("/get/{id-User}")
+    public User getById(@PathVariable("id-User") Long numUser) {
+        return userService.retrieveUser(numUser);
+    }
+
+    /**
+     * Endpoint pour supprimer un utilisateur par son ID.
+     */
+    @DeleteMapping("/delete/{id-User}")
+    public void deleteById(@PathVariable("id-User") Long numUser) {
+        userService.removeUser(numUser);
+    }
+
+    /**
+     * Endpoint pour changer le mot de passe d'un utilisateur connecté.
+     *
+     * @param request       Le DTO contenant l'ancien et le nouveau mot de passe.
+     * @param connectedUser Le principal de l'utilisateur connecté.
+     * @return ResponseEntity indiquant le succès de l'opération.
+     */
+    @PatchMapping("/changePassword")
+    public ResponseEntity<?> changePassword(@RequestBody ChangePasswordRequest request, Principal connectedUser) {
+        userService.changePassword(request, connectedUser);
+        return ResponseEntity.ok().build();
+    }
 }
-
-
