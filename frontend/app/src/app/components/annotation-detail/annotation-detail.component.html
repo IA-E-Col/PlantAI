@@ -97,24 +97,25 @@
     
           <!-- Texte du commentaire -->
           <div class="comment-text text-start">
-            <h5 class="text-fawn spartan-bold mb-2">
-              {{ comment.createurC.prenom }} {{ comment.createurC.nom }}
-            </h5>
+            <div class="d-flex justify-content-between">
+              <h5 class="text-fawn spartan-bold mb-2">
+                {{ comment.createurC.prenom }} {{ comment.createurC.nom }}
+              </h5>
+              <div class="d-flex gap-2 h-100 align-items-start" *ngIf="comment.createurC.id === userId">
+                <fa-icon [icon]="faEdit" class="text-gold cursor-pointer"
+                (click)="openEdit(comment)"> </fa-icon>
+                <fa-icon [icon]="faTrash" class="text-gold cursor-pointer"
+                        (click)="deleteComment(comment.id)">
+                  Delete
+                </fa-icon>
+      
+              </div>
+            </div>
             <p class="m-0">{{ comment.commentaire }}</p>
           </div>
         </div>
     
         <!-- Boutons agrandis à droite -->
-        <div class="d-flex flex-column gap-2 position-absolute top-0 end-0 mt-2 me-2">
-          <button class="btn btn-sm btn-danger py-2 px-3" 
-                  (click)="deleteComment(comment.id)">
-            Delete
-          </button>
-          <button class="btn btn-sm btn-green py-2 px-3" 
-                  (click)="openEdit(comment)">
-            Edit
-          </button>
-        </div>
       </div>
     </div>
     
@@ -134,7 +135,7 @@
         </div>
         <div class="modal-footer ">
           <button class="btn btn-secondary decline" (click)="closeEdit()">Annuler</button>
-          <button class="btn btn-primary validate bg-green" (click)="saveEdit()">Sauvegarder</button>
+          <button class="btn btn-green validate bg-green" (click)="saveEdit()">Sauvegarder</button>
         </div>
       </div>
     </div>

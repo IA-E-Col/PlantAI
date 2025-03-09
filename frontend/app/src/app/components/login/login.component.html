@@ -3,104 +3,100 @@
   <div class="h-100">
     <div class="d-flex justify-content-center align-items-center h-100">
       
-      <!-- Section gauche : image et slogan -->
+      <!-- Left section: image and slogan -->
       <div class="col-md-6 d-md-block d-none col-12 bg-grad h-100">
         <div class="d-flex h-100 flex-column align-items-center justify-content-center">
           <div class="text-center">
-            <h1 class="text-white display-5">Bienvenue sur PlantAI</h1>
+            <h1 class="text-white display-5">Welcome to PlantAI</h1>
           </div>
           <div class="mt-2 text-center">
-            <p class="text-light fs-4 font-light">Votre solution pour gérer vos herbiers</p>
+            <p class="text-light fs-4 font-light">Your solution for managing your herbariums</p>
           </div>
-          <img src="assets/plant.svg" class="w-75 h-75 opacity-50" alt="Image de plante">
+          <img src="assets/plant.svg" class="w-75 h-75 opacity-50" alt="Plant image">
         </div>
       </div>
       
-      <!-- Section droite : formulaire de connexion ou de vérification MFA -->
+      <!-- Right section: login form or MFA verification -->
       <div class="col-md-6 d-md-flex flex-column justify-content-center align-items-center h-100">
         
-        <!-- Logo IRD -->
-        <div class="mt-5 mb-5 d-flex justify-content-center align-items-center p-3">
-          <img src="assets/IRD.png" class="w-75" alt="Logo IRD">
-        </div>
         
-        <!-- Formulaire de connexion (affiché si MFA n'est pas activé) -->
+        <!-- Login form (displayed if MFA is not enabled) -->
         <form
           *ngIf="!authResponse?.mfaEnabled"
           (ngSubmit)="authenticate()"
           class="form-login p-2 d-flex col-12 col-sm-12 col-md-6"
         >
-          <!-- En-tête pour mobiles -->
+          <!-- Mobile header -->
           <div class="d-md-none d-flex justify-content-center align-items-center mb-3">
             <div class="rounded-circle bg-green d-inline-block p-2">
-              <img src="assets/plant.svg" width="50" height="50" alt="Logo PlantAI">
+              <img src="assets/plant.svg" width="50" height="50" alt="PlantAI Logo">
             </div>
             <p class="fs-4 font-light p-0 mb-0 mt-0 ms-4">
-              Bienvenue sur <span class="text-green fs-4 font-light">PlantAI</span>
+              Welcome to <span class="text-green fs-4 font-light">PlantAI</span>
             </p>
           </div>
           
-          <!-- Titre -->
+          <!-- Title -->
           <div class="mb-5">
-            <h1 class="underlined text-green">Connexion</h1>
+            <h1 class="underlined text-green">Login</h1>
           </div>
           
-          <!-- Champ E-mail -->
+          <!-- Email field -->
           <div class="d-flex align-items-start flex-column mb-4 w-100">
-            <label for="username">E-mail</label>
+            <label for="username">Email</label>
             <input
               name="username"
               id="username"
               type="text"
-              placeholder="E-mail"
+              placeholder="Email"
               class="form-control w-100"
               required
               [(ngModel)]="authRequest.email"
             >
           </div>
           
-          <!-- Champ Mot de passe -->
+          <!-- Password field -->
           <div class="d-flex align-items-start flex-column w-100">
-            <label for="password">Mot de passe</label>
+            <label for="password">Password</label>
             <input
               type="password"
               id="password"
               name="password"
               class="form-control"
-              placeholder="Mot de passe"
+              placeholder="Password"
               required
               [(ngModel)]="authRequest.password"
             >
           </div>
           
-          <!-- Lien d'inscription -->
+          <!-- Sign-up link -->
           <div class="d-flex justify-content-end">
             <p class="fs-5 font-light text-black">
-              Pas de compte ?
+              No account?
               <span>
                 <a class="text-green fs-5 underlined font-light" [routerLink]="['/signup']">
-                  S'inscrire
+                  Sign up
                 </a>
               </span>
             </p>
           </div>
           
-          <!-- Bouton de connexion -->
-          <button class="btn btn-green p-2" type="submit">Connexion</button>
+          <!-- Login button -->
+          <button class="btn btn-green p-2" type="submit">Login</button>
           
-          <!-- Message d'erreur éventuel -->
+          <!-- Error message (if any) -->
           <div *ngIf="errorMessage" class="text-danger">
             {{ errorMessage }}
           </div>
         </form>
         
-        <!-- Formulaire MFA (affiché si MFA est activé) -->
+        <!-- MFA Form (displayed if MFA is enabled) -->
         <div class="mfa-container" *ngIf="authResponse?.mfaEnabled">
-          <h2>Authentification à deux facteurs</h2>
+          <h2>Two-Factor Authentication</h2>
           
           <div class="form-group">
             <label for="validationCode">
-              Saisissez le code de validation à 6 chiffres généré par l'application
+              Enter the 6-digit verification code generated by the application
             </label>
             <input
               type="text"
@@ -114,9 +110,10 @@
           <button
             type="button"
             (click)="verifyCode()"
+            class="btn btn-green"
             [class.button-disabled]="otpCode.length < 6"
           >
-            Vérifier le code
+            Verify Code
           </button>
         </div>
         

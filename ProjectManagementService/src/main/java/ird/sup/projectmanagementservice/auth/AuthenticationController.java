@@ -31,9 +31,9 @@ public class AuthenticationController {
 
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody RegisterRequest request)
-            throws MessagingException, jakarta.mail.MessagingException {
-        var response = service.register(request);
+    public ResponseEntity<?> register(@ModelAttribute RegisterRequest request, @RequestPart("file") MultipartFile file)
+            throws MessagingException, jakarta.mail.MessagingException, SQLException, IOException {
+        var response = service.register(request,file);
         
         // Si MFA est activé, on renvoie l'objet complet (avec QR code, etc.)
         if (request.isMfaEnabled()) {
@@ -45,7 +45,7 @@ public class AuthenticationController {
         return ResponseEntity.accepted().build();
     }
     @PostMapping("/authenticate")
-    public ResponseEntity<AuthenticationResponse> authenticate(@RequestBody AuthenticationRequest request) {
+    public ResponseEntity<AuthenticationResponse> authenticate(@RequestBody AuthenticationRequest request) throws SQLException {
         return ResponseEntity.ok(service.authenticate(request));
     }
 
@@ -57,8 +57,7 @@ public class AuthenticationController {
     @PostMapping("/verify")
     public ResponseEntity<?> verifyCode(
             @RequestBody VerificationRequest verificationRequest
-    ) throws MessagingException, jakarta.mail.MessagingException
-    {
+    ) throws MessagingException, jakarta.mail.MessagingException, SQLException {
       return ResponseEntity.ok(service.verifyCode(verificationRequest));
     }
 

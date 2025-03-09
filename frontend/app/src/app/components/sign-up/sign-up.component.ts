@@ -19,13 +19,13 @@ export class SignUpComponent {
 
   // Pour alimenter la liste déroulante des départements
   public departments: string[] = [
-    'Biologie',
-    'Botanique',
-    'Ecologie',
-    'Zoologie',
-    'Chimie',
-    'Géologie',
-    'Microbiologie'
+  'Biology',
+  'Botany',
+  'Ecology',
+  'Zoology',
+  'Chemistry',
+  'Geology',
+  'Microbiology'
   ];
 
   signupRequest: SignupRequest = {} as SignupRequest;
@@ -48,16 +48,7 @@ export class SignUpComponent {
    * Gère la sélection d'un fichier et affiche un aperçu + conversion en Base64.
    */
   onFileSelected(event: any): void {
-    const file = event.target.files[0];
-    if (file) {
-      this.selectedFile = file;
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => {
-        this.previewImage = reader.result as string;
-        this.signupRequest.image = this.previewImage;
-      };
-    }
+     this.selectedFile = event.target.files[0];
   }
 
   /**
@@ -69,14 +60,19 @@ export class SignUpComponent {
   
     // Vérifie la correspondance des mots de passe
     if (this.signupRequest.password !== this.confirmPassword) {
-      this.message = 'Les mots de passe ne correspondent pas.';
+      this.message = 'The passwords do not match.';
       this.isError = true;
       return;
     }
     
     this.isLoading = true;
-  
-    this.authService.register(this.signupRequest).subscribe({
+    const formData : FormData = new FormData();
+    if (this.selectedFile)
+      formData.append('file',this.selectedFile);
+    Object.entries(this.signupRequest).forEach(([key, value]) => {
+      formData.append(key,value);
+    });
+    this.authService.register(formData).subscribe({
       next: (response) => {
         this.isLoading = false;
         this.isError = false;
@@ -84,8 +80,7 @@ export class SignUpComponent {
           this.authResponse = response;
           console.log('authResponse:', this.authResponse);
         } else {
-          this.message = 'Compte créé, veuillez vérifier votre e-mail pour activer votre compte. ' +
-                         'Vous serez redirigé vers la page de connexion dans 5 secondes.';
+          this.message = "Account created, please check your email to activate your account. You will be redirected to the login page in 5 seconds";
           setTimeout(() => {
             this.router.navigate(['login']);
           }, 5000);
@@ -93,14 +88,14 @@ export class SignUpComponent {
       },
       error: (err) => {
         this.isLoading = false;
-        console.error('Erreur lors de l\'inscription:', err);
+        console.error('Error in sign up :', err);
         this.isError = true;
         if (err.error) {
           this.message = typeof err.error === 'string'
             ? err.error
             : err.error.message || JSON.stringify(err.error);
         } else {
-          this.message = 'Un compte avec le même mail existe déjà.';
+          this.message = 'An account with this email already exists';
         }
       }
     });
@@ -123,7 +118,7 @@ export class SignUpComponent {
       next: (response) => {
         this.isLoading = false;
         this.isError = false;
-        this.message = 'Compte créé avec succès. Vous serez redirigé vers la page d\'accueil dans 3 secondes.';
+        this.message = 'Account successfully created. You will be redirected to the home page in 3 seconds.';
         setTimeout(() => {
           localStorage.setItem('token', response.accessToken as string);
           this.router.navigate(['login']);
@@ -131,9 +126,9 @@ export class SignUpComponent {
       },
       error: (err) => {
         this.isLoading = false;
-        console.error('Erreur lors de la vérification:', err);
+        console.error('Error during verification:', err);
         this.isError = true;
-        this.message = 'Échec de la vérification';
+        this.message = 'Verification failed';
       }
     });
   }

@@ -13,9 +13,10 @@
   .activation-message, .activation-error {
     text-align: center;
   }
-  button:hover {
-    background-color: #0056b3;
-  }
+  .btn-green{
+    background-color: #86A786;
+    color: white;
+}
   button {
     width: 100%;
     padding: 10px;

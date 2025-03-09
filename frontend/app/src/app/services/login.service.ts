@@ -15,7 +15,7 @@ export class LoginService {
 
   constructor(private http: HttpClient) { }
 
-  register(registerRequest: SignupRequest): Observable<AuthenticationResponse> {
+  register(registerRequest: FormData): Observable<AuthenticationResponse> {
     return this.http.post<AuthenticationResponse>(`${this.baseUrl}/register`, registerRequest)
       .pipe(catchError(this.handleError));
   }

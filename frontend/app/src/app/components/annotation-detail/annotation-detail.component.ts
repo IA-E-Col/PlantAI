@@ -9,7 +9,7 @@ import { CommentDialogComponent } from '../comment-dialog/comment-dialog.compone
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import Swal from 'sweetalert2';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faUserCircle } from '@fortawesome/free-solid-svg-icons';
+import { faEdit, faTrash, faUserCircle } from '@fortawesome/free-solid-svg-icons';
 
 interface Commentaire {
   id: number;
@@ -36,7 +36,8 @@ interface Commentaire {
 
 export class AnnotationDetailComponent {
   commentss: Commentaire[] = [];
-
+  faEdit = faEdit;
+  faTrash = faTrash;
   comments : any = [];
   /****************/
   showModal = false;

@@ -11,7 +11,10 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.sql.Blob;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -48,8 +51,9 @@ public class User implements UserDetails {
     @JsonIgnore
     String password;
 
-    // Stocke l'URL de l'image ou une représentation textuelle
-    String image;
+    @Lob
+    @Column(nullable = true, length = 500000)
+    private String image;
 
     @Enumerated(EnumType.STRING)
     Role role;
@@ -107,14 +111,6 @@ public class User implements UserDetails {
         return nom;
     }
 
-    // Méthode pour obtenir les octets de l'URL stockée dans le champ image
-    @JsonProperty("image")
-    public byte[] getImageAsByteArray() {
-        if (image != null) {
-            return image.getBytes(StandardCharsets.UTF_8);
-        }
-        return null;
-    }
     
     @Override
     @JsonIgnore
