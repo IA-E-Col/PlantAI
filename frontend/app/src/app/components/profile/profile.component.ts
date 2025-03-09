@@ -53,7 +53,7 @@ export class ProfileComponent implements OnInit {
       // Si l'utilisateur souhaite modifier son mot de passe, vérifier la cohérence
       if (formValues.passwordAncien || formValues.passwordNouveau || formValues.passwordNouveauConfirm) {
         if (formValues.passwordNouveau !== formValues.passwordNouveauConfirm) {
-          Swal.fire({ icon: 'error', title: 'Erreur', text: 'Le nouveau mot de passe et sa confirmation ne correspondent pas.' });
+          Swal.fire({ icon: 'error', title: 'Error', text: 'The new password and the old password do not match.' });
           return;
         }
       }
@@ -72,18 +72,18 @@ export class ProfileComponent implements OnInit {
       this.projetService.func_modifer_profile(updatedProfile).subscribe({
         next: (data) => {
           console.log(data);
-          Swal.fire({ icon: 'success', title: 'Succès', text: 'Profil modifié avec succès. Veuillez vous reconnecter.' })
+          Swal.fire({ icon: 'success', title: 'Success', text: 'Profil modified successfully. Reconnect please.' })
             .then(() => {
               this.router.navigate(['login']);
             });
         },
         error: (err) => {
           console.error(err);
-          Swal.fire({ icon: 'error', title: 'Erreur', text: 'Échec de la modification du profil.' });
+          Swal.fire({ icon: 'error', title: 'Error', text: 'Error while modifying profile.' });
         }
       });
     } else {
-      Swal.fire({ icon: 'error', title: 'Erreur', text: 'Le formulaire n\'est pas valide !' });
+      Swal.fire({ icon: 'error', title: 'Error', text: 'The form is invalid' });
     }
   }
 }

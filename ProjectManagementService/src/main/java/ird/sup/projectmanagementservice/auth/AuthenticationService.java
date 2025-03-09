@@ -34,6 +34,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.mail.MessagingException;
 
@@ -73,8 +74,8 @@ public class AuthenticationService {
     @Value("http://localhost:4200/activate-account")
     private String activationUrl;
 
-    public AuthenticationResponse register(RegisterRequest request)
-            throws MessagingException, jakarta.mail.MessagingException {
+    public AuthenticationResponse register(RegisterRequest request, MultipartFile file)
+            throws MessagingException, jakarta.mail.MessagingException, IOException, SQLException {
 
     	
     	  // Vérifier si un utilisateur avec cet email existe déjà
@@ -83,40 +84,8 @@ public class AuthenticationService {
             throw new IllegalArgumentException("L'email " + request.getEmail() + " existe déjà.");
         }
     	// 1) Si le champ image est au format Base64, on enregistre le fichier en local.
-    	if (request.getImage() != null && request.getImage().startsWith("data:image")) {
-    	    try {
-    	        int commaIndex = request.getImage().indexOf(",");
-    	        if (commaIndex > 0) {
-    	            // Récupérer la partie "base64" (après la virgule)
-    	            String base64Data = request.getImage().substring(commaIndex + 1);
-    	            byte[] imageBytes = Base64.getDecoder().decode(base64Data);
-
-    	            // Générer un nom de fichier unique (ex: 1678123456789_profile.png)
-    	            String fileName = System.currentTimeMillis() + "_profile.png";
-
-    	            // Définir le dossier cible : "../frontend/src/assets/uploads/"
-    	            // (Hypothèse : le backend et le frontend sont au même niveau)
-    	            String uploadDir = "../frontend/app/src/assets/uploads/";
-    	            File directory = new File(uploadDir);
-    	            if (!directory.exists()) {
-    	                directory.mkdirs();
-    	            }
-
-    	            // Écrire le fichier sur le disque
-    	            File file = new File(directory, fileName);
-    	            try (FileOutputStream fos = new FileOutputStream(file)) {
-    	                fos.write(imageBytes);
-    	            }
-
-    	            // Stocker un chemin relatif pour que le front (Angular) puisse y accéder :
-    	            // Par exemple "assets/uploads/1678123456789_profile.png"
-    	            request.setImage("assets/uploads/" + fileName);
-    	        }
-    	    } catch (IOException e) {
-    	        throw new RuntimeException("Failed to process base64 image: " + e.getMessage(), e);
-    	    }
-    	}
-
+        byte[] bytes = file.getBytes();
+        request.setImage(Base64.getEncoder().encodeToString(bytes));
 
         // 2) Créer l'utilisateur
         var user = User.builder()
@@ -126,7 +95,7 @@ public class AuthenticationService {
                 .departement(request.getDepartement())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .mfaEnabled(request.isMfaEnabled())
-                .image(request.getImage())  // Stocke "uploads/xxx.png"
+                .image(Base64.getEncoder().encodeToString(bytes))  // Stocke "uploads/xxx.png"
                 .build();
 
         // 2) Génère et assigne un secret si 2FA est activé
@@ -158,7 +127,7 @@ public class AuthenticationService {
                 .accessToken(jwtToken)
                 .refreshToken(refreshToken)
                 .mfaEnabled(user.isMfaEnabled())
-                .profileImageUrl(user.getImage())  // Permettre au front de connaître le chemin
+                .profileImageUrl(bytes)  // Permettre au front de connaître le chemin
                 .secretImageUri(user.isMfaEnabled() ? tfaService.generateQrCodeImageUri(user.getSecret()) : null)
                 .build();
     }
@@ -179,14 +148,14 @@ public class AuthenticationService {
 
         StringBuilder emailContent = new StringBuilder();
         emailContent.append("<html><body style='font-family: Arial, sans-serif;'>");
-        emailContent.append("<div style='background-color:#007bff; color:#fff; padding:10px; text-align:center;'>");
+        emailContent.append("<div style='background-color:#86A786; color:#fff; padding:10px; text-align:center;'>");
         emailContent.append("<h1>PlantAi Activating account</h1>");
         emailContent.append("</div>");
         emailContent.append("<div style='background-color:#f8f9fa; padding:10px; margin-top:20px;'>");
         emailContent.append("<h3 style='color:#28a745;'>Token : </h3>");
         emailContent.append("<p><strong>This is your token :</strong> ").append(token).append("</p>");
         emailContent.append("<a href='").append(activationUrl)
-                    .append("' style='background-color:#007bff; color:#fff; padding:10px; text-decoration:none; display:inline-block; margin-top:10px;'>Activate Account</a>");
+                    .append("' style='background-color:#86A786 color:#fff; padding:10px; text-decoration:none; display:inline-block; margin-top:10px;'>Activate Account</a>");
         emailContent.append("</div>");
         emailContent.append("</body></html>");
 
@@ -233,7 +202,7 @@ public class AuthenticationService {
      * - Si MFA activé, renvoie un accessToken vide => forcer verifyCode().
      * - Sinon, renvoie token + refresh + info sur l'image.
      */
-    public AuthenticationResponse authenticate(AuthenticationRequest request) {
+    public AuthenticationResponse authenticate(AuthenticationRequest request) throws SQLException {
         try {
             authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
@@ -268,7 +237,7 @@ public class AuthenticationService {
                 .accessToken(jwtToken)
                 .refreshToken(refreshToken)
                 .mfaEnabled(false)
-                .profileImageUrl(user.getImage())
+                .profileImageUrl(java.util.Base64.getDecoder().decode(user.getImage()))
                 .nom(user.getNom())
                 .prenom(user.getPrenom())
                 .userId(user.getId())
@@ -315,7 +284,7 @@ public class AuthenticationService {
         }
     }
 
-    public AuthenticationResponse verifyCode(VerificationRequest verificationRequest) throws MessagingException, jakarta.mail.MessagingException {
+    public AuthenticationResponse verifyCode(VerificationRequest verificationRequest) throws MessagingException, jakarta.mail.MessagingException, SQLException {
         User user = repository.findByEmaill(verificationRequest.getEmail())
             .orElseThrow(() -> new EntityNotFoundException(
                 String.format("No user found with %s", verificationRequest.getEmail()))
@@ -334,7 +303,7 @@ public class AuthenticationService {
         return AuthenticationResponse.builder()
             .accessToken(jwtToken)
             .mfaEnabled(user.isMfaEnabled())
-            .profileImageUrl(user.getImage())
+            .profileImageUrl(java.util.Base64.getDecoder().decode(user.getImage()))
             .nom(user.getNom())
             .prenom(user.getPrenom())
             .userId(user.getId())

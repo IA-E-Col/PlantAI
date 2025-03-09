@@ -23,7 +23,10 @@ import { UserService } from '../../services/user.service';
 export class LoginComponent implements OnInit {
 
   loginFormGroup!: FormGroup;
-  authRequest: AuthenticationRequest = {} as AuthenticationRequest;
+  authRequest: AuthenticationRequest = {
+    email : "",
+    password: ""
+  } as AuthenticationRequest;
   authResponse: AuthenticationResponse = {} as AuthenticationResponse;
   otpCode = '';
   errorMessage = '';
@@ -47,7 +50,6 @@ export class LoginComponent implements OnInit {
    * Enregistre dans le localStorage toutes les infos de l'utilisateur, sauf le mot de passe.
    */
   authenticate(): void {
-    this.authRequest = this.loginFormGroup.value;
     this.authService.login(this.authRequest).subscribe({
       next: (response: AuthenticationResponse) => {
         this.authResponse = response;
@@ -78,16 +80,16 @@ export class LoginComponent implements OnInit {
               this.fetchUserDetailsAndNavigate();
             },
             error: (error: any) => {
-              console.error('Erreur lors de la récupération de l\'ID utilisateur :', error);
+              console.error('Error while retrieving user :', error);
             }
           });
         }
         // En cas de MFA activé, l'utilisateur devra passer par verifyCode()
       },
       error: (err: any) => {
-        this.errorMessage = 'Email ou mot de passe incorrect.';
+        this.errorMessage = 'Incorrect email or password.';
         console.error(err);
-        Swal.fire('Erreur', 'L\'utilisateur n\'existe pas', 'error');
+        Swal.fire('Error', 'User does not exist', 'error');
       }
     });
   }
@@ -126,13 +128,13 @@ export class LoginComponent implements OnInit {
             this.fetchUserDetailsAndNavigate();
           },
           error: (error: any) => {
-            console.error('Erreur lors de la récupération de l\'ID utilisateur :', error);
+            console.error('Error while retrieving user :', error);
           }
         });
       },
       error: (err: any) => {
-        console.error('Code de vérification invalide', err);
-        Swal.fire('Erreur', 'Code de vérification invalide', 'error');
+        console.error('Invalid verification code', err);
+        Swal.fire('Error', 'Invalid verification code', 'error');
       }
     });
   }

@@ -18,7 +18,7 @@ public class AuthenticationResponse {
 	    private String refreshToken;
 	    private boolean mfaEnabled;
 	    private String secretImageUri;
-	    private String profileImageUrl; // URL de l'image de profil
+	    private byte[] profileImageUrl; // URL de l'image de profil
 	    private String nom;             // Nom de l'utilisateur
 	    private String prenom;          // Prénom de l'utilisateur
 	    private String email;   

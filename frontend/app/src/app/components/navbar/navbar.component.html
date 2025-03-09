@@ -10,7 +10,7 @@
       <!-- Infos utilisateur cliquables (avatar + nom) -->
       <div class="user-info" (click)="navigateToProfile()" style="cursor: pointer;">
         <img [src]="userImageUrl" alt="Avatar utilisateur" class="user-avatar" />
-        <span class="user-name">{{ username }}</span>
+        <span class="user-name text-light">{{ username }}</span>
       </div>
       
       <!-- Dropdown minimal pour Modifier Profil et Déconnexion -->
@@ -22,14 +22,14 @@
           <li>
             <a class="dropdown-item" (click)="navigateToProfile()">
               <i class="fa fa-edit me-2"></i>
-              Modifier Profil
+              Edit Profile
             </a>
           </li>
           <li><hr class="dropdown-divider" /></li>
           <li>
-            <a class="dropdown-item" (click)="logout()">
+            <a class="dropdown-item text-danger" (click)="logout()">
               <i class="bx bx-power-off me-2"></i>
-              Déconnexion
+              Logout
             </a>
           </li>
         </ul>

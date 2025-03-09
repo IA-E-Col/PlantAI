@@ -33,7 +33,7 @@ export class NavbarComponent implements OnInit {
     if (storedProfile) {
       const userProfile = JSON.parse(storedProfile);
       this.userImageUrl = (userProfile.profileImageUrl && userProfile.profileImageUrl.trim() !== '')
-        ? "/" + userProfile.profileImageUrl
+        ? 'data:image/jpeg;base64, ' + userProfile.profileImageUrl
         : 'assets/user.png';
 
       // Si le username n'est pas déjà défini, le composer à partir de prenom et nom

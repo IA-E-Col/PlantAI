@@ -1,2 +1,2 @@
 ann_specification,libelle,valeur_precision,valeur_predite,media_id,model_inference_id,dataset_id
-classi,test,0,1,35395,8,6
+classi,PlanteElliptique,0,0,334,1,1
