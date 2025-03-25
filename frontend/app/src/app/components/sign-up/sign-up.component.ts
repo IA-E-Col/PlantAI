@@ -1,58 +1,135 @@
-import {Component, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
-import {LoginService} from "../../services/login.service";
-import {Router, RouterLink} from "@angular/router";
-import Swal from 'sweetalert2';
+import { Component, Inject } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { Router, RouterLink } from '@angular/router';
+import { AuthenticationResponse } from '../../model/authentication-response';
+import { LoginService } from '../../services/login.service';
+import { VerificationRequest } from '../../model/verification-request';
+import { UserService } from '../../services/user.service';
+import { SignupRequest } from '../../model/signup-request';
 
 @Component({
-  selector: 'app-signup',
+  selector: 'app-register',
   standalone: true,
-  imports: [
-    ReactiveFormsModule,
-    RouterLink
-  ],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './sign-up.component.html',
-  styleUrl: './sign-up.component.css'
+  styleUrls: ['./sign-up.component.css']
 })
-export class SignUpComponent implements OnInit{
+export class SignUpComponent {
 
-  inscrFormGroup! : FormGroup
+  // Pour alimenter la liste déroulante des départements
+  public departments: string[] = [
+  'Biology',
+  'Botany',
+  'Ecology',
+  'Zoology',
+  'Chemistry',
+  'Geology',
+  'Microbiology'
+  ];
 
-  constructor(private  fb: FormBuilder, private loginServ : LoginService, private router : Router) {
+  signupRequest: SignupRequest = {} as SignupRequest;
+  authResponse: AuthenticationResponse = {} as AuthenticationResponse;
+  message = '';
+  isError: boolean = false; // Indique si le message est une erreur ou un succès
+  otpCode = '';
+  selectedFile: File | null = null;
+  previewImage: string | null = null;
+  confirmPassword: string = '';
+  isLoading: boolean = false;
+
+  constructor(
+    private authService: LoginService,
+    private router: Router,
+    @Inject(UserService) private userService: UserService
+  ) {}
+
+  /**
+   * Gère la sélection d'un fichier et affiche un aperçu + conversion en Base64.
+   */
+  onFileSelected(event: any): void {
+     this.selectedFile = event.target.files[0];
   }
-  ngOnInit(): void {
 
-    this.inscrFormGroup = this.fb.group({
-        username : this.fb.control( "test", [Validators.required]),
-        nom : this.fb.control( null, [Validators.required]),
-        prenom : this.fb.control( null, [Validators.required]),
-        email : this.fb.control( null, [Validators.required]),
-        tel : null,
-        departement : this.fb.control( null, [Validators.required]),
-        password : this.fb.control(null, [Validators.required]),
-        password1 : this.fb.control(null, [Validators.required]),
+  /**
+   * Enregistre un nouvel utilisateur (avec ou sans MFA).
+   */
+  registerUser(): void {
+    this.message = '';
+    this.isError = false;
+  
+    // Vérifie la correspondance des mots de passe
+    if (this.signupRequest.password !== this.confirmPassword) {
+      this.message = 'The passwords do not match.';
+      this.isError = true;
+      return;
+    }
+    
+    this.isLoading = true;
+    const formData : FormData = new FormData();
+    if (this.selectedFile)
+      formData.append('file',this.selectedFile);
+    Object.entries(this.signupRequest).forEach(([key, value]) => {
+      formData.append(key,value);
+    });
+    this.authService.register(formData).subscribe({
+      next: (response) => {
+        this.isLoading = false;
+        this.isError = false;
+        if (response) {
+          this.authResponse = response;
+          console.log('authResponse:', this.authResponse);
+        } else {
+          this.message = "Account created, please check your email to activate your account. You will be redirected to the login page in 5 seconds";
+          setTimeout(() => {
+            this.router.navigate(['login']);
+          }, 5000);
+        }
+      },
+      error: (err) => {
+        this.isLoading = false;
+        console.error('Error in sign up :', err);
+        this.isError = true;
+        if (err.error) {
+          this.message = typeof err.error === 'string'
+            ? err.error
+            : err.error.message || JSON.stringify(err.error);
+        } else {
+          this.message = 'An account with this email already exists';
+        }
       }
-    );
+    });
   }
   
-  inscr() {
-    let user =  this.inscrFormGroup.value;
-    if(user.password ===  user.password1  ) {
-      this.loginServ.inscr(user).subscribe({
-        next:(data) => {
-          Swal.fire('Success', 'User created successfully!', 'success').then(() => {
-            window.location.reload();
-          });
-        },
-        error: (err) => {
-          Swal.fire('Error', 'Failed to create user', 'error');
-        }
-      });
-    }
-    else {
-      Swal.fire('Error', 'Passwords do not match', 'error');
-    }
+  /**
+   * Vérifie le code OTP (MFA).
+   */
+  verifyTfa() {
+    this.message = '';
+    this.isError = false;
+    this.isLoading = true;
+    
+    const verifyRequest: VerificationRequest = {
+      email: this.signupRequest.email,
+      code: this.otpCode
+    };
+    
+    this.authService.verifyCode(verifyRequest).subscribe({
+      next: (response) => {
+        this.isLoading = false;
+        this.isError = false;
+        this.message = 'Account successfully created. You will be redirected to the home page in 3 seconds.';
+        setTimeout(() => {
+          localStorage.setItem('token', response.accessToken as string);
+          this.router.navigate(['login']);
+        }, 3000);
+      },
+      error: (err) => {
+        this.isLoading = false;
+        console.error('Error during verification:', err);
+        this.isError = true;
+        this.message = 'Verification failed';
+      }
+    });
   }
-
-
 }

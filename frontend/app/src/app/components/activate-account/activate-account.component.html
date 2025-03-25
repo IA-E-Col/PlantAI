@@ -1,0 +1,39 @@
+<div class="container" *ngIf="submitted else codeForm">
+    <div class="activation-message" *ngIf="isOkay; else activationError">
+      <h2>Activation Successful!</h2>
+      <p>Your account has been successfully activated.</p>
+      <button class="btn btn-green" (click)="redirectToLogin()">Go to Login</button>
+    </div>
+    <ng-template #activationError>
+      <div class="activation-error">
+        <h2>Activation Failed!</h2>
+        <p>{{ message }}</p>
+        <button class="btn btn-green" (click)="submitted = false">Try again</button>
+      </div>
+    </ng-template>
+  </div>
+  <ng-template #codeForm>
+    <div class="container">
+     <div class="form-group">
+      <h2> <label for="validationCode">Type your activation code</label></h2>
+       <br>
+        <input
+          style="width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      border: 1px solid #cccccc;
+      border-radius: 4px;"
+          type="text"
+          id="validationCode"
+          name="validationCode"
+          required
+          [(ngModel)]="otpCode"
+        >
+      </div>
+      <div>
+           <button type="button" class="btn btn-green" (click)="verifyCode()"
+                        [class.button-disabled]="otpCode.length < 6"
+    >Verify code</button></div>
+    </div>
+  </ng-template>
+  

@@ -4,7 +4,22 @@ import {HttpClient, HttpHeaders, HttpParams} from "@angular/common/http";
 import {LoginService} from "./login.service";
 import {LinkedList} from "ngx-bootstrap/utils";
 
-
+interface Model {
+  id: number;
+  name: string;
+  description: string;
+  urlModele: string;
+  categorie: string;
+}
+interface Annotation {
+  id: number;
+  libelle: string;
+  etat: string;
+  valeurPredite: string;
+  ann_specification: string;
+  modelName: string;
+  modelcat: string;
+}
 export interface Specimen {
   id: number;
   baseDEnregistrement: string;
@@ -60,7 +75,7 @@ export class ProjetService {
     const userString = localStorage.getItem("authUser");
     if (userString !== null) {
       const user = JSON.parse(userString);
-      let userId = user.user.id; // recuperer aussi les projets collab
+      let userId = user.id; // recuperer aussi les projets collab
       return  this.http.get<any>(`http://localhost:8080/api/projets/list/PCR/${userId}`);
     }
     return of([]);
@@ -102,7 +117,7 @@ export class ProjetService {
     const userString = localStorage.getItem("authUser");
     if (userString !== null) {
       const user = JSON.parse(userString);
-      let userId = user.user.id;
+      let userId = user.id;
       this.http.post<any>(`http://localhost:8080/api/projets/add/${userId}/${cID}`,p).subscribe({
         next : (data)=>{
           console.log(data);
@@ -142,13 +157,6 @@ export class ProjetService {
     return this.http.delete<any>(`http://localhost:8080/api/projets/delete/${IdP}`);
   }
 
-  func_get_username(){
-    const userString = localStorage.getItem("authUser");
-    if (userString !== null) {
-      const user = JSON.parse(userString);
-      return  user.user.username;
-    }
-  }
 
   func_get_users(): Observable<any[]> {
     return this.http.get<any[]>('http://localhost:8080/api/users/');
@@ -181,7 +189,7 @@ export class ProjetService {
     return this.http.post<any[]>(`http://localhost:8080/api/collections/addCollection`,col);
   }
   func_modifer_profile(user:any):Observable<any>{
-    return this.http.put<any>(`http://localhost:8080/api/users/modifier`,user);
+    return this.http.put<any>(`http://localhost:8080/api/v1/auth/modifieruser`,user);
   }
 
   func_delete_collection(id:any):Observable<any>{
@@ -196,7 +204,7 @@ export class ProjetService {
     const userString = localStorage.getItem("authUser");
     if (userString !== null) {
       const user = JSON.parse(userString);
-      let userId = user.user.id; // recuperer aussi les projets collab
+      let userId = user.id; // recuperer aussi les projets collab
       return  this.http.get<any>(`http://localhost:8080/api/projets/list/PCR/${userId}`);
     }
     return of([]);
@@ -205,7 +213,7 @@ export class ProjetService {
     const userString = localStorage.getItem("authUser");
     if (userString !== null) {
       const user = JSON.parse(userString);
-      let userId = user.user.id; // recuperer aussi les projets collab
+      let userId = user.id; // recuperer aussi les projets collab
       return  this.http.get<any>(`http://localhost:8080/api/projets/list/user/${userId}`);
     }
     return of([]);
@@ -215,7 +223,7 @@ export class ProjetService {
     const userString = localStorage.getItem("authUser");
     if (userString !== null) {
       const user = JSON.parse(userString);
-      let userId = user.user.id; // recuperer aussi les projets collab
+      let userId = user.id; // recuperer aussi les projets collab
       return  this.http.get<any>(`http://localhost:8080/api/projets/list/PCO/${userId}`);
     }
     return of([]);
@@ -249,7 +257,7 @@ export class ProjetService {
   importCsv(file: File, idCollection: any): Observable<string> {
     const formData = new FormData();
     formData.append('file', file);
-    return this.http.post<string>(`http://127.0.0.1:8080/import-csv/${idCollection}`, formData);
+    return this.http.post<string>(`http://127.0.0.1:8080/api/import/import-csv/${idCollection}`, formData);
   }
   addClasse(classe: any): Observable<any> {
     return this.http.post<any>('http://127.0.0.1:8080/api/annotationModele/addClasse', classe);
@@ -280,7 +288,23 @@ export class ProjetService {
   addCommentToAnnotation(idAnnotation: number, idUser: number, commentaire: any): Observable<any> {
     return this.http.post<any>(`http://127.0.0.1:8080/api/annotationModele/${idAnnotation}/${idUser}/addComment`, commentaire);
   }
-
+  getAnnHistory(idUser:string , idDataset:string): Observable<Annotation[]> {
+    return this.http.get<any[]>(`http://localhost:8080/api/annotationModele/history/${idUser}/${idDataset}`).pipe(
+      map(annotations => 
+        annotations.map(ann => ({
+          id: ann.id,
+          libelle: ann.libelle,
+          state: ann.state,
+          etat: ann.etat,
+          valeurPredite: ann.valeurPredite,
+          ann_specification: ann.ann_specification,
+          modelName: ann.model.name,  // Assure-toi que 'model' contient bien un objet avec la propriété 'name'
+          modelcat: ann.model.categorie  // Même chose pour 'categorie'
+        }))
+      )
+    );
+  }
+  
 
   deleteCommentFromAnnotation(idAnnotation: number, idUser: number, idCommentaire: number): Observable<any> {
     return this.http.delete<any>(`http://127.0.0.1:8080/api/annotationModele/${idUser}/${idAnnotation}/${idCommentaire}/deleteComment`);
@@ -308,4 +332,9 @@ export class ProjetService {
   func_supp_modele(id: any) {
     return this.http.delete(`/api/models/${id}`);
   }
+
+
+
+
+
 }

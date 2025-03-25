@@ -218,4 +218,62 @@ button.ghost {
   height: 40px;
   width: 40px;
 }
+.mfa-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  max-width: 400px;
+  width: 90%;
+  padding: 20px;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.mfa-container h2 {
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.mfa-container .form-group {
+  margin-bottom: 15px;
+  text-align: left;
+}
+
+.mfa-container label {
+  display: block;
+  margin-bottom: 5px;
+  color: #555;
+}
+
+.mfa-container input[type="text"] {
+  width: 100%;
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #cccccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+.mfa-container button {
+  width: 100%;
+  padding: 10px;
+  color: #fff;
+  font-size: 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+
+.button-disabled {
+  background-color: #cccccc;
+  color: #777;
+  cursor: not-allowed;
+  opacity: 0.6;
+  pointer-events: none;
+}
 

@@ -1,9 +1,9 @@
 <div class="layout">
-  <app-navbar [username]="username"></app-navbar>
-    <div class="flex">
-      <app-sidebar [class.collapsed]="!menuOpen"></app-sidebar>
-      <div class="content" [class]="{ 'expanded': menuOpen, 'collapsed': !menuOpen }">
-        <router-outlet></router-outlet>
-      </div>
+  <app-navbar></app-navbar>
+  <div class="flex">
+    <app-sidebar [class.collapsed]="!menuOpen"></app-sidebar>
+    <div class="content" [class]="{ 'expanded': menuOpen, 'collapsed': !menuOpen }">
+      <router-outlet></router-outlet>
     </div>
+  </div>
 </div>

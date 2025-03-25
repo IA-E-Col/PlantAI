@@ -1,23 +1,28 @@
 package ird.sup.projectmanagementservice.Services;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.opencsv.CSVReader;
+import com.opencsv.bean.CsvToBean;
+import com.opencsv.bean.CsvToBeanBuilder;
 import com.opencsv.exceptions.CsvException;
-import ird.sup.projectmanagementservice.DAO.CollectionRepository;
-import ird.sup.projectmanagementservice.DAO.MediaRepository;
-import ird.sup.projectmanagementservice.DAO.SpecimenRepository;
+import ird.sup.projectmanagementservice.DAO.*;
+import ird.sup.projectmanagementservice.DTO.AnnotationRecord;
+import ird.sup.projectmanagementservice.Entities.AnnotationH.Annotation;
+import ird.sup.projectmanagementservice.Entities.AnnotationH.AnnotationSP.AnnClassification;
 import ird.sup.projectmanagementservice.Entities.Collection;
+import ird.sup.projectmanagementservice.Entities.DataSet;
 import ird.sup.projectmanagementservice.Entities.MediaH.Image;
 import ird.sup.projectmanagementservice.Entities.MediaH.Media;
+import ird.sup.projectmanagementservice.Entities.Modele;
 import ird.sup.projectmanagementservice.Entities.Specimen;
+import ird.sup.projectmanagementservice.Enums.EState;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class CsvService {
@@ -28,6 +33,14 @@ public class CsvService {
     private CollectionRepository collectionRepository;
     @Autowired
     private MediaRepository mediaRepository;
+    @Autowired
+    private DataSetRepository dataSetRepository;
+    @Autowired
+    private ModeleRepository modeleRepository;
+    @Autowired
+    private AnnotationRepository annotationRepository;
+    @Autowired
+    private AnnClassificationRepository annClassificationRepository;
 
     public void importCsv(MultipartFile file ,Long colId) throws IOException, CsvException {
         try (CSVReader csvReader = new CSVReader(new InputStreamReader(file.getInputStream()))) {
@@ -102,4 +115,77 @@ public class CsvService {
     }
 
 
+    public List<AnnClassification> importAnnotationsCSV(MultipartFile file) {
+        List<AnnClassification> annClassifications = new ArrayList<>();
+        try (InputStreamReader reader = new InputStreamReader(file.getInputStream())) {
+            CsvToBean<AnnotationRecord> csvToBean = new CsvToBeanBuilder<AnnotationRecord>(reader)
+                    .withType(AnnotationRecord.class)
+                    .withIgnoreLeadingWhiteSpace(true)
+                    .build();
+
+            List<AnnotationRecord> records = csvToBean.parse();
+
+            // Example: process records
+            for (AnnotationRecord record : records) {
+                Optional<Media> media = mediaRepository.findById(record.getMediaId());
+                if (media.isEmpty())
+                    return null;
+                Optional<DataSet> dataset = dataSetRepository.findById(record.getDatasetId());
+                if (dataset.isEmpty())
+                    return null;
+                Optional<Modele> modele = modeleRepository.findById(record.getModelInferenceId());
+                if (modele.isEmpty())
+                    return null;
+                Optional<AnnClassification> annClassification = annClassificationRepository.findAnnotationByDatasetAndMediaAndModel(dataset.get().getId(),media.get().getId(), modele.get().getId());
+                if (annClassification.isPresent())
+                    return null;
+                AnnClassification annotation = new AnnClassification(record.getLibelle(), record.getValeurPrecision(), record.getValeurPredite(), media.get(), modele.get(), dataset.get());
+                annotation.setEtat(EState.PENDING);
+                annotation.setModeAquisition("Inference");
+                AnnClassification newAnnotation = annotationRepository.save(annotation);
+                annClassifications.add(newAnnotation);
+            }
+
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to process file", e);
+        }
+        return annClassifications;
+    }
+    public List<AnnClassification> importAnnotationsJSON(MultipartFile file) {
+        List<AnnClassification> annClassifications = new ArrayList<>();
+        try {
+            // Parse JSON content from the file using Jackson's ObjectMapper
+            ObjectMapper objectMapper = new ObjectMapper();
+
+            // Assuming your JSON is an array of AnnotationRecord objects
+            List<AnnotationRecord> records = objectMapper.readValue(file.getInputStream(),
+                    objectMapper.getTypeFactory().constructCollectionType(List.class, AnnotationRecord.class));
+
+            // Process each record
+            for (AnnotationRecord record : records) {
+                Optional<Media> media = mediaRepository.findById(record.getMediaId());
+                if (media.isEmpty())
+                    return null;
+                Optional<DataSet> dataset = dataSetRepository.findById(record.getDatasetId());
+                if (dataset.isEmpty())
+                    return null;
+                Optional<Modele> modele = modeleRepository.findById(record.getModelInferenceId());
+                if (modele.isEmpty())
+                    return null;
+                Optional<AnnClassification> annClassification = annClassificationRepository.findAnnotationByDatasetAndMediaAndModel(dataset.get().getId(), media.get().getId(), modele.get().getId());
+                if (annClassification.isPresent())
+                    return null;
+                AnnClassification annotation = new AnnClassification(record.getLibelle(), record.getValeurPrecision(), record.getValeurPredite(), media.get(), modele.get(), dataset.get());
+                annotation.setEtat(EState.PENDING);
+                annotation.setModeAquisition("Inference");
+                AnnClassification newAnnotation = annotationRepository.save(annotation);
+                annClassifications.add(newAnnotation);
+            }
+        } catch (Exception e) {
+            // Handle exception (e.g., log or rethrow)
+            e.printStackTrace();
+            return null;
+        }
+        return annClassifications;
+    }
 }

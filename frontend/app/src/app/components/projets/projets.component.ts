@@ -45,7 +45,6 @@ export class ProjetsComponent implements OnInit {
   projets! : Array<any>
   message_err! : string
   nonPrj! : string;
-  username = this.projetService.func_get_username();
 
   errorMessage!: string;
 

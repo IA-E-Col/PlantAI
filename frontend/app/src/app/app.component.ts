@@ -10,7 +10,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, RouterOutlet ,RouterLink, RouterLinkActive, ReactiveFormsModule, LoginComponent,HttpClientModule, FontAwesomeModule  ],
+  imports: [CommonModule, RouterOutlet ,RouterLink, RouterLinkActive, ReactiveFormsModule, LoginComponent ,HttpClientModule, FontAwesomeModule  ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css',
 

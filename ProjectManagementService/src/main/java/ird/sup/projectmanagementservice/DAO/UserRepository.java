@@ -5,10 +5,15 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-public interface UserRepository extends JpaRepository<User,Long> {
-    @Query("select u from User u where u.username = :x")
-    public User findByUserName( @Param("x")String username );
+import java.util.Optional;
 
-    @Query("select u from User u where u.email = :x")
-    public User findByUserEmail( @Param("x")String email );
+public interface UserRepository extends JpaRepository<User, Long> {
+    
+    @Query("SELECT u FROM User u WHERE u.username = :x")
+    User findByUserName(@Param("x") String username);
+
+    @Query("SELECT u FROM User u WHERE u.email = :x")
+    User findByUserEmail(@Param("x") String email);
+    
+    Optional<User> findByEmail(String email);
 }

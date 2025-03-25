@@ -1,58 +1,54 @@
 import { Injectable } from '@angular/core';
-import {catchError, Observable, of, throwError} from "rxjs";
-import {HttpClient} from "@angular/common/http";
-
-
+import { HttpClient, HttpErrorResponse } from "@angular/common/http";
+import { SignupRequest } from "../model/signup-request";
+import { AuthenticationResponse } from "../model/authentication-response";
+import { VerificationRequest } from "../model/verification-request";
+import { AuthenticationRequest } from "../model/authentication-request";
+import { catchError, Observable, of, throwError, switchMap } from "rxjs";
 
 @Injectable({
   providedIn: 'root'
 })
 export class LoginService {
-  message! : string
-  private isAuthenticated = false;
-  constructor(private http:HttpClient) { }
 
-  public login(p :any):Observable<any>{
+  private baseUrl = 'http://localhost:8080/api/v1/auth';
 
-    let email = p.email
-    return   this.http.get<any>(`http://localhost:8080/api/users/email/${email}`).pipe(
-      catchError(error => {
-        return error;   // ici je dois faire test pour verifier password, c objectif de pipe
-      })               // faire des traitments ici
-    );
+  constructor(private http: HttpClient) { }
 
+  register(registerRequest: FormData): Observable<AuthenticationResponse> {
+    return this.http.post<AuthenticationResponse>(`${this.baseUrl}/register`, registerRequest)
+      .pipe(catchError(this.handleError));
   }
 
-
-
-  public authenticateUser(p :any):Observable<any>{
-    localStorage.setItem("authUser", JSON.stringify({user:p}))
-    return of(true)
+  login(authRequest: AuthenticationRequest): Observable<AuthenticationResponse> {
+    return this.http.post<AuthenticationResponse>(`${this.baseUrl}/authenticate`, authRequest)
+      .pipe(catchError(this.handleError));
   }
 
-  public isauthenticated(): boolean {
-    return this.isAuthenticated;
-  }
-  public authenticatedOK(): void {
-    this.isAuthenticated = true ;
+  verifyCode(verificationRequest: VerificationRequest): Observable<AuthenticationResponse> {
+    return this.http.post<AuthenticationResponse>(`${this.baseUrl}/verify`, verificationRequest)
+      .pipe(catchError(this.handleError));
   }
 
-  public isadmin() : boolean{
-    // code
-    return true
+  confirm(token: string): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}/activate-account?emailtoken=${token}`)
+      .pipe(catchError(this.handleError));
   }
 
-  public inscr(p :any):Observable<any>{
-    delete p.password1;
-    p.username = p.prenom +"."+p.nom
-    return this.http.post<any>("http://localhost:8080/api/users/", p).pipe(
-      catchError(error => {
-        return error;
-      })
-    );
+  public getUserImageUrl(email: string): Observable<string | null> {
+    return this.http.get<string>(`${this.baseUrl}/${email}/image`)
+      .pipe(catchError(() => of(null)));
   }
 
+  private getToken(): string | null {
+    return localStorage.getItem('token');
+  }
 
+  
 
+  private handleError(error: HttpErrorResponse) {
+    return throwError(() => new Error(error.message));
+  }
 
+  
 }

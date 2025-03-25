@@ -46,7 +46,7 @@ export class ExplorerComponent {
   
   constructor(
     private dialogRef: MatDialog,
-    private projetService: ProjetService, // Use ProjetService
+    private projetService: ProjetService,
     private router: Router,
     private sharedServiceService: SharedServiceService
   ) { }

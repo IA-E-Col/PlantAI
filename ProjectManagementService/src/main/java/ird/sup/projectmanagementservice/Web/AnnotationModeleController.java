@@ -38,6 +38,11 @@ public class AnnotationModeleController {
     @Autowired
     private UserRepository userRepository;
 
+    @GetMapping("/history/{userId}/{dataSetId}")
+    public List<AnnClassification> getAnnHistory(@PathVariable Long userId, @PathVariable Long dataSetId) {
+        return annotationModeleService.GetAnnHistory(userId, dataSetId);
+    }
+
     @GetMapping("/getAllClasse")
     public List<ClasseAnnotation> getAllclasses() {
         return annotationModeleService.getAllClasses();
@@ -141,5 +146,10 @@ public class AnnotationModeleController {
             }
         }
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new Message("Unmatching state value!"));
+    }
+
+    @GetMapping("/annotations/{userId}/{dataSetId}")
+    public List<AnnClassification> getPendingAnnotations(@PathVariable Long userId, @PathVariable Long dataSetId) {
+        return annotationModeleService.getPendingAnnotations(userId, dataSetId);
     }
 }

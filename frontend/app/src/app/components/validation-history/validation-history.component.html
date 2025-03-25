@@ -5,27 +5,33 @@
     </div>
 
     <div class="filters">
-        <input type="text" [(ngModel)]="filterText" (input)="filterAnnotations()" placeholder="🔍 Search by annotation name">
-        <input type="text" [(ngModel)]="filterState" (input)="filterAnnotations()" placeholder="🔍 Search by state">
+        <input type="text" [(ngModel)]="filterText" (input)="filterAnnotations()" placeholder="Search by annotation name">
+        <input type="text" [(ngModel)]="filterState" (input)="filterAnnotations()" placeholder="Search by state">
         <input type="date" [(ngModel)]="filterDate" (input)="filterAnnotations()" placeholder="Filter by date">
     </div>
 
     <table class="validation-table">
         <thead>
-            <tr>
-                <th (click)="sortBy('name')">Annotation <span class="sort-icons">⬆⬇</span></th>
-                <th (click)="sortBy('submissionDate')">Date of Submission <span class="sort-icons">⬆⬇</span></th>
-                <th (click)="sortBy('state')">State <span class="sort-icons">⬆⬇</span></th>
-            </tr>
+          <tr>
+            <th (click)="sortBy('libelle')">Annotation <span class="sort-icons">⬆⬇</span></th>
+            <th (click)="sortBy('etat')">Etat <span class="sort-icons">⬆⬇</span></th>
+
+            <th (click)="sortBy('modelName')">Model <span class="sort-icons">⬆⬇</span></th>
+            <th (click)="sortBy('modelcat')">Model <span class="sort-icons">⬆⬇</span></th>
+
+        </tr>
         </thead>
         <tbody>
-            <tr *ngFor="let annotation of filteredAnnotations">
-                <td>{{ annotation.name }}</td>
-                <td>{{ annotation.submissionDate }}</td>
-                <td [ngClass]="annotation.etat.toLowerCase()">
-                    {{ annotation.etat }}
-                </td>
-            </tr>
+          <tr *ngFor="let annotation of filteredAnnotations">
+            <td>{{ annotation.libelle }}</td>
+            <td [ngClass]="annotation.etat.toLowerCase()">
+                <span class="badge badge-green text-light p-2">{{ annotation.etat }}</span>
+              </td>
+            <td>{{ annotation.modelName }}</td>
+            <td>{{ annotation.modelcat }}</td>
+
+          </tr>
         </tbody>
-    </table>
+      </table>
+      
 </div>

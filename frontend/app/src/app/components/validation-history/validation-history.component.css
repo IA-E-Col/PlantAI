@@ -20,6 +20,10 @@
     font-weight: bold;
     color: #6C7542;
 }
+.badge-green {
+    background-color:#86A786;
+    color: white;
+  }
 
 .add-user-btn {
     background: #A3B18A;

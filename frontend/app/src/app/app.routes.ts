@@ -24,6 +24,9 @@ import { DatasetModelComponent } from "./components/dataset-model/dataset-model.
 import { DashboardDatasetComponent } from "./components/dashboard-dataset/dashboard-dataset.component";
 import { UpdateModeleComponent } from "./components/update-modele/update-modele.component";
 
+import {ActivateAccountComponent} from "./components/activate-account/activate-account.component";
+import { ExportannotationComponent } from './components/exportannotation/exportannotation.component';
+
 import { ExplorerDetailsComponent } from "./components/explorer-details/explorer-details.component";
 import { CollectionInfoComponent } from "./components/collection-info/collection-info.component";
 import { CollectionImgComponent } from "./components/collection-img/collection-img.component";
@@ -46,6 +49,10 @@ export const routes: Routes = [
   {path : 'signup', component: SignUpComponent},
   { path: 'login', component: LoginComponent },
   { path: '', component: LoginComponent },
+  {
+    path: 'activate-account',
+    component: ActivateAccountComponent
+  },
   {
     path: 'admin', component: AdminTemplateComponent, canActivate: [authenticationGuard], children: [
       { path: 'projects', component: ProjetsComponent },
@@ -85,7 +92,6 @@ export const routes: Routes = [
           { path: 'edit', component: GererprojetComponent },
           { path: 'collaborators', component: AjouterCollabComponent },
           { path: 'supprcollab/:id', component: SupprimerCollabComponent },
-          { path: 'validation-history', component: ValidationHistoryComponent }, // ✅ Ajout ici
           { path: '', component: ProjetInfComponent },
         ]
       },
@@ -125,7 +131,9 @@ export const routes: Routes = [
           { path: 'details', component: DatasetInfComponent },
           { path: 'models', component: DatasetModelComponent },
           { path: 'edit', component: GererDatasetComponent },
+          { path: 'validation_history', component: ValidationHistoryComponent },
           { path: 'images/:catalogueCode', component: ImageInfComponent },
+          { path: 'import_export_annotation', component: ExportannotationComponent },
           {
             path: 'datasetPrediction/:modelId', component: DatasetPredictionComponent,
             children: [
@@ -136,6 +144,8 @@ export const routes: Routes = [
       },
       { path: 'annotation_validation', component: AnnotationValidationComponent },
       { path: 'scores', component: ScoresComponent },
+      
+
     ]
   },  
 

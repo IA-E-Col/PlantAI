@@ -1,17 +1,39 @@
 <nav class="navbar">
-  <div class="w-100 d-flex justify-content-between">
-      <div class="logo">
-          <fa-icon [icon]="faLeaf"></fa-icon> PlantAI
+  <div class="navbar-container">
+    <!-- Logo cliquable -->
+    <div class="logo" (click)="navigateToProfile()" style="cursor: pointer;">
+      <fa-icon [icon]="faLeaf"></fa-icon> PlantAI
+    </div>
+    
+    <!-- Section utilisateur -->
+    <div class="user-section">
+      <!-- Infos utilisateur cliquables (avatar + nom) -->
+      <div class="user-info" (click)="navigateToProfile()" style="cursor: pointer;">
+        <img [src]="userImageUrl" alt="Avatar utilisateur" class="user-avatar" />
+        <span class="user-name text-light">{{ username }}</span>
       </div>
-      <div class="user d-flex align-items-center dropdown position-relative" [class.show]="isDropdownOpen">
-          <fa-icon [icon]="faUserCircle" class="user-icon"></fa-icon>
-          <span class="username">{{ username }}</span>
-          <fa-icon [icon]="faChevronDown" class="ms-2 cursor-pointer text-white fs-4"
-                   (click)="toggleDropdown()"></fa-icon>
-          <ul class="dropdown-menu dropdown-menu-end position-absolute fix-positions" [class.show]="isDropdownOpen">
-              <li><a class="dropdown-item" [routerLink]="['profile']" href="#">Profile</a></li>
-              <li><a class="dropdown-item text-danger" [routerLink]="['../login']" href="#">Logout</a></li>
-          </ul>
+      
+      <!-- Dropdown minimal pour Modifier Profil et Déconnexion -->
+      <div class="dropdown">
+        <button class="bg-transparent border-0" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+          <fa-icon [icon]="faChevronDown" class="text-light"></fa-icon>
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+          <li>
+            <a class="dropdown-item" (click)="navigateToProfile()">
+              <i class="fa fa-edit me-2"></i>
+              Edit Profile
+            </a>
+          </li>
+          <li><hr class="dropdown-divider" /></li>
+          <li>
+            <a class="dropdown-item text-danger" (click)="logout()">
+              <i class="bx bx-power-off me-2"></i>
+              Logout
+            </a>
+          </li>
+        </ul>
       </div>
+    </div>
   </div>
 </nav>
