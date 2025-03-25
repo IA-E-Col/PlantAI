@@ -1,9 +1,10 @@
-import {Component, OnInit} from '@angular/core';
-import {ReactiveFormsModule} from "@angular/forms";
-import {RouterLink, RouterOutlet} from "@angular/router";
-import {ProjetService} from "../../services/projet.service";
+import { Component, OnInit } from '@angular/core';
+import { ReactiveFormsModule } from '@angular/forms';
+import { RouterLink, RouterOutlet } from '@angular/router';
+import { ProjetService } from '../../services/projet.service';
 import { NavbarComponent } from '../navbar/navbar.component';
 import { SidebarComponent } from '../sidebar/sidebar.component';
+
 @Component({
   selector: 'app-admin-template',
   standalone: true,
@@ -15,19 +16,21 @@ import { SidebarComponent } from '../sidebar/sidebar.component';
     SidebarComponent
   ],
   templateUrl: './admin-template.component.html',
-  styleUrl: './admin-template.component.css'
+  styleUrls: ['./admin-template.component.css']
 })
-export class AdminTemplateComponent implements OnInit{
-  corpusId! : string;
+export class AdminTemplateComponent implements OnInit {
+  corpusId!: string;
   cheminLogo = "assets/IRD.png";
   cheminUser = "assets/user.png";
-  username! : string
+  username!: string;
   id: string = '';
-  constructor(private projetService: ProjetService) {
-  }
   menuOpen = false;
 
-  ngOnInit() {
-    this.username = this.projetService.func_get_username();
+  constructor(private projetService: ProjetService) {}
+
+  ngOnInit(): void {
+    // Récupère le nom complet depuis le service ou localStorage
+    const username = localStorage.getItem('prenom') || '';
+    const nom = localStorage.getItem('nom') || '';
   }
 }

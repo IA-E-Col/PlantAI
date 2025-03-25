@@ -5,10 +5,7 @@ import ird.sup.projectmanagementservice.Entities.DataSet;
 import ird.sup.projectmanagementservice.Entities.Commentaire;
 import ird.sup.projectmanagementservice.Entities.Modele;
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,20 +16,16 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 public class Annotation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
-    String libelle ;
-    String type ;
+    protected Long id;
+    protected String libelle ;
+    protected String type ;
     @OneToMany(mappedBy = "annotation", cascade = CascadeType.ALL)
     @JsonIgnore
-    private List<Modele> modeles = new ArrayList<>();
-
-
-
-
-
+    protected List<Modele> modeles = new ArrayList<>();
     @ManyToOne
-    private DataSet dataset;
+    protected DataSet dataset;
 }

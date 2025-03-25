@@ -66,7 +66,7 @@ public class AnnotationModeleService {
 
         List<AnnClassification> annotations = annClassificationRepository.findByEtatInAndProjetIdIn(
                // List.of(EState.REJECTED EState.APPROVED),
-                List.of(EState.PENDING),
+                List.of(EState.APPROVED,EState.REJECTED),
                 projetsCreeIds
         );
 
@@ -194,4 +194,7 @@ public class AnnotationModeleService {
     }
 
 
+    public List<AnnClassification> getPendingAnnotations(Long userId, Long dataSetId) {
+        return projetRepository.findPendingAnnotationByDataset(dataSetId);
+    }
 }

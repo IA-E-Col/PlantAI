@@ -9,7 +9,7 @@ import { CommentDialogComponent } from '../comment-dialog/comment-dialog.compone
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import Swal from 'sweetalert2';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faUserCircle } from '@fortawesome/free-solid-svg-icons';
+import { faEdit, faTrash, faUserCircle } from '@fortawesome/free-solid-svg-icons';
 
 interface Commentaire {
   id: number;
@@ -36,7 +36,8 @@ interface Commentaire {
 
 export class AnnotationDetailComponent {
   commentss: Commentaire[] = [];
-
+  faEdit = faEdit;
+  faTrash = faTrash;
   comments : any = [];
   /****************/
   showModal = false;
@@ -76,7 +77,7 @@ selectedComment: any = null;
   constructor(private dialog: MatDialog, private route: ActivatedRoute, private router: Router, private projetservice: ProjetService, private imageService: ImageService) {
     this.userString = localStorage.getItem("authUser");
     this.user = JSON.parse(this.userString);
-    this.userId = this.user.user.id; // recuperer aussi les projets collab
+    this.userId = this.user.id; // recuperer aussi les projets collab
     this.descriptionsVisible = Array(8).fill(false)
   }
 

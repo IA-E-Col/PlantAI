@@ -1,50 +1,56 @@
-<div class="container mt-5">
-  <div class="form-wrapper p-4">
-    <h2 class="text-center mb-4">Update Profile</h2>
-    <form [formGroup]="inscrFormGroup" (ngSubmit)="onSubmit()">
-      <h5 class="mb-3">Personal Information</h5>
-      <div class="mb-3">
-        <label for="username" class="form-label">Username:</label>
-        <input type="text" id="username" formControlName="username" class="form-control">
-      </div>
-      <div class="mb-3">
-        <label for="nom" class="form-label">Last Name:</label>
-        <input type="text" id="nom" formControlName="nom" class="form-control">
-      </div>
-      <div class="mb-3">
-        <label for="prenom" class="form-label">First Name:</label>
-        <input type="text" id="prenom" formControlName="prenom" class="form-control">
-      </div>
-      <div class="mb-3">
-        <label for="email" class="form-label">Email:</label>
-        <input type="email" id="email" formControlName="email" class="form-control">
-      </div>
-      <div class="mb-3">
-        <label for="tel" class="form-label">Phone:</label>
-        <input type="text" id="tel" formControlName="tel" class="form-control">
-      </div>
-      <div class="mb-3">
-        <label for="departement" class="form-label">Department:</label>
-        <input type="text" id="departement" formControlName="departement" class="form-control">
-      </div>
-
-      <h5 class="mt-4 mb-3">Security</h5>
-      <div class="mb-3">
-        <label for="password2" class="form-label">Old Password:</label>
-        <input type="password" id="password2" formControlName="passwordAncien" class="form-control">
-      </div>
-      <div class="mb-3">
-        <label for="password" class="form-label">New Password:</label>
-        <input type="password" id="password" formControlName="passwordNouveauConfirm" class="form-control">
-      </div>
-      <div class="mb-4">
-        <label for="password1" class="form-label">Confirm New Password:</label>
-        <input type="password" id="password1" formControlName="passwordNouveau" class="form-control">
-      </div>
-
-      <div class="text-center">
-        <button type="submit" class="btn btn-green w-100">Save</button>
-      </div>
-    </form>
+<form [formGroup]="profileFormGroup" (ngSubmit)="onSubmitProfile()" class="container mt-4">
+  <div class="mb-3 row">
+    <label for="nom" class="col-sm-2 col-form-label">Last Name:</label>
+    <div class="col-sm-10">
+      <input type="text" id="nom" formControlName="nom" class="form-control" placeholder="Your last name">
+    </div>
   </div>
-</div>
+  
+  <div class="mb-3 row">
+    <label for="prenom" class="col-sm-2 col-form-label">First Name:</label>
+    <div class="col-sm-10">
+      <input type="text" id="prenom" formControlName="prenom" class="form-control" placeholder="Your first name">
+    </div>
+  </div>
+  
+  <div class="mb-3 row">
+    <label for="email" class="col-sm-2 col-form-label">Email:</label>
+    <div class="col-sm-10">
+      <input type="email" id="email" formControlName="email" class="form-control" placeholder="Your email address">
+    </div>
+  </div>
+  
+  <div class="mb-3 row">
+    <label for="departement" class="col-sm-2 col-form-label">Department:</label>
+    <div class="col-sm-10">
+      <input type="text" id="departement" formControlName="departement" class="form-control" placeholder="Your department">
+    </div>
+  </div>
+  
+  <div class="mb-3 row">
+    <label for="passwordAncien" class="col-sm-2 col-form-label">Current Password:</label>
+    <div class="col-sm-10">
+      <input type="password" id="passwordAncien" formControlName="passwordAncien" class="form-control" placeholder="Enter your current password">
+    </div>
+  </div>
+  
+  <div class="mb-3 row">
+    <label for="passwordNouveau" class="col-sm-2 col-form-label">New Password:</label>
+    <div class="col-sm-10">
+      <input type="password" id="passwordNouveau" formControlName="passwordNouveau" class="form-control" placeholder="Enter your new password">
+    </div>
+  </div>
+  
+  <div class="mb-3 row">
+    <label for="passwordNouveauConfirm" class="col-sm-2 col-form-label">Confirm New Password:</label>
+    <div class="col-sm-10">
+      <input type="password" id="passwordNouveauConfirm" formControlName="passwordNouveauConfirm" class="form-control" placeholder="Confirm your new password">
+    </div>
+  </div>
+  
+  <div class="mb-3 row">
+    <div class="offset-sm-2 col-sm-10">
+      <button type="submit" class="btn btn-green">Save</button>
+    </div>
+  </div>
+</form>
