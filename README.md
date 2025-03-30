@@ -55,7 +55,34 @@ Before you begin, make sure you have the following installed:
     export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
     export PATH=$JAVA_HOME/bin:$PATH
     ```
-3. Reload the shell configuration file:
+3. Define the file `application.properties` in `ProjectManagementService\src\main\resources` (Create the database manually in PostgreSQL, the tables will be created by Hibernate) 
+Don't forget to set your password in `spring.datasource.password`
+    ```
+        # PostgreSQL Configuration
+        spring.application.name=Management-Service
+
+        spring.datasource.url=jdbc:postgresql://127.0.0.1:5432/plantai
+        spring.datasource.username=postgres
+        spring.datasource.password=your_password
+        application.security.jwt.secret-key=your_jwt_key
+        application.security.jwt.expiration=your_jwt_expiration
+        application.security.jwt.refresh-token.expiration=your_jwt_expiration_key
+        spring.datasource.driver-class-name=org.postgresql.Driver
+        spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
+
+        spring.jpa.hibernate.ddl-auto=create
+        spring.jpa.show-sql=false
+
+        spring.cloud.discovery.enabled=false
+        eureka.instance.prefer-ip-address=true
+        eureka.client.service-url.defaultZone=http://localhost:8761/eureka
+
+        # File upload settings
+        spring.servlet.multipart.enabled=true
+        spring.servlet.multipart.max-file-size=500MB
+        spring.servlet.multipart.max-request-size=50MB
+    ```
+4. Reload the shell configuration file:
     ```bash
     source ~/.bashrc
     ```
