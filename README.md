@@ -9,11 +9,11 @@ This application consists of three main parts:
 ## Prerequisites
 Before you begin, make sure you have the following installed:
 - [Node.js](https://nodejs.org/) (for the frontend)
+- [PostgreSQL](https://www.postgresql.org/download/) (for the database)
 - [Java JDK](https://www.oracle.com/java/technologies/javase-downloads.html) (for the management service)
 - [Python](https://python.org/downloads/) and [pip](https://pip.pypa.io/en/stable/installation/) (for the prediction service)
 
 ## Installation
-
 ### Frontend
 #### Launching application on machine
 1. Navigate to the frontend directory:
@@ -86,7 +86,7 @@ Don't forget to set your password in `spring.datasource.password`
     ```bash
     source ~/.bashrc
     ```
-4. Compile and run the service:
+5. Compile and run the service:
     ```bash
     ./mvnw spring-boot:run
     ```

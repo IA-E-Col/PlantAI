@@ -12,8 +12,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AnnBBox extends AnnotationSpecimen {
-    float Xmax;
-    float Ymax;
-    float Xmin;
-    float Ymin;
+    float x_max;
+    float y_max;
+    float x_min;
+    float y_min;
 }
