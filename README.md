@@ -64,7 +64,9 @@ Don't forget to set your password in `spring.datasource.password`
         spring.datasource.url=jdbc:postgresql://127.0.0.1:5432/plantai
         spring.datasource.username=postgres
         spring.datasource.password=your_password
-
+        application.security.jwt.secret-key=your_jwt_key
+        application.security.jwt.expiration=your_jwt_expiration
+        application.security.jwt.refresh-token.expiration=your_jwt_expiration_key
         spring.datasource.driver-class-name=org.postgresql.Driver
         spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
 
