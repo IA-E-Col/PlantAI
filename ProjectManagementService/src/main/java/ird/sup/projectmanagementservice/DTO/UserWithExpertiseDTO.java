@@ -4,6 +4,7 @@ import lombok.*;
 
 import java.sql.Blob;
 
+@NoArgsConstructor     
 @Getter
 @Setter
 @AllArgsConstructor
