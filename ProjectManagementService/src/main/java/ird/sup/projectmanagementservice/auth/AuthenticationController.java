@@ -65,6 +65,7 @@ public class AuthenticationController {
     public void confirm(@RequestParam String emailtoken)
             throws MessagingException, jakarta.mail.MessagingException {
         service.activateAccount(emailtoken);
+
     }
     
 

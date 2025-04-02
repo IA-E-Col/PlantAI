@@ -93,6 +93,20 @@ Don't forget to set your password in `spring.datasource.password`
     mvn spring-boot:run
     ```
 
+
+### Management Service (Docker)
+1. Create the jar file using the following command (you have to be in the folder `/ProjectManagementService`):
+```bash
+./mvnw clean install
+```
+or if Maven is available globally.
+```bash
+mvn clean install
+```
+A jar file of the Spring Boot App will be created inside the `target` folder.
+2. Create the containers using the following command `docker compose-up --build`
+A `Postgres` and a `Spring boot` container will be created.
+
 ### Prediction Service (FastAPI)
 
 #### Launching application on machine

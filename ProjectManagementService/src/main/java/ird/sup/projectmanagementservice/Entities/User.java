@@ -51,7 +51,6 @@ public class User implements UserDetails {
     @JsonIgnore
     String password;
 
-    @Lob
     @Column(nullable = true, length = 500000)
     private String image;
 
