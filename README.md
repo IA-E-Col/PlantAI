@@ -128,7 +128,7 @@ A `Postgres` and a `Spring boot` container will be created.
     ```
 4. Launch the service:
     ```bash
-    uvicorn main:app --reload
+    uvicorn app:app --reload
     ```
 
 #### Launching application using docker
