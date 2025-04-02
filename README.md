@@ -114,7 +114,7 @@ Don't forget to set your password in `spring.datasource.password`
     ```
 4. Launch the service:
     ```bash
-    uvicorn main:app --reload
+    uvicorn app:app --reload
     ```
 
 #### Launching application using docker
