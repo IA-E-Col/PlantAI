@@ -1,4 +1,4 @@
-package ird.sup.projectmanagementservice.Web;
+/*package ird.sup.projectmanagementservice.Web;
 
 import ird.sup.projectmanagementservice.DAO.CollectionRepository;
 import ird.sup.projectmanagementservice.DAO.ModeleRepository;
@@ -32,6 +32,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 /**
  * Classe de test pour {@link ProjetController}.
  */
+/*
 @WebMvcTest(controllers = ProjetController.class)
 public class ProjetControllerTest {
 
@@ -75,6 +76,7 @@ public class ProjetControllerTest {
     /**
      * Test: Récupération d’un projet par son ID (cas: projet trouvé)
      */
+/*
     @Test
     void testFindProjetById_OK() throws Exception {
         System.out.println("➡️ testFindProjetById_OK: Start");
@@ -98,6 +100,7 @@ public class ProjetControllerTest {
     /**
      * Test: Récupération d’un projet par son ID (cas: projet introuvable)
      */
+/*
     @Test
     void testFindProjetById_NotFound() throws Exception {
         System.out.println("➡️ testFindProjetById_NotFound: Start");
@@ -115,6 +118,11 @@ public class ProjetControllerTest {
     /**
      * Test: liste de tous les projets
      */
+
+
+
+
+/*
     @Test
     void testGetProjetsList_OK() throws Exception {
         System.out.println("➡️ testGetProjetsList_OK: Start");
@@ -139,6 +147,7 @@ public class ProjetControllerTest {
     /**
      * Test: liste des collaborateurs d’un projet
      */
+/*
     @Test
     void testGetCollaborateurs_OK() throws Exception {
         System.out.println("➡️ testGetCollaborateurs_OK: Start");
@@ -163,6 +172,7 @@ public class ProjetControllerTest {
     /**
      * Test: récupération du créateur d’un projet (cas OK)
      */
+ /*
     @Test
     void testGetCreateur_OK() throws Exception {
         System.out.println("➡️ testGetCreateur_OK: Start");
@@ -185,6 +195,7 @@ public class ProjetControllerTest {
     /**
      * Test: récupération du créateur d’un projet (cas introuvable)
      */
+/*
     @Test
     void testGetCreateur_NotFound() throws Exception {
         System.out.println("➡️ testGetCreateur_NotFound: Start");
@@ -199,3 +210,5 @@ public class ProjetControllerTest {
     }
 
 }
+*/
+

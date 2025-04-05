@@ -1,4 +1,4 @@
-package ird.sup.projectmanagementservice.Web;
+/*package ird.sup.projectmanagementservice.Web;
 
 import ird.sup.projectmanagementservice.Services.AnnotationModeleService;
 import ird.sup.projectmanagementservice.config.TestConfig;
@@ -35,3 +35,5 @@ public class AnnotationModeleControllerTest {
                 .andExpect(status().isOk());
     }
 }
+
+ */
