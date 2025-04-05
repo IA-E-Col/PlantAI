@@ -18,7 +18,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(controllers = AnnotationModeleController.class)
 @Import(TestConfig.class)
 public class AnnotationModeleControllerTest {
-
+/*
     @Autowired
     private MockMvc mockMvc;
 
@@ -33,7 +33,5 @@ public class AnnotationModeleControllerTest {
         mockMvc.perform(get("/api/annotationModele/getAllClasse")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
-    }
-}
+    } */
 
- */
