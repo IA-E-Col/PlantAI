@@ -42,14 +42,14 @@ public class Specimen {
     Float longitude;
     String codePays;
 
-    @OneToMany(fetch=FetchType.LAZY,mappedBy = "specimen",cascade = CascadeType.ALL)
+    @OneToMany(fetch=FetchType.EAGER,mappedBy = "specimen",cascade = CascadeType.ALL)
     @JsonIgnore
     private List<Media> medias = new ArrayList<>();
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER,cascade = CascadeType.ALL)
     @JsonIgnore
     Collection collection;
 
-    @ManyToMany(mappedBy = "specimens")
+    @ManyToMany(mappedBy = "specimens",cascade = CascadeType.PERSIST)
     @JsonIgnore
     private List<DataSet> datasets = new ArrayList<>();
 

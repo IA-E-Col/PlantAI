@@ -25,12 +25,12 @@ public class DataSet {
    // @ManyToOne(cascade = CascadeType.ALL)
    // @JsonIgnore
    // Collection collection ;
-    @ManyToOne(cascade = CascadeType.PERSIST)
+    @ManyToOne(cascade = CascadeType.PERSIST,fetch = FetchType.EAGER)
     Projet projet ;
-    @OneToMany(fetch=FetchType.LAZY,cascade = CascadeType.ALL)
+    @OneToMany(fetch=FetchType.EAGER,cascade = CascadeType.ALL)
     @JsonIgnore
     private List<Filtre> Filtres;
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.PERSIST,fetch = FetchType.EAGER)
     @JsonIgnore
     @JoinTable(
             name = "Dataset_specimen",

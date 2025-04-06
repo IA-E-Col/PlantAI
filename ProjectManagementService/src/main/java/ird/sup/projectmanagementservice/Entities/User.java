@@ -71,11 +71,11 @@ public class User implements UserDetails {
     @JsonIgnore
     List<Projet> projetsCree;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.PERSIST,  orphanRemoval = false)
     @JsonIgnore
     private List<Participation> participations = new ArrayList<>();
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "createurC", cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "createurC", cascade = CascadeType.PERSIST, orphanRemoval = false)
     @JsonIgnore
     List<Commentaire> commentaires;
 

@@ -1,12 +1,16 @@
 package ird.sup.projectmanagementservice.Web;
 
 
+import ird.sup.projectmanagementservice.DAO.CollectionRepository;
+import ird.sup.projectmanagementservice.DAO.ModeleRepository;
+import ird.sup.projectmanagementservice.DTO.Message;
 import ird.sup.projectmanagementservice.DTO.ModelResponse;
 import ird.sup.projectmanagementservice.Entities.AnnotationH.Annotation;
 import ird.sup.projectmanagementservice.Entities.AnnotationH.AnnotationMDL.ClasseAnnotation;
 import ird.sup.projectmanagementservice.Entities.AnnotationH.AnnotationSP.AnnClassification;
 import ird.sup.projectmanagementservice.Entities.Modele;
 import ird.sup.projectmanagementservice.Entities.Specimen;
+import ird.sup.projectmanagementservice.Services.CollectionService;
 import ird.sup.projectmanagementservice.Services.ModelService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,12 +19,20 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+
 @CrossOrigin(origins="*")
 @RestController
 @RequestMapping("/api/models")
 public class ModelController {
     @Autowired
     ModelService modelService;
+    @Autowired
+    ModeleRepository modeleRepository;
+    @Autowired
+    private CollectionRepository collectionRepository;
+    @Autowired
+    private CollectionService collectionService;
 
     @GetMapping("/")
     public List<Modele> getAllModels() {
@@ -75,7 +87,18 @@ public class ModelController {
             return null;
         }
     }
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteModel(@PathVariable Long id) {
+        System.out.println("EXPOSED API");
+        Optional<Modele> model = Optional.ofNullable(modelService.getModelById(id));
 
+        if (model.isPresent()) {
+            this.modeleRepository.deleteById(id);
+            return ResponseEntity.ok().body(model.get());
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new Message("Model Not Found !"));
+
+    }
 
     @GetMapping("/predictDataset/{idS}/{idM}")
     public ResponseEntity<ArrayList<Annotation>> predictDataset(@PathVariable Long idM, @PathVariable Long idS) {

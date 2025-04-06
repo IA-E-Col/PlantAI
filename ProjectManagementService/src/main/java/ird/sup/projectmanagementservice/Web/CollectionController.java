@@ -1,6 +1,7 @@
 package ird.sup.projectmanagementservice.Web;
 
 import ird.sup.projectmanagementservice.DAO.CollectionRepository;
+import ird.sup.projectmanagementservice.DTO.Message;
 import ird.sup.projectmanagementservice.Entities.Collection;
 import ird.sup.projectmanagementservice.Entities.DataSet;
 import ird.sup.projectmanagementservice.Entities.Projet;
@@ -9,6 +10,7 @@ import ird.sup.projectmanagementservice.Services.CollectionService;
 import ird.sup.projectmanagementservice.Services.DatasetService;
 import ird.sup.projectmanagementservice.Services.ProjetService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -91,10 +93,19 @@ public class CollectionController {
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> deleteCollection(@PathVariable Long id) {
-        datasetService.deleteDataSet(id);
+        collectionService.deleteCollection(id);
         return ResponseEntity.ok().build();
     }
 
+    @DeleteMapping("/delete/dataset/{id}")
+    public ResponseEntity<?> deleteDatasetModel(@PathVariable Long id) {
+        boolean deleted = collectionService.deleteDataset(id);
+        if (deleted) {
+            return ResponseEntity.ok().body(new Message("Dataset Deleted !"));
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new Message("Dataset Not Found !"));
+
+    }
     @GetMapping("/{id}")
     public ResponseEntity<Collection> findCollectionById(@PathVariable Long id) {
         Collection collection = collectionService.findCollectionbyId(id);

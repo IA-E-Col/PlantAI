@@ -24,7 +24,7 @@ public class Projet {
     @OneToMany(mappedBy = "projet", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Participation> participations = new ArrayList<>();
 
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.PERSIST)
     @JoinTable(
             name = "projet_modele",
             joinColumns = @JoinColumn(name = "projet_id"),
@@ -32,15 +32,15 @@ public class Projet {
     @JsonIgnore
     private List<Modele> modeles;
 
-    @OneToMany(fetch=FetchType.LAZY,mappedBy = "projet", cascade = CascadeType.ALL)
+    @OneToMany(fetch=FetchType.EAGER,mappedBy = "projet", cascade = CascadeType.PERSIST)
     @JsonIgnore
     private List<DataSet> Datasets = new ArrayList<>();
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.PERSIST)
     @JsonIgnore
     private Collection collection;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.PERSIST)
     private User createur;
 
     public int getNumberOfDataset(){

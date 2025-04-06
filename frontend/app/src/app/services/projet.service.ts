@@ -193,9 +193,12 @@ export class ProjetService {
   }
 
   func_delete_collection(id:any):Observable<any>{
-    return this.http.delete<any>(`http://localhost:8080/api/collections/delete/${id}`);
+    return this.http.delete<any>(`http://localhost:8080/api/collections/delete/dataset/${id}`);
   }
 
+  func_delete_dataset(id:any):Observable<any>{
+    return this.http.delete<any>(`http://localhost:8080/api/collections/delete/dataset/${id}`);
+  }
   func_get_dataset(id:any):Observable<any>{
     return this.http.get<any>(`http://localhost:8080/api/collections/dataset/${id}`);
   }
@@ -330,7 +333,7 @@ export class ProjetService {
     return this.http.get<any>(`http://127.0.0.1:8080/api/annotationModele/${idAnnotation}/state?state=${newState}`)
   }
   func_supp_modele(id: any) {
-    return this.http.delete(`/api/models/${id}`);
+    return this.http.delete(`http://127.0.0.1:8080/api/models/${id}`);
   }
 
 

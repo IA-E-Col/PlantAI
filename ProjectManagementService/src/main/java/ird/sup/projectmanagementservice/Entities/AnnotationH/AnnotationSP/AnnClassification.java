@@ -50,7 +50,7 @@ public class AnnClassification extends AnnotationSpecimen {
         }
         return null;
     }
-    @OneToMany(fetch=FetchType.EAGER,mappedBy = "annotation",cascade = CascadeType.ALL)
+    @OneToMany(fetch=FetchType.EAGER,mappedBy = "annotation",cascade = CascadeType.PERSIST)
     @JsonIgnore
     private List<Commentaire> commentaires ;
 

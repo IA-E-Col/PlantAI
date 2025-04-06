@@ -244,26 +244,26 @@ export class CollectionComponent implements OnInit {
     // Affichage de l'alerte de confirmation
     Swal.fire({
       title: 'Are you sure?',
-      text: 'You are about to delete this collection. This action cannot be undone.',
+      text: 'You are about to delete this dataset. This action cannot be undone.',
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#86A786',
       cancelButtonColor: '#d33',
-      confirmButtonText: 'Yes, delete collection',
+      confirmButtonText: 'Yes, delete dataset',
       cancelButtonText: 'Cancel'
     }).then((result) => {
       if (result.isConfirmed) {
         // Si l'utilisateur confirme, procédez à la suppression de la collection
         this.projetservice.func_delete_collection(c.id).subscribe({
           next: (data) => {
-            Swal.fire('Success', 'Collection deleted successfully', 'success').then(() => {
+            Swal.fire('Success', 'dataset deleted successfully', 'success').then(() => {
               // Recharger les données après la suppression
               this.nbr_s = 0;
-              this.ngOnInit();
+              this.collections = this.collections.filter((collection:any) => collection.id != c.id)
             });
           },
           error: (err) => {
-            Swal.fire('Error', 'Failed to delete collection', 'error');
+            Swal.fire('Error', 'Failed to delete dataset', 'error');
             console.error(err);
           }
         });

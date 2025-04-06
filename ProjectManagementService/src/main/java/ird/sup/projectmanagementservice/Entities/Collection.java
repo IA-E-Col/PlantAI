@@ -17,13 +17,13 @@ public class Collection {
     String nom;
     String Description;
     Date DateCreation;
-    @OneToMany(fetch=FetchType.LAZY,mappedBy = "collection",cascade = CascadeType.ALL)
+    @OneToMany(fetch=FetchType.EAGER,mappedBy = "collection",cascade = CascadeType.REMOVE, orphanRemoval = true)
     @JsonIgnore
     private List<Specimen> specimens = new ArrayList<>();
-    @OneToMany(fetch=FetchType.LAZY,mappedBy = "collection",cascade = CascadeType.ALL)
+    @OneToMany(fetch=FetchType.EAGER,mappedBy = "collection",cascade = CascadeType.REMOVE, orphanRemoval = true)
     @JsonIgnore
     private List<Projet> projets = new ArrayList<>();
-    @OneToMany(fetch=FetchType.LAZY,cascade = CascadeType.ALL)
+    @OneToMany(fetch=FetchType.EAGER,cascade = CascadeType.REMOVE ,orphanRemoval = true)
     @JsonIgnore
     private List<DataSet> datasets = new ArrayList<>();
 }

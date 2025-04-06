@@ -26,13 +26,13 @@ public class Modele {
     private String urlModele;
     private String categorie;
 
-    @OneToMany(fetch=FetchType.LAZY,cascade = CascadeType.ALL)
+    @OneToMany(fetch=FetchType.EAGER,cascade = CascadeType.PERSIST, orphanRemoval = false)
     @JsonIgnore
     private List<DataSet> Datasets=new ArrayList<>();
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.PERSIST)
     @JsonIgnore
     private AnnotationModele annotation;
-    @OneToMany(mappedBy = "modelInference", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "modelInference", cascade = CascadeType.PERSIST, orphanRemoval = false)
     @JsonIgnore
     private List<AnnClassification> annClassifications = new ArrayList<>();
 }

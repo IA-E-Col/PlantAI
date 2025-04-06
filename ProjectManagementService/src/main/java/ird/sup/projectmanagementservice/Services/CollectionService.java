@@ -2,6 +2,7 @@ package ird.sup.projectmanagementservice.Services;
 
 import ird.sup.projectmanagementservice.DAO.*;
 import ird.sup.projectmanagementservice.Entities.*;
+import ird.sup.projectmanagementservice.Entities.AnnotationH.AnnotationSP.AnnClassification;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,7 +24,8 @@ public class CollectionService  {
     private SpecimenRepository ps;
     @Autowired
     private DataSetRepository dr;
-
+    @Autowired
+    AnnClassificationRepository ar;
     public Collection addCollection(Collection c ) {
         c.setDateCreation(new Date());
         return  cr.save(c);
@@ -68,7 +70,23 @@ public class CollectionService  {
             cr.deleteById(id);
         }
     }
-
+    public boolean deleteDataset(Long id) {
+        Optional<DataSet> d=dr.findById(id);
+        if(d.isPresent()) {
+            List<AnnClassification> annotations = ar.findAnnotationByDataset(d.get());
+            for (AnnClassification a : annotations) {
+                ar.deleteById(a.getId());
+            }
+            
+            System.out.println(d.get().getName());
+            Projet p = d.get().getProjet();
+            p.getDatasets().remove(d.get());
+            pr.save(p);
+            dr.deleteById(d.get().getId());
+            return true;
+        }
+        return false;
+    }
     public Collection findCollectionbyId(Long id) {
         return cr.findById(id).orElse(null);
     }

@@ -16,7 +16,7 @@ public class Filtre {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
     String libelle;
-    @OneToMany(fetch=FetchType.LAZY,cascade = CascadeType.ALL)
+    @OneToMany(fetch=FetchType.EAGER,cascade = CascadeType.ALL)
     @JsonIgnore
     private List<ValueFiltre> values;
 }

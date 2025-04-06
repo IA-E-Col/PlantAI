@@ -15,7 +15,7 @@ public class ClasseAnnotation {
     Long id;
     String identifier;
     String name;
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JsonIgnore
     private AnnotationModele annotationModele;
 }

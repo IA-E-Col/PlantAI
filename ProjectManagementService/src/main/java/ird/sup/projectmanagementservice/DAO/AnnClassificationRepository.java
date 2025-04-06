@@ -1,6 +1,7 @@
 package ird.sup.projectmanagementservice.DAO;
 
 import ird.sup.projectmanagementservice.Entities.AnnotationH.AnnotationSP.AnnClassification;
+import ird.sup.projectmanagementservice.Entities.DataSet;
 import ird.sup.projectmanagementservice.Enums.EState;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -29,5 +30,5 @@ public interface AnnClassificationRepository extends JpaRepository<AnnClassifica
     );
 
 
-
+    List<AnnClassification> findAnnotationByDataset(DataSet dataset);
 }

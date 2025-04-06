@@ -26,6 +26,6 @@ public class Annotation {
     @OneToMany(mappedBy = "annotation", cascade = CascadeType.ALL)
     @JsonIgnore
     protected List<Modele> modeles = new ArrayList<>();
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.PERSIST)
     protected DataSet dataset;
 }

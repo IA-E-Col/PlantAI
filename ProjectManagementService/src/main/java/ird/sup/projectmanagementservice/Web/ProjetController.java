@@ -27,6 +27,9 @@ public class ProjetController {
     private SpecimenService specimenService;
     @Autowired
     private DatasetService datasetService;
+    @Autowired
+    private CollectionService collectionService;
+
     @PostMapping("/add/{userId}/{colId}")
     public ResponseEntity<Projet> addProjet(@RequestBody Projet projet, @PathVariable Long userId,@PathVariable Long colId) {
         Projet newProjet = projetService.addProjet(projet, userId,colId);
@@ -68,11 +71,8 @@ public class ProjetController {
     public ResponseEntity<Void> deleteProjet(@PathVariable Long id) {
         System.out.println("deleteProjet");
         Projet projet = projetService.findProjetbyId(id);
-        projet.setCreateur(null);
-        projet.setParticipations(null);
-        projet.setCollection(null);
         for(DataSet d :projet.getDatasets()){
-            datasetService.deleteDataSet(d.getId());
+            collectionService.deleteDataset(d.getId());
         }
         projetService.deleteProjet(id);
         return ResponseEntity.ok().build();

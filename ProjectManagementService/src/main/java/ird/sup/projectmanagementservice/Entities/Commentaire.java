@@ -30,6 +30,6 @@ public class Commentaire {
     @ManyToOne
     private User createurC;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
     private AnnClassification annotation;
 }
