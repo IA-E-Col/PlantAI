@@ -44,6 +44,6 @@ public interface ProjetRepository extends JpaRepository<Projet,Long> {
     @Query("SELECT p.Id FROM Projet p JOIN p.participations part WHERE part.user.id = :userId")
     List<Long> findProjetsByParticipant(@Param("userId") Long userId);
 
-    @Query("select a from AnnClassification a where a.dataset.id = :datasetId and a.etat = 'PENDING'")
+    @Query("select a from AnnClassification a where a.dataset.id = :datasetId")
     List<AnnClassification> findPendingAnnotationByDataset(@Param("datasetId") Long datasetId);
 }

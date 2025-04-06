@@ -52,7 +52,7 @@ public class User implements UserDetails {
     String password;
 
     @Lob
-    @Column(nullable = true, length = 500000)
+    @Column(nullable = true, length = 50000000)
     private String image;
 
     @Enumerated(EnumType.STRING)
