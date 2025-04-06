@@ -52,6 +52,7 @@ public class User implements UserDetails {
     @JsonIgnore
     String password;
 
+    @Column(nullable = true, length = 50000000)
     @Column(nullable = true, length = 500000)
     private String image;
 
