@@ -64,14 +64,18 @@
             
             <div class="d-flex align-items-start flex-column mb-4 w-100">
               <label for="email">Email</label>
-              <input id="email" name="email" type="text" placeholder="Email" pattern=".+@gmail\.com$" required [(ngModel)]="signupRequest.email">
+              <input 
+                id="email" 
+                name="email" 
+                type="email" 
+                placeholder="Email" 
+                required 
+                [(ngModel)]="signupRequest.email">
             </div>
+            
             <div *ngIf="registerForm.controls['email']?.invalid && (registerForm.controls['email']?.dirty || registerForm.controls['email']?.touched)" class="text-danger mt-1">
-              <span *ngIf="registerForm.controls['email']?.errors?.['pattern']">
-                Invalid email address. Must end with "gmail.com".
-              </span>
-              <span *ngIf="registerForm.controls['email']?.errors?.['required']">
-                Email is required.
+              <span *ngIf="registerForm.controls['email']?.errors?.['email']">
+                Invalid email format.
               </span>
             </div>
             
