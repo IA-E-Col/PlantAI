@@ -51,8 +51,12 @@ public class User implements UserDetails {
     @JsonIgnore
     String password;
 
+<<<<<<< Updated upstream
     @Lob
     @Column(nullable = true, length = 500000)
+=======
+    @Column(nullable = true, length = 50000000)
+>>>>>>> Stashed changes
     private String image;
 
     @Enumerated(EnumType.STRING)
