@@ -13,10 +13,10 @@ import java.util.List;
 @Entity @Data @NoArgsConstructor @AllArgsConstructor
 public class Collection {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long Id;
+    Long id;
     String nom;
-    String Description;
-    Date DateCreation;
+    String description;
+    Date dateCreation;
     @OneToMany(fetch=FetchType.LAZY,mappedBy = "collection",cascade = CascadeType.ALL)
     @JsonIgnore
     private List<Specimen> specimens = new ArrayList<>();

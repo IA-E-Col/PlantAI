@@ -29,46 +29,82 @@ export class CreateCollectionModalComponent {
 
   // Méthode pour soumettre les informations de la collection
   soumettreCollection() {
+    console.log('=== STARTING DATASET CREATION FLOW ===');
     console.log('Nom de la collection:', this.nom);
     console.log('Description de la collection:', this.description);
     this.projetService.dataset.name = this.nom
     this.projetService.dataset.description = this.description
 
-    console.log(this.projetService.specimens)
-
-    /*const userString = localStorage.getItem("authUser");
-    if (userString !== null) {
-      const user = JSON.parse(userString);
-      let userName = user.user.username;
-      console.log(userName)
-      this.projetService.collection.createur = userName;
-    }*/
-    console.log(this.projetService.dataset)
+    console.log('Current specimens in service:', this.projetService.specimens)
+    console.log('Dataset object:', this.projetService.dataset)
+    
     // Réinitialisez les champs après la soumission
     this.nom = '';
     this.description = '';
     this.id = this.projetService.projet.id;
-    // Redirection vers l'URL spécifiée
-    console.log(this.projetService.projet.id)
-    this.projetService.func_add_Dataset(this.id).subscribe({
-      next:(data)=>{
-        console.log('rani hna ',data)
-        this.projetService.func_add_Specimens_To_Dataset(data.id).subscribe({
-          next:(data)=>{
-            this.router.navigate([`/admin/projects/${this.projetService.projet.id}/datasets`]);
-          }, error:(err)=>{
-            console.log(err)
-            alert('DATASET non cree')
+    console.log('Project ID:', this.projetService.projet.id);
+    
+    // 1) Get the project's collection to fetch its specimens
+    console.log('Step 1: Getting project collection...');
+    this.projetService.func_get_collection_by_project(this.id).subscribe({
+      next: (collection) => {
+        console.log('Collection received:', collection);
+        const collectionId = collection?.id;
+        console.log('Collection ID extracted:', collectionId);
+        
+        if (!collectionId) {
+          alert('No collection found for this project');
+          return;
+        }
+        
+        // 2) Fetch specimens from that collection
+        console.log('Step 2: Fetching specimens from collection...');
+        this.projetService.func_get_SpecimenByCollection(collectionId).subscribe({
+          next: (specimens) => {
+            console.log('Specimens received:', specimens);
+            console.log('Number of specimens:', specimens?.length || 0);
+            
+            this.projetService.specimenstosend = specimens || [];
+            console.log('Specimens set in service:', this.projetService.specimenstosend);
+            
+            // 3) Create dataset then attach specimens
+            console.log('Step 3: Creating dataset...');
+            this.projetService.func_add_Dataset(this.id).subscribe({
+              next:(dataset)=>{
+                console.log('Dataset created:', dataset);
+                console.log('Dataset ID:', dataset.id);
+                
+                console.log('Step 4: Attaching specimens to dataset...');
+                console.log('Specimens to attach:', this.projetService.specimenstosend);
+                
+                this.projetService.func_add_Specimens_To_Dataset(dataset.id).subscribe({
+                  next:(result)=>{
+                    console.log('Specimens attached successfully:', result);
+                    console.log('=== DATASET CREATION COMPLETE ===');
+                    this.router.navigate([`/admin/projects/${this.projetService.projet.id}/datasets`]);
+                  }, error:(err)=>{
+                    console.error('Failed to attach specimens to dataset:', err);
+                    alert('Failed to attach specimens to dataset. Check console for details.');
+                  }
+                })
+              },
+              error:(err)=>{
+                console.error('Dataset creation failed:', err);
+                alert('Dataset not created. Check console for details.');
+              }
+            })
+          },
+          error: (err) => {
+            console.error('Failed to load specimens from collection:', err);
+            alert('Failed to load specimens from collection. Check console for details.');
           }
         })
-
       },
-      error:(err)=>{
-        console.log(err)
-        alert('collection non cree')
+      error: (err) => {
+        console.error('Failed to load project collection:', err);
+        alert('Failed to load project collection. Check console for details.');
       }
     })
-
   }
 
 }

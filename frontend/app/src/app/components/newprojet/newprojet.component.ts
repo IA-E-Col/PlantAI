@@ -60,7 +60,7 @@ export class NewprojetComponent implements OnInit {
 
   ajout_prt() {
     if (this.projetFormGroup.valid) {
-      const projet: Projet = {
+      const projet: any = {
         nomProjet: this.projetFormGroup.get('nomProjet')?.value,
         description: this.projetFormGroup.get('description')?.value
       };

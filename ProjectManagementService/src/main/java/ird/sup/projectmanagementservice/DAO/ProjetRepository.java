@@ -20,12 +20,12 @@ public interface ProjetRepository extends JpaRepository<Projet,Long> {
             "WHERE u.id NOT IN (" +
             "    SELECT p.user.id " +
             "    FROM Participation p " +
-            "    WHERE p.projet.Id = :projectId" +
+            "    WHERE p.projet.id = :projectId" +
             ") " +
             "AND u.id NOT IN (" +
             "    SELECT pr.createur.id " +
             "    FROM Projet pr " +
-            "    WHERE pr.Id = :projectId" +
+            "    WHERE pr.id = :projectId" +
             ")")
     List<User> findUsersNotInProject(@Param("projectId") Long projectId);
 
@@ -34,14 +34,14 @@ public interface ProjetRepository extends JpaRepository<Projet,Long> {
             "FROM User u " +
             "JOIN Participation part ON part.user.id = u.id " +
             "JOIN part.projet p " +
-            "WHERE p.Id = :projectId")
+            "WHERE p.id = :projectId")
     List<UserWithExpertiseDTO> findUsersInProject(@Param("projectId") Long projectId);
 
 
-    @Query("SELECT p.Id FROM Projet p WHERE p.createur.id = :userId")
+    @Query("SELECT p.id FROM Projet p WHERE p.createur.id = :userId")
     List<Long> findProjetsByCreateur(@Param("userId") Long userId);
 
-    @Query("SELECT p.Id FROM Projet p JOIN p.participations part WHERE part.user.id = :userId")
+    @Query("SELECT p.id FROM Projet p JOIN p.collaborateurs part WHERE part.user.id = :userId")
     List<Long> findProjetsByParticipant(@Param("userId") Long userId);
 
     @Query("select a from AnnClassification a where a.dataset.id = :datasetId")

@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @CrossOrigin(origins="*")
@@ -107,9 +108,9 @@ public class CollectionController {
 
     @GetMapping("/dataset/{id}")
     public ResponseEntity<DataSet> findDatasetById(@PathVariable Long id) {
-        DataSet dataset = datasetService.getDataSetById(id).get();
-        if (dataset != null) {
-            return ResponseEntity.ok(dataset);
+        Optional<DataSet> datasetOpt = datasetService.getDataSetById(id);
+        if (datasetOpt.isPresent()) {
+            return ResponseEntity.ok(datasetOpt.get());
         } else {
             return ResponseEntity.notFound().build();
         }
@@ -136,9 +137,9 @@ public class CollectionController {
 
     @GetMapping("/Dataset/{id}/specimen")
     public ResponseEntity<List<Specimen>> findSpecimensByDataset(@PathVariable Long id) {
-        DataSet dataSet = datasetService.getDataSetById(id).get();
-        if (dataSet.getSpecimens() != null) {
-            return ResponseEntity.ok(dataSet.getSpecimens());
+        Optional<DataSet> dataSetOpt = datasetService.getDataSetById(id);
+        if (dataSetOpt.isPresent() && dataSetOpt.get().getSpecimens() != null) {
+            return ResponseEntity.ok(dataSetOpt.get().getSpecimens());
         } else {
             return ResponseEntity.notFound().build();
         }

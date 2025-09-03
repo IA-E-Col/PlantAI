@@ -200,6 +200,9 @@ export class FormulaireComponent implements OnInit {
     console.log(selectedOptions);
     this.Filtres.test=selectedOptions;
     console.log('ici tout les filtre', this.Filtres); // Here, you can send these data to the server in Angular
+    console.log('Project ID:', this.projetService.projet.id);
+    console.log('Filtres object:', JSON.stringify(this.Filtres));
+    
     this.projetService.func_get_Specimen_Filtred(this.Filtres,this.projetService.projet.id).subscribe({
       next: (data) => {
         this.id = this.projetService.projet.id;
@@ -218,7 +221,10 @@ export class FormulaireComponent implements OnInit {
 
       },
       error: (err) => {
-        console.log(err);
+        console.error('Error filtering specimens:', err);
+        console.error('Error details:', err.error);
+        console.error('Error status:', err.status);
+        alert('Error filtering specimens. Please check the console for details.');
       }
     });
   }

@@ -36,14 +36,72 @@ export class CollectionImgComponent  implements OnInit, OnDestroy {
   constructor(private projetService: ProjetService, private router: Router, private route: ActivatedRoute) {}
 
   ngOnInit(): void {
-    if (this.route.parent){
+    // Check if we're in a formulaire context (no collection ID in URL)
+    if (this.router.url.includes('/formulaire')) {
+      console.log('In formulaire context - fetching project collection');
+      this.fetchProjectCollection();
+    } else if (this.route.parent) {
+      // Normal corpus context - get collection ID from URL
       this.routeSub = this.route.parent.paramMap.subscribe(params => {
         this.collectionId = params.get('Id') || params.get('id');
-        console.log('Collection ID:', this.collectionId);
+        console.log('Collection ID from URL:', this.collectionId);
         if (this.collectionId) {
           this.fetchSpecimens();
         }
       });
+    }
+  }
+
+  fetchProjectCollection(): void {
+    // Get the collection from the current project
+    if (this.projetService.projet && this.projetService.projet.collection) {
+      this.collectionId = this.projetService.projet.collection.id.toString();
+      console.log('Using project collection ID:', this.collectionId);
+      this.fetchSpecimens();
+    } else {
+      console.log('No project or collection found in service');
+      
+      // Try to get the most recent project from localStorage or user's projects
+      const userString = localStorage.getItem("authUser");
+      if (userString) {
+        const user = JSON.parse(userString);
+        console.log('Fetching recent projects for user:', user.id);
+        
+        this.projetService.funcS_get_All().subscribe({
+          next: (projects) => {
+            if (projects && projects.length > 0) {
+              // Get the most recent project (first one)
+              const recentProject = projects[0];
+              console.log('Loading recent project:', recentProject);
+              
+              // Load this project into the service
+              this.projetService.func_get_Id(recentProject.id).subscribe({
+                next: (projectData) => {
+                  console.log('Loaded project data:', projectData);
+                  if (projectData.collection) {
+                    this.collectionId = projectData.collection.id.toString();
+                    this.fetchSpecimens();
+                  } else {
+                    this.errorMessage = 'Le projet n\'a pas de collection associée.';
+                  }
+                },
+                error: (err) => {
+                  console.error('Error loading project:', err);
+                  this.errorMessage = 'Erreur lors du chargement du projet.';
+                }
+              });
+            } else {
+              this.errorMessage = 'Aucun projet trouvé. Veuillez d\'abord créer un projet.';
+            }
+          },
+          error: (err) => {
+            console.error('Error fetching projects:', err);
+            this.errorMessage = 'Erreur lors de la récupération des projets.';
+          }
+        });
+      } else {
+        this.errorMessage = 'Utilisateur non connecté.';
+      }
     }
   }
 
@@ -57,7 +115,7 @@ export class CollectionImgComponent  implements OnInit, OnDestroy {
         })
       )
       .subscribe((specimens) => {
-        console.log(specimens);
+        console.log('Loaded specimens:', specimens);
         this.collectionSpecimens = specimens;
         this.sortPlantsByScientificName();
       });

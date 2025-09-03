@@ -35,10 +35,10 @@
           <p class="text-muted">{{nbr_s}} Images</p>
         </div>
 
-        <div *ngIf="projet?.collaborateurs.length > 0" class="info-row">
+        <div *ngIf="projet?.collaborateurs && projet.collaborateurs.length > 0" class="info-row">
           <h5 class="card-title">Collaborators:</h5>
           <ul class="collaborateurs-liste">
-            <li *ngFor="let c of projet?.collaborateurs" class="collaborateur-item">
+            <li *ngFor="let c of projet.collaborateurs" class="collaborateur-item">
               <img [src]="cheminUser" alt="User avatar" width="25" height="25">
               <span>{{c.username}}</span>
             </li>

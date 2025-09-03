@@ -82,12 +82,22 @@ public class CsvService {
                 image.setImage_url(record[columnIndexMap.get("associatedMedia")]);
                 image.setRdf_path(record[columnIndexMap.get("RDF_path")]);
                 image.setImage_path(record[columnIndexMap.get("IMAGE_path")]);
-                specimen.getMedias().add(image);
+                
+                // Set up bidirectional relationship
                 specimen.setCollection(c);
                 image.setSpecimen(specimen);
-               specimen = specimenRepository.save(specimen);
-               c.getSpecimens().add(specimen);
+                specimen.getMedias().add(image);
+                
+                // Save the specimen first (this will cascade save the image if cascade is set)
+                specimen = specimenRepository.save(specimen);
+                
+                // Explicitly save the image to ensure it persists
+                mediaRepository.save(image);
+                
+                c.getSpecimens().add(specimen);
             }
+            // Save the collection to persist the bidirectional relationship
+            collectionRepository.save(c);
         }
     }
 

@@ -17,12 +17,12 @@ import java.util.List;
 public class Projet {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long Id ;
+    Long id;
     String nomProjet;
-    String Description;
-    Date dateCreation ;
+    String description;
+    Date dateCreation;
     @OneToMany(mappedBy = "projet", cascade = CascadeType.REMOVE, orphanRemoval = true)
-    private List<Participation> participations = new ArrayList<>();
+    private List<Participation> collaborateurs = new ArrayList<>();
 
     @ManyToMany
     @JoinTable(
@@ -34,26 +34,35 @@ public class Projet {
 
     @OneToMany(fetch=FetchType.LAZY,mappedBy = "projet", cascade = CascadeType.ALL)
     @JsonIgnore
-    private List<DataSet> Datasets = new ArrayList<>();
+    private List<DataSet> datasets = new ArrayList<>();
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JsonIgnore
+    @ManyToOne
     private Collection collection;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     private User createur;
 
     public int getNumberOfDataset(){
-        return this.Datasets.size();
+        try {
+            return this.datasets != null ? this.datasets.size() : 0;
+        } catch (Exception e) {
+            return 0;
+        }
     }
+    
     public int getNumberOfSpecimen(){
-        int n =0;
-
-            for(DataSet d : getDatasets()){
-                n+=d.getSpecimens().size();
+        int n = 0;
+        try {
+            if (this.datasets != null) {
+                for(DataSet d : this.datasets){
+                    if (d.getSpecimens() != null) {
+                        n += d.getSpecimens().size();
+                    }
+                }
             }
-
-
+        } catch (Exception e) {
+            return 0;
+        }
         return n;
     }
 

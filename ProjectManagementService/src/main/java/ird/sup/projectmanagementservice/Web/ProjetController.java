@@ -35,8 +35,14 @@ public class ProjetController {
 
     @PutMapping("/update/{id}") // discutr youssef
     public ResponseEntity<Projet> updateProjet(@RequestBody Projet projet,@PathVariable Long id) {
-        Projet projet_t = projetService.findProjetbyId(projet.getId());
-        Projet updatedProjet = projetService.updateProjet(projet);
+        Projet existing = projetService.findProjetbyId(id);
+        if (existing == null) {
+            return ResponseEntity.notFound().build();
+        }
+        // Update only editable scalar fields; keep relations intact
+        existing.setNomProjet(projet.getNomProjet());
+        existing.setDescription(projet.getDescription());
+        Projet updatedProjet = projetService.updateProjet(existing);
         return ResponseEntity.ok(updatedProjet);
     }
 
@@ -68,14 +74,18 @@ public class ProjetController {
     public ResponseEntity<Void> deleteProjet(@PathVariable Long id) {
         System.out.println("deleteProjet");
         Projet projet = projetService.findProjetbyId(id);
-        projet.setCreateur(null);
-        projet.setParticipations(null);
-        projet.setCollection(null);
-        for(DataSet d :projet.getDatasets()){
-            datasetService.deleteDataSet(d.getId());
+        if (projet == null) {
+            return ResponseEntity.notFound().build();
         }
-        projetService.deleteProjet(id);
-        return ResponseEntity.ok().build();
+        
+        try {
+            // JPA cascade settings will handle relationship cleanup automatically
+            projetService.deleteProjet(id);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            System.err.println("Error deleting project: " + e.getMessage());
+            return ResponseEntity.internalServerError().build();
+        }
     }
 
     @DeleteMapping("/delete/{IdP}/collab/{IdC}")

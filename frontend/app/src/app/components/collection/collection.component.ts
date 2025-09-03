@@ -215,26 +215,67 @@ export class CollectionComponent implements OnInit {
         this.route.parent?.params.subscribe(params => {
           this.projectId = params['id'];
           console.log('id:', this.projectId)
-          /*this.collection = this.data["collect1"];
-          console.log(this.collection)*/
-
+          
           this.collections = [];
           this.width = false;
-          this.projetservice.func_get_DatasetsById(this.projectId).subscribe({
-            next: (data) => {
-              this.collections = data;
-              console.log('this.collections',this.collections)
-              this.collections.forEach((collection: { numberOfSpecimen: number; }) => {
-                this.nbr_s += collection.numberOfSpecimen
-              });
-              this.nbr_c = data.length;
-              this.formatted_nbr_s = this.formatNumber(this.nbr_s);
-              this.formatted_nbr_c = this.formatNumber(this.nbr_c);
+          
+          // First, get the project's collection (corpus) that contains the CSV-imported specimens
+          this.projetservice.func_get_collection_by_project(this.projectId).subscribe({
+            next: (collection) => {
+              console.log('Project collection (corpus):', collection);
+              if (collection) {
+                // Get specimens from this collection
+                this.projetservice.func_get_SpecimenByCollection(collection.id).subscribe({
+                  next: (specimens) => {
+                    console.log('Specimens in collection:', specimens);
+                    console.log('Number of specimens:', specimens?.length || 0);
+                    
+                    // Create a collection object with specimen count
+                    const collectionWithSpecimens = {
+                      ...collection,
+                      numberOfSpecimen: specimens?.length || 0,
+                      specimens: specimens || []
+                    };
+                    
+                    this.collections = [collectionWithSpecimens];
+                    console.log('Collections array:', this.collections);
+                    
+                    this.nbr_s = specimens?.length || 0;
+                    this.nbr_c = 1; // One collection
+                    this.formatted_nbr_s = this.formatNumber(this.nbr_s);
+                    this.formatted_nbr_c = this.formatNumber(this.nbr_c);
+                  },
+                  error: (err) => {
+                    console.error('Error fetching specimens:', err);
+                    this.collections = [];
+                    this.nbr_s = 0;
+                    this.nbr_c = 0;
+                  }
+                });
+              } else {
+                console.log('No collection found for project');
+                this.collections = [];
+                this.nbr_s = 0;
+                this.nbr_c = 0;
+              }
             },
             error: (err) => {
-              console.log(err)
+              console.error('Error fetching project collection:', err);
+              this.collections = [];
+              this.nbr_s = 0;
+              this.nbr_c = 0;
             }
-          })
+          });
+          
+          // Also get datasets for reference
+          this.projetservice.func_get_DatasetsById(this.projectId).subscribe({
+            next: (datasets) => {
+              console.log('Project datasets:', datasets);
+            },
+            error: (err) => {
+              console.log('Error fetching datasets:', err);
+            }
+          });
         });
       }
     });

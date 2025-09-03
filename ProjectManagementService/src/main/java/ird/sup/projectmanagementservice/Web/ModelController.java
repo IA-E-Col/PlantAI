@@ -34,7 +34,11 @@ public class ModelController {
        for (Modele modele : modeles) {
            ModelResponse modelResponse = new ModelResponse();
            modelResponse.setModel(modele);
-           modelResponse.setClasses(modele.getAnnotation().getClasseAnnotationS());
+           if (modele.getAnnotation() != null) {
+               modelResponse.setClasses(modele.getAnnotation().getClasseAnnotationS());
+           } else {
+               modelResponse.setClasses(new ArrayList<>());
+           }
            modelResponses.add(modelResponse);
        }
        return modelResponses;

@@ -7,10 +7,8 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @Transactional
@@ -60,13 +58,8 @@ public class ProjetService  {
     }
 
     public List<Projet> getProjetsIdCollab(Long Id){
-        List<Projet> projets = new ArrayList<>();
-        for(Projet p: this.getProjets()){
-            Optional user = p.getParticipations().stream().filter(c -> c.getUser().getId().equals(Id)).findFirst();
-            if(user != Optional.empty())
-                projets.add(p);
-        }
-        return projets;
+        List<Long> projetIds = pr.findProjetsByParticipant(Id);
+        return pr.findAllById(projetIds);
     }
 
     public List<UserWithExpertiseDTO> getCollaborateurs(Long id) {
@@ -79,7 +72,7 @@ public class ProjetService  {
         User u = ur.findById(idU).get();
         Expertise e = er.findById(idE).get();
         Participation pa = new Participation(null,u,p,e);
-        p.getParticipations().add(pa);
+        p.getCollaborateurs().add(pa);
         u.getParticipations().add(pa);
         prp.save(pa);
         ur.save(u);
@@ -92,8 +85,8 @@ public class ProjetService  {
     public Projet deleteCollaborateur(Long idU , Long idP){
         Projet p = pr.findById(idP).get();
         User u = ur.findById(idU).get();
-        Participation participationToRemove;
-        for (Participation participation : p.getParticipations()) {
+        // no-op
+        for (Participation participation : p.getCollaborateurs()) {
             if (participation.getUser().getId().equals(idU) && participation.getProjet().getId().equals(idP)) {
                 prp.deleteById(participation.getId());
                 break;
@@ -106,10 +99,10 @@ public class ProjetService  {
     }
 
     public User getCreateur(Long id) {
-        Projet p = pr.findById(id).get();
-        if(p==null)
+        Projet p = pr.findById(id).orElse(null);
+        if(p == null)
             return null;
-        return null;
+        return p.getCreateur();
     }
 
     public Collection getCollections(Long id) {

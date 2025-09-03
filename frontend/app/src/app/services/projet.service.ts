@@ -117,28 +117,19 @@ export class ProjetService {
     const userString = localStorage.getItem("authUser");
     if (userString !== null) {
       const user = JSON.parse(userString);
-      let userId = user.id;
-      this.http.post<any>(`http://localhost:8080/api/projets/add/${userId}/${cID}`,p).subscribe({
-        next : (data)=>{
-          console.log(data);
-        },
-        error : err =>{
-          alert("erreur ajout_prjt");
-        }
-      })
+      const userId = user.id;
+      return this.http.post<any>(`http://localhost:8080/api/projets/add/${userId}/${cID}`, p);
     }
-    return of(p)
+    return throwError(() => new Error('User not authenticated'));
   }
 
   func_modif_proj(Vprojet: any,projet: any, projectId : any):Observable<any>{
-    console.log('chouf hna 1', Vprojet)
-    console.log('chouf hna 1', projet)
-    Vprojet.nomProjet = projet.nomProjet;
-    Vprojet.description = projet.description;
-    Vprojet.etat = projet.etat;
-    console.log('chouf hna 2', Vprojet)
-    console.log('chouf hna 2', projet)
-    return this.http.put<any>(`http://localhost:8080/api/projets/update/${projectId}`,Vprojet);
+    Vprojet = {
+      ...Vprojet,
+      nomProjet: projet.nomProjet,
+      description: projet.description
+    };
+    return this.http.put<any>(`http://localhost:8080/api/projets/update/${projectId}`, Vprojet);
   }
 
   func_ajout_collab(IdP:any, IdC:any,IdE: any): Observable<any>{
@@ -236,6 +227,10 @@ export class ProjetService {
 
   func_get_collection_by_id(id:any): Observable<any> {
     return this.http.get<any>(`http://localhost:8080/api/collections/${id}`);
+  }
+
+  func_get_collection_by_project(id:any): Observable<any> {
+    return this.http.get<any>(`http://localhost:8080/api/projets/${id}/collections`);
   }
 
   func_get_All_models():Observable<any>{

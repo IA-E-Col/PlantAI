@@ -40,24 +40,93 @@ public class CollectionService  {
     }
 
     public DataSet addDataset(Long iDP, DataSet DS){
-        System.out.println("ici je suis au service "+iDP);
-        System.out.println("number of specimens "+DS.getSpecimens().size());
-        Projet p = pr.findById(iDP).get();
-        p.getDatasets().add(DS);
-        DS.setProjet(p);
-        return dr.save(DS);
+        try {
+            System.out.println("=== ADDING DATASET ===");
+            System.out.println("Project ID: " + iDP);
+            System.out.println("Dataset name: " + DS.getName());
+            System.out.println("Dataset description: " + DS.getDescription());
+            
+            Projet p = pr.findById(iDP).orElse(null);
+            if (p == null) {
+                System.err.println("Project not found with ID: " + iDP);
+                return null;
+            }
+            
+            System.out.println("Project found: " + p.getNomProjet());
+            System.out.println("Project datasets count before: " + p.getDatasets().size());
+            
+            // Initialize specimens list if null
+            if (DS.getSpecimens() == null) {
+                DS.setSpecimens(new ArrayList<>());
+            }
+            
+            p.getDatasets().add(DS);
+            DS.setProjet(p);
+            
+            DataSet savedDataset = dr.save(DS);
+            System.out.println("Dataset saved with ID: " + savedDataset.getId());
+            System.out.println("Project datasets count after: " + p.getDatasets().size());
+            
+            // Save the project to persist the relationship
+            pr.save(p);
+            
+            return savedDataset;
+        } catch (Exception e) {
+            System.err.println("Error in addDataset: " + e.getMessage());
+            e.printStackTrace();
+            return null;
+        }
     }
 
     public DataSet addSpecimensToDataset(Long IDdataset, List<Long> specimens){
-        System.out.println("ici je suis au service d'ajout de specimens to dataset "+IDdataset);
-        System.out.println("number of specimens "+specimens.size());
-        DataSet d = dr.findById(IDdataset).get();
-        for(Long a: specimens){
-            Specimen s=ps.findById(a).get();
-            s.getDatasets().add(d);
-            d.getSpecimens().add(s);
+        try {
+            System.out.println("=== ADDING SPECIMENS TO DATASET ===");
+            System.out.println("Dataset ID: " + IDdataset);
+            System.out.println("Number of specimens to add: " + (specimens != null ? specimens.size() : 0));
+            
+            if (specimens == null || specimens.isEmpty()) {
+                System.out.println("No specimens to add");
+                return dr.findById(IDdataset).orElse(null);
+            }
+            
+            DataSet d = dr.findById(IDdataset).orElse(null);
+            if (d == null) {
+                System.err.println("Dataset not found with ID: " + IDdataset);
+                return null;
+            }
+            
+            System.out.println("Dataset found: " + d.getName());
+            System.out.println("Dataset specimens count before: " + (d.getSpecimens() != null ? d.getSpecimens().size() : 0));
+            
+            // Initialize specimens list if null
+            if (d.getSpecimens() == null) {
+                d.setSpecimens(new ArrayList<>());
+            }
+            
+            for(Long specimenId: specimens){
+                Specimen s = ps.findById(specimenId).orElse(null);
+                if (s != null) {
+                    if (s.getDatasets() == null) {
+                        s.setDatasets(new ArrayList<>());
+                    }
+                    s.getDatasets().add(d);
+                    d.getSpecimens().add(s);
+                    System.out.println("Added specimen ID: " + specimenId);
+                } else {
+                    System.err.println("Specimen not found with ID: " + specimenId);
+                }
+            }
+            
+            DataSet savedDataset = dr.save(d);
+            System.out.println("Dataset specimens count after: " + savedDataset.getSpecimens().size());
+            System.out.println("=== SPECIMENS ADDED SUCCESSFULLY ===");
+            
+            return savedDataset;
+        } catch (Exception e) {
+            System.err.println("Error in addSpecimensToDataset: " + e.getMessage());
+            e.printStackTrace();
+            return null;
         }
-        return dr.save(d);
     }
 
 
