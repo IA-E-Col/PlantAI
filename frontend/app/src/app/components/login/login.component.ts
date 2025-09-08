@@ -1,17 +1,21 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
+import { Store } from '@ngrx/store';
+import { Observable, Subject, takeUntil } from 'rxjs';
 import Swal from 'sweetalert2';
 
 import { AuthenticationRequest } from '../../model/authentication-request';
-import { AuthenticationResponse } from '../../model/authentication-response';
-import { VerificationRequest } from '../../model/verification-request';
-
-import { LoginService } from '../../services/login.service';
-import { UserService } from '../../services/user.service';
+import { AppState } from '../../store/app.state';
+import { AuthActions } from '../../store';
+import { 
+  selectIsLoading, 
+  selectAuthError, 
+  selectIsAuthenticated 
+} from '../../store/auth/auth.selectors';
 
 @Component({
   selector: 'app-login',
@@ -20,129 +24,100 @@ import { UserService } from '../../services/user.service';
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
 })
-export class LoginComponent implements OnInit {
+export class LoginComponent implements OnInit, OnDestroy {
 
   loginFormGroup!: FormGroup;
-  authRequest: AuthenticationRequest = {
-    email : "",
-    password: ""
-  } as AuthenticationRequest;
-  authResponse: AuthenticationResponse = {} as AuthenticationResponse;
   otpCode = '';
-  errorMessage = '';
+  showMfaInput = false;
+  
+  // NgRx Observables
+  isLoading$: Observable<boolean>;
+  error$: Observable<string | null>;
+  isAuthenticated$: Observable<boolean>;
+  
+  private destroy$ = new Subject<void>();
 
   constructor(
     private fb: FormBuilder,
-    private authService: LoginService,
-    private router: Router,
-    private userService: UserService
-  ) {}
+    private store: Store<AppState>,
+    private router: Router
+  ) {
+    // Initialize observables
+    this.isLoading$ = this.store.select(selectIsLoading);
+    this.error$ = this.store.select(selectAuthError);
+    this.isAuthenticated$ = this.store.select(selectIsAuthenticated);
+  }
 
   ngOnInit(): void {
     this.loginFormGroup = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', Validators.required]
     });
+
+    // Clear any previous errors when component loads
+    this.store.dispatch(AuthActions.clearError());
+
+    // Listen for authentication success
+    this.isAuthenticated$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(isAuthenticated => {
+        if (isAuthenticated) {
+          this.router.navigateByUrl('/admin');
+        }
+      });
+
+    // Listen for authentication errors
+    this.error$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(error => {
+        if (error === 'MFA_REQUIRED') {
+          this.showMfaInput = true;
+        } else if (error) {
+          Swal.fire('Error', error, 'error');
+        }
+      });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   /**
-   * Authentification classique (sans MFA ou avec MFA activé, mais non vérifié).
-   * Enregistre dans le localStorage toutes les infos de l'utilisateur, sauf le mot de passe.
+   * Handle login form submission - now using NgRx!
    */
   authenticate(): void {
-    this.authService.login(this.authRequest).subscribe({
-      next: (response: AuthenticationResponse) => {
-        this.authResponse = response;
-
-        // Créer un objet profil sans le mot de passe
-        const userProfile = {
-          nom: response.nom,
-          prenom: response.prenom,
-          email: response.email,
-          departement: response.departement,
-          profileImageUrl: response.profileImageUrl,
-          mfaEnabled: response.mfaEnabled
-        };
-
-        // Stocker l'objet profil dans le localStorage sous "authUser"
-        localStorage.setItem('authUser', JSON.stringify(userProfile));
-        localStorage.setItem('mfaEnabled', JSON.stringify(response.mfaEnabled));
-
-        // Si MFA n'est pas activé, stocker le token et récupérer l'ID utilisateur
-        if (!response.mfaEnabled) {
-          localStorage.setItem('token', response.accessToken as string);
-          this.userService.getUserID(this.authRequest.email!).subscribe({
-            next: (id: number) => {
-              // Mettre à jour l'objet authUser avec l'ID utilisateur
-              const storedUser = JSON.parse(localStorage.getItem('authUser') || '{}');
-              storedUser.id = id;
-              localStorage.setItem('authUser', JSON.stringify(storedUser));
-              this.fetchUserDetailsAndNavigate();
-            },
-            error: (error: any) => {
-              console.error('Error while retrieving user :', error);
-            }
-          });
-        }
-        // En cas de MFA activé, l'utilisateur devra passer par verifyCode()
-      },
-      error: (err: any) => {
-        this.errorMessage = 'Incorrect email or password.';
-        console.error(err);
-        Swal.fire('Error', 'User does not exist', 'error');
-      }
-    });
+    if (this.loginFormGroup.valid) {
+      const { email, password } = this.loginFormGroup.value;
+      
+      // Dispatch login action - NgRx handles the rest!
+      this.store.dispatch(AuthActions.login({ email, password }));
+    } else {
+      Swal.fire('Error', 'Please fill in all required fields', 'error');
+    }
   }
 
   /**
-   * Vérification du code MFA (OTP).
+   * Handle MFA verification - now using NgRx!
    */
   verifyCode(): void {
-    const verifyRequest: VerificationRequest = {
-      email: this.authRequest.email,
-      code: this.otpCode
-    };
-
-    this.authService.verifyCode(verifyRequest).subscribe({
-      next: (response: AuthenticationResponse) => {
-        // Mettre à jour le token
-        localStorage.setItem('token', response.accessToken as string);
-
-        // Mettre à jour l'objet authUser avec les informations de la réponse
-        const userProfile = {
-          nom: response.nom,
-          prenom: response.prenom,
-          email: response.email,
-          departement: response.departement,
-          profileImageUrl: response.profileImageUrl,
-          mfaEnabled: response.mfaEnabled
-        };
-        localStorage.setItem('authUser', JSON.stringify(userProfile));
-
-        // Récupérer l'ID utilisateur et l'ajouter à l'objet authUser
-        this.userService.getUserID(this.authRequest.email!).subscribe({
-          next: (id: number) => {
-            const storedUser = JSON.parse(localStorage.getItem('authUser') || '{}');
-            storedUser.id = id;
-            localStorage.setItem('authUser', JSON.stringify(storedUser));
-            this.fetchUserDetailsAndNavigate();
-          },
-          error: (error: any) => {
-            console.error('Error while retrieving user :', error);
-          }
-        });
-      },
-      error: (err: any) => {
-        console.error('Invalid verification code', err);
-        Swal.fire('Error', 'Invalid verification code', 'error');
-      }
-    });
+    if (this.otpCode.trim()) {
+      const email = this.loginFormGroup.get('email')?.value;
+      
+      // Dispatch MFA verification action - NgRx handles the rest!
+      this.store.dispatch(AuthActions.verifyMfa({ 
+        email, 
+        code: this.otpCode 
+      }));
+    } else {
+      Swal.fire('Error', 'Please enter the verification code', 'error');
+    }
   }
 
   /**
-   * Redirige l'utilisateur après une authentification réussie.
+   * Clear error messages
    */
-  fetchUserDetailsAndNavigate(): void {
-    this.router.navigateByUrl('/admin/corpus');
+  clearError(): void {
+    this.store.dispatch(AuthActions.clearError());
   }
 }

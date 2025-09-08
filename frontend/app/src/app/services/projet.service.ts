@@ -153,6 +153,11 @@ export class ProjetService {
     return this.http.get<any[]>('http://localhost:8080/api/users/');
   }
 
+  //fetch a user by their details 
+  func_get_user_by_id(userId: number): Observable<any> {
+    return this.http.get<any>(`http://localhost:8080/api/users/get/${userId}`);
+  }
+
   func_get_possible_collaborators(idP : number): Observable<any[]> {
     return this.http.get<any[]>(`http://localhost:8080/api/projets/${idP}/possible_collaborators`);
   }

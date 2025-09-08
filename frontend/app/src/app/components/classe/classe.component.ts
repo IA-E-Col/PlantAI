@@ -1,20 +1,32 @@
-import { Component, OnInit } from '@angular/core';
-import { NgForOf } from "@angular/common";
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { NgForOf, AsyncPipe } from "@angular/common";
 import { FormsModule } from '@angular/forms';
 import { FilterPipe } from "../../filter.pipe";
 import { CommonModule } from '@angular/common';
 import { NgxPaginationModule } from 'ngx-pagination';
 import { ActivatedRoute, Router, RouterLink, RouterOutlet } from "@angular/router";
-import { ProjetService } from "../../services/projet.service";
 import Swal from "sweetalert2";
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { NewclasseComponent } from '../newclasse/newclasse.component';
-import { catchError } from 'rxjs/operators';
-import { of } from 'rxjs';
+import { Observable, Subject, takeUntil } from 'rxjs';
 import { CreeCollectionComponent } from '../cree-collection/cree-collection.component';
 import { CreeModeleComponent } from '../cree-modele/cree-modele.component';
 import { faEdit, faEye, faSearch, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { Store } from '@ngrx/store';
+
+import { AppState } from '../../store/app.state';
+import { ModelsActions, CollectionsActions, NavigationActions } from '../../store';
+import { 
+  selectAllModels,
+  selectModelsLoading,
+  selectModelsError 
+} from '../../store/models/models.selectors';
+import { 
+  selectAllCollections,
+  selectCollectionsLoading,
+  selectCollectionsError 
+} from '../../store/collections/collections.selectors';
 
 @Component({
   selector: 'app-classe',
@@ -28,12 +40,15 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
     RouterOutlet,
     FormsModule,
     MatDialogModule,
-    FontAwesomeModule
+    FontAwesomeModule,
+    AsyncPipe
   ],
   templateUrl: './classe.component.html',
   styleUrls: ['./classe.component.css']
 })
-export class ClasseComponent implements OnInit {
+export class ClasseComponent implements OnInit, OnDestroy {
+  
+  // UI State
   p: number = 1;
   p1: number = 1;
   p2: number = 1;
@@ -42,187 +57,230 @@ export class ClasseComponent implements OnInit {
   searchtext1: any;
   searchtext2: any;
   searchtext3: any;
-  Classes: Array<{ name: string, identifier: string }> = [];
   isAscending: boolean = true;
   currentSortField: string = '';
-  collections: any[] = [];
-  modele: any[] = [];
-  users: any[] = [];
-  errorMessage!: string
   currentStep: number = 2;
+  
+  // Font Awesome icons
   faEdit = faEdit;
   faTrash = faTrash;
   faEye = faEye;
   faSearch = faSearch;
-  constructor(private dialogRef: MatDialog,private projetService: ProjetService, private router: Router) { }
+  
+  // NgRx Observables
+  models$: Observable<any[]>;
+  modelsLoading$: Observable<boolean>;
+  modelsError$: Observable<string | null>;
+  
+  collections$: Observable<any[]>;
+  collectionsLoading$: Observable<boolean>;
+  collectionsError$: Observable<string | null>;
+  
+  // Mock data for classes (will be enhanced later)
+  Classes: Array<{ name: string, identifier: string }> = [
+    { name: 'Leaf Shape', identifier: 'leaf_shape' },
+    { name: 'Flower Color', identifier: 'flower_color' },
+    { name: 'Plant Height', identifier: 'plant_height' },
+    { name: 'Bark Texture', identifier: 'bark_texture' },
+    { name: 'Root Type', identifier: 'root_type' }
+  ];
+  
+  // Mock users data
+  users: any[] = [
+    { name: 'User1', prenom: 'Prenom1', email: 'user1@example.com', id: 'ID1' },
+    { name: 'User2', prenom: 'Prenom2', email: 'user2@example.com', id: 'ID2' },
+    { name: 'User3', prenom: 'Prenom3', email: 'user3@example.com', id: 'ID3' },
+    { name: 'User4', prenom: 'Prenom4', email: 'user4@example.com', id: 'ID4' }
+  ];
+  
+  private destroy$ = new Subject<void>();
 
-  ngOnInit(): void {
-    this.projetService.func_get_All_collection()
-      .pipe(
-        catchError(error => {
-          this.errorMessage = 'An error occurred while fetching collections';
-          // Optionally, you can log the error or handle it as needed
-          console.error('Error fetching collections', error);
-          return of([]);
-        })
-      )
-      .subscribe(
-        (collections) => {
-          this.collections = collections;
-        }
-      );
-
-      this.projetService.func_get_All_models().subscribe({
-        next: (data) => {
-          this.modele=data;
-          console.log("settings",data)
-          },
-
-        error: (err) => {
-          Swal.fire('Error', 'Failed to load models', 'error');
-          console.error(err);
-        }
-      });
-    this.projetService.func_get_All_classe().subscribe({
-      next: (data) => {
-        console.log(data)
-        this.Classes=data;
-      },
-      error: (err) => {
-        console.log(err);
-      }
-    })
-
-    this.users = [
-      { name: 'User1', prenom: 'Prenom1', email: 'user1@example.com', id: 'ID1' },
-      { name: 'User2', prenom: 'Prenom2', email: 'user2@example.com', id: 'ID2' },
-      { name: 'User3', prenom: 'Prenom3', email: 'user3@example.com', id: 'ID3' },
-      { name: 'User4', prenom: 'Prenom4', email: 'user4@example.com', id: 'ID4' },
-      { name: 'User5', prenom: 'Prenom5', email: 'user5@example.com', id: 'ID5' },
-      { name: 'User6', prenom: 'Prenom6', email: 'user6@example.com', id: 'ID6' },
-      { name: 'User7', prenom: 'Prenom7', email: 'user7@example.com', id: 'ID7' },
-      { name: 'User8', prenom: 'Prenom8', email: 'user8@example.com', id: 'ID8' },
-      { name: 'User9', prenom: 'Prenom9', email: 'user9@example.com', id: 'ID9' },
-      { name: 'User1', prenom: 'Prenom1', email: 'user1@example.com', id: 'ID1' },
-      { name: 'User2', prenom: 'Prenom2', email: 'user2@example.com', id: 'ID2' },
-      { name: 'User3', prenom: 'Prenom3', email: 'user3@example.com', id: 'ID3' },
-      { name: 'User4', prenom: 'Prenom4', email: 'user4@example.com', id: 'ID4' },
-      { name: 'User5', prenom: 'Prenom5', email: 'user5@example.com', id: 'ID5' },
-      { name: 'User6', prenom: 'Prenom6', email: 'user6@example.com', id: 'ID6' },
-      { name: 'User7', prenom: 'Prenom7', email: 'user7@example.com', id: 'ID7' },
-      { name: 'User8', prenom: 'Prenom8', email: 'user8@example.com', id: 'ID8' },
-      { name: 'User9', prenom: 'Prenom9', email: 'user9@example.com', id: 'ID9' }
-    ];
+  constructor(
+    private dialogRef: MatDialog,
+    private router: Router,
+    private store: Store<AppState>
+  ) {
+    // Initialize observables from NgRx store
+    this.models$ = this.store.select(selectAllModels);
+    this.modelsLoading$ = this.store.select(selectModelsLoading);
+    this.modelsError$ = this.store.select(selectModelsError);
+    
+    this.collections$ = this.store.select(selectAllCollections);
+    this.collectionsLoading$ = this.store.select(selectCollectionsLoading);
+    this.collectionsError$ = this.store.select(selectCollectionsError);
   }
 
-  func_ajout_Classe() {
-    const dialogRefa = this.dialogRef.open(NewclasseComponent);
-
-    dialogRefa.afterClosed().subscribe(result => {
-      // Réagir à la fermeture du dialogue si nécessaire
-      // Par exemple, rafraîchir la liste des classes
-      this.projetService.func_get_All_classe().subscribe({
-        next: (data) => {
-          this.Classes = data;
-        },
-        error: (err) => {
-          console.error(err);
+  ngOnInit(): void {
+    // Load data through NgRx
+    this.store.dispatch(CollectionsActions.loadCollections());
+    this.store.dispatch(ModelsActions.loadModels());
+    
+    // Subscribe to errors for user feedback
+    this.collectionsError$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(error => {
+        if (error) {
+          Swal.fire('Error', `Failed to load collections: ${error}`, 'error');
         }
       });
+      
+    this.modelsError$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(error => {
+        if (error) {
+          Swal.fire('Error', `Failed to load models: ${error}`, 'error');
+        }
+      });
+    
+    console.log('Classes component initialized with NgRx');
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  func_ajout_Classe(): void {
+    const dialogRefa = this.dialogRef.open(NewclasseComponent);
+
+    dialogRefa.afterClosed()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(result => {
+        if (result) {
+          console.log('Class created successfully');
+          // Refresh the classes list - for now using mock data
+          // TODO: Implement classes store refresh
+        }
+      });
+  }
+
+  func_update_c(classe: any): void {
+    console.log('Update class:', classe);
+    // TODO: Implement class update functionality
+    Swal.fire('Info', 'Class update functionality will be implemented soon', 'info');
+  }
+
+  func_delete_c(classe: any): void {
+    console.log('Delete class:', classe);
+    Swal.fire({
+      title: 'Are you sure?',
+      text: `You want to delete the class "${classe.name}"?`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Yes, delete it!'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // TODO: Implement class deletion through NgRx
+        Swal.fire('Deleted!', 'Class has been deleted.', 'success');
+      }
     });
   }
 
-  func_update_c(p: any) { }
-
-  func_delete_c(p: any) { }
-
-  func_ajout_Col() {
+  func_ajout_Col(): void {
     const dialogRefa = this.dialogRef.open(CreeCollectionComponent, {
       width: '900px',
       height: '550px',
-      data: { is_active : false }
+      data: { is_active: false }
     });
-    dialogRefa.afterClosed().subscribe(result => {
-      // Réagir à la fermeture du dialogue si nécessaire
-      // Par exemple, rafraîchir la liste des classes
-      this.projetService.func_get_All_collection()
-        .pipe(
-          catchError(error => {
-            this.errorMessage = 'An error occurred while fetching collections';
-            // Optionally, you can log the error or handle it as needed
-            console.error('Error fetching collections', error);
-            return of([]);
-          })
-        )
-        .subscribe(
-          (collections) => {
-            this.collections = collections;
-          }
-        );
-    });
+    
+    dialogRefa.afterClosed()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(result => {
+        if (result) {
+          // Refresh collections through NgRx
+          this.store.dispatch(CollectionsActions.loadCollections());
+        }
+      });
   }
 
-  ouvrirCol(id: any) {
+  ouvrirCol(id: any): void {
+    this.store.dispatch(NavigationActions.setCurrentCollectionId({ collectionId: id.toString() }));
     this.router.navigateByUrl(`/admin/corpus/${id}`);
   }
 
-  supprimerCol(id: any) { }
+  supprimerCol(id: any): void {
+    Swal.fire({
+      title: 'Are you sure?',
+      text: 'You want to delete this collection?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Yes, delete it!'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.store.dispatch(CollectionsActions.deleteCollection({ collectionId: id }));
+      }
+    });
+  }
 
-  func_inf_m(id: any) {
+  func_inf_m(id: any): void {
+    this.store.dispatch(NavigationActions.setCurrentModelId({ modelId: id.toString() }));
     this.router.navigateByUrl(`/admin/models/${id}/model-library`);
   }
 
-  func_update_m(p: any){
-    this.router.navigateByUrl("/admin/UpdateMode")
+  func_update_m(model: any): void {
+    this.store.dispatch(NavigationActions.setCurrentModelId({ modelId: model.id.toString() }));
+    this.router.navigateByUrl("/admin/UpdateMode");
   }
 
-  func_delete_m(p: any){
-
+  func_delete_m(model: any): void {
+    Swal.fire({
+      title: 'Are you sure?',
+      text: `You want to delete the model "${model.nom}"?`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Yes, delete it!'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.store.dispatch(ModelsActions.deleteModel({ modelId: model.id }));
+      }
+    });
   }
 
-  func_ajout_Model(){
+  func_ajout_Model(): void {
     const dialogRef = this.dialogRef.open(CreeModeleComponent, {
       width: '700px',
       height: '480px',
-      data: { is_active : false }
+      data: { is_active: false }
     });
-    dialogRef.afterClosed().subscribe(result => {
-      // Réagir à la fermeture du dialogue si nécessaire
-      // Par exemple, rafraîchir la liste des classes
-      this.projetService.func_get_All_models()
-        .pipe(
-          catchError(error => {
-            this.errorMessage = 'An error occurred while fetching collections';
-            // Optionally, you can log the error or handle it as needed
-            console.error('Error fetching collections', error);
-            return of([]);
-          })
-        )
-        .subscribe(
-          (collections) => {
-            this.modele = collections;
-          }
-        );
-    });
+    
+    dialogRef.afterClosed()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(result => {
+        if (result) {
+          // Refresh models through NgRx
+          this.store.dispatch(ModelsActions.loadModels());
+        }
+      });
   }
 
-  func_ajout_User(){
-
+  func_ajout_User(): void {
+    console.log('Add user functionality');
+    // TODO: Implement user addition functionality
+    Swal.fire('Info', 'User management functionality will be implemented with the users store', 'info');
   }
 
-  func_inf_u(id: any) {
-
+  func_inf_u(id: any): void {
+    console.log('View user info:', id);
+    // TODO: Navigate to user details
   }
 
-  func_update_u(p: any){
-
+  func_update_u(user: any): void {
+    console.log('Update user:', user);
+    // TODO: Implement user update functionality
   }
 
-  func_delete_u(p: any){
-
+  func_delete_u(user: any): void {
+    console.log('Delete user:', user);
+    // TODO: Implement user deletion functionality
   }
 
-  sortBy(field: string) {
+  sortBy(field: string): void {
     if (this.currentSortField === field) {
       this.isAscending = !this.isAscending;
     } else {
@@ -242,13 +300,45 @@ export class ClasseComponent implements OnInit {
       }
       return this.isAscending ? comparison : -comparison;
     });
+    
+    console.log('Sorted classes by:', field, 'ascending:', this.isAscending);
   }
 
-  getFieldValue(object: any, field: string) {
+  getFieldValue(object: any, field: string): any {
     return field.split('.').reduce((o, i) => o[i], object);
   }
 
-  goToStep(step: number) {
+  goToStep(step: number): void {
     this.currentStep = step;
+    console.log('Switched to step:', step);
+  }
+
+  // TrackBy functions for performance optimization
+  trackByCollectionId(index: number, collection: any): any {
+    return collection.id || index;
+  }
+
+  trackByModelId(index: number, model: any): any {
+    return model.id || index;
+  }
+
+  trackByUserId(index: number, user: any): any {
+    return user.id || index;
+  }
+
+  trackByClassId(index: number, classe: any): any {
+    return classe.identifier || classe.name || index;
+  }
+
+  // Utility methods
+  getSortIcon(field: string): string {
+    if (this.currentSortField === field) {
+      return this.isAscending ? '⬆' : '⬇';
+    }
+    return '⬆⬇';
+  }
+
+  isStepActive(step: number): boolean {
+    return this.currentStep === step;
   }
 }

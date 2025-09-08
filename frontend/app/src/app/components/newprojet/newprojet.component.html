@@ -7,11 +7,30 @@
           <span class="border-bottom-green pb-1">Add a Project</span>
         </h2>
 
+        <!-- Loading Indicator -->
+        <div *ngIf="isLoadingCollections$ | async" class="text-center mb-3">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading collections...</span>
+          </div>
+          <p class="mt-2">Loading available collections...</p>
+        </div>
+
+        <!-- Error Messages -->
+        <div *ngIf="collectionsError$ | async as error" class="alert alert-danger mb-3">
+          <strong>Error:</strong> {{ error }}
+        </div>
+
         <!-- Form -->
         <form [formGroup]="projetFormGroup" (ngSubmit)="ajout_prt()">
           <div class="mb-3">
             <label for="name" class="form-label fw-bold">Project Name:</label>
-            <input type="text" class="form-control" id="name" formControlName="nomProjet" placeholder="Project Name">
+            <input 
+              type="text" 
+              class="form-control" 
+              id="name" 
+              formControlName="nomProjet" 
+              placeholder="Project Name"
+              [class.is-invalid]="projetFormGroup.controls['nomProjet'].errors && projetFormGroup.controls['nomProjet'].touched">
             <small *ngIf="projetFormGroup.controls['nomProjet'].errors && projetFormGroup.controls['nomProjet'].touched" class="text-danger">
               Project name is required.
             </small>
@@ -19,17 +38,30 @@
 
           <div class="mb-3">
             <label for="description" class="form-label fw-bold">Description:</label>
-            <textarea class="form-control" id="description" formControlName="description" placeholder="Enter project description"></textarea>
+            <textarea 
+              class="form-control" 
+              id="description" 
+              formControlName="description" 
+              placeholder="Enter project description"
+              [class.is-invalid]="projetFormGroup.controls['description'].errors && projetFormGroup.controls['description'].touched"></textarea>
             <small *ngIf="projetFormGroup.controls['description'].errors && projetFormGroup.controls['description'].touched" class="text-danger">
-              Description is required and must be at least 3 characters long.
+              <span *ngIf="projetFormGroup.controls['description'].errors?.['required']">Description is required.</span>
+              <span *ngIf="projetFormGroup.controls['description'].errors?.['minlength']">Description must be at least 3 characters long.</span>
             </small>
           </div>
 
           <div class="mb-3">
             <label for="collection" class="form-label fw-bold">Corpus:</label>
-            <select class="form-select" id="collection" formControlName="collection">
-              <option value="" disabled selected>Select a corpus</option>
-              <ng-container *ngFor="let col of collections">
+            <select 
+              class="form-select" 
+              id="collection" 
+              formControlName="collection"
+              [class.is-invalid]="projetFormGroup.controls['collection'].errors && projetFormGroup.controls['collection'].touched"
+              [disabled]="(isLoadingCollections$ | async) || false">
+              <option value="" disabled selected>
+                {{ (isLoadingCollections$ | async) ? 'Loading collections...' : 'Select a corpus' }}
+              </option>
+              <ng-container *ngFor="let col of collections$ | async; trackBy: trackByCollectionId">
                 <option [value]="col.id">{{ col.nom }}</option>
               </ng-container>
             </select>
@@ -39,7 +71,13 @@
           </div>
 
           <div style="text-align: center;">
-            <button [disabled]="projetFormGroup.invalid" type="submit" class="btn btn-green">Create Project</button>
+            <button 
+              [disabled]="projetFormGroup.invalid || (isLoadingProjects$ | async)" 
+              type="submit" 
+              class="btn btn-green">
+              <span *ngIf="isLoadingProjects$ | async" class="spinner-border spinner-border-sm me-2" role="status"></span>
+              {{ (isLoadingProjects$ | async) ? 'Creating...' : 'Create Project' }}
+            </button>
           </div>
         </form>
       </div>

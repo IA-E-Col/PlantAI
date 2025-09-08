@@ -1,10 +1,16 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
-import { LoginService } from '../../services/login.service'; // Corrigé "serives" en "services"
-import { skipUntil } from 'rxjs';
-import { CommonModule } from "@angular/common";
+import { CommonModule, AsyncPipe } from "@angular/common";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
-import { VerificationRequest } from '../../model/verification-request';
+import { Store } from '@ngrx/store';
+import { Observable, Subject, takeUntil } from 'rxjs';
+
+import { AppState } from '../../store/app.state';
+import { AuthActions } from '../../store';
+import { 
+  selectIsLoading, 
+  selectAuthError 
+} from '../../store/auth/auth.selectors';
 
 @Component({
   selector: 'app-activate-account',
@@ -13,80 +19,115 @@ import { VerificationRequest } from '../../model/verification-request';
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    FormsModule
+    FormsModule,
+    AsyncPipe
   ],
   styleUrls: ['./activate-account.component.css']
 })
-export class ActivateAccountComponent {
+export class ActivateAccountComponent implements OnInit, OnDestroy {
 
-  // Message à afficher à l'utilisateur
+  // UI state
   message = '';
-  // Indique si l'opération s'est déroulée correctement
   isOkay = true;
-  // Indique si l'opération a été soumise (pour afficher un feedback)
   submitted = false;
-  // Stocke le code OTP saisi par l'utilisateur
   otpCode = '';
+
+  // NgRx Observables
+  isLoading$: Observable<boolean>;
+  error$: Observable<string | null>;
+  
+  private destroy$ = new Subject<void>();
 
   constructor(
     private router: Router,
-    private authService: LoginService
-  ) {}
+    private store: Store<AppState>
+  ) {
+    // Initialize observables from NgRx store
+    this.isLoading$ = this.store.select(selectIsLoading);
+    this.error$ = this.store.select(selectAuthError);
+  }
 
-  /**
-   * Vérifie le code OTP saisi par l'utilisateur.
-   */
-  verifyCode() {
-    // Appelle la méthode confirm du service d'authentification avec le code OTP
-    this.authService.confirm(this.otpCode).subscribe({
-      next: () => {
-        // Si la confirmation est réussie, affiche un message de succès
-        this.message = 'Your account has been successfully activated.\nNow you can proceed to login';
-        this.submitted = true;
-        this.isOkay = true;
-      },
-      error: () => {
-        // En cas d'erreur (token expiré ou invalide), affiche un message d'erreur
-        this.message = 'Token has been expired or invalid';
-        this.submitted = true;
-        this.isOkay = false;
-      }
-    });
+  ngOnInit(): void {
+    // Subscribe to authentication success/error states
+    this.error$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(error => {
+        if (error) {
+          this.message = error;
+          this.submitted = true;
+          this.isOkay = false;
+        }
+      });
+
+    // Listen for successful activation (when loading stops and no error)
+    this.isLoading$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(isLoading => {
+        if (!isLoading && this.submitted && !this.message.includes('expired')) {
+          // Only if we were previously submitting and no error occurred
+          this.error$
+            .pipe(takeUntil(this.destroy$))
+            .subscribe(error => {
+              if (!error && this.submitted) {
+                this.message = 'Your account has been successfully activated.\nNow you can proceed to login';
+                this.isOkay = true;
+              }
+            });
+        }
+      });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   /**
-   * Méthode privée pour confirmer le compte en utilisant un token.
-   * @param token Le token d'activation à vérifier.
+   * Verifies the activation code using NgRx
    */
-  private confirmAccount(token: string) {
-    this.authService.confirm(token).subscribe({
-      next: () => {
-        this.message = 'Your account has been successfully activated.\nNow you can proceed to login';
-        this.submitted = true;
-      },
-      error: () => {
-        this.message = 'Token has been expired or invalid';
-        this.submitted = true;
-        this.isOkay = false;
-      }
-    });
+  verifyCode(): void {
+    if (!this.otpCode || this.otpCode.length < 6) {
+      this.message = 'Please enter a valid 6-digit activation code.';
+      this.isOkay = false;
+      return;
+    }
+
+    this.submitted = true;
+    this.message = '';
+    
+    console.log('Activating account with NgRx:', this.otpCode);
+    
+    // Dispatch activate account action through NgRx
+    this.store.dispatch(AuthActions.activateAccount({ token: this.otpCode }));
   }
 
   /**
-   * Redirige l'utilisateur vers la page de connexion.
+   * Redirects user to login page
    */
-  redirectToLogin() {
+  redirectToLogin(): void {
     this.router.navigate(['login']);
   }
 
   /**
-   * Méthode appelée lorsque le code d'activation est complété.
-   * @param emailtoken Le token d'activation reçu (par exemple depuis l'URL ou un input).
+   * Called when activation code is completed (for URL-based activation)
    */
-  onCodeCompleted(emailtoken: string) {
-    this.confirmAccount(emailtoken);
+  onCodeCompleted(emailtoken: string): void {
+    if (emailtoken) {
+      this.otpCode = emailtoken;
+      this.verifyCode();
+    }
   }
 
-  // Expose la fonction skipUntil (utilisée éventuellement dans le template)
-  protected readonly skipUntil = skipUntil;
+  /**
+   * Resets the form to try activation again
+   */
+  tryAgain(): void {
+    this.submitted = false;
+    this.message = '';
+    this.isOkay = true;
+    this.otpCode = '';
+    
+    // Clear any previous errors
+    this.store.dispatch(AuthActions.clearError());
+  }
 }

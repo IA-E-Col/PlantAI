@@ -1,7 +1,13 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { RouterLink, RouterOutlet } from '@angular/router';
-import { ProjetService } from '../../services/projet.service';
+import { AsyncPipe } from '@angular/common';
+import { Store } from '@ngrx/store';
+import { Observable, Subject, takeUntil } from 'rxjs';
+
+import { AppState } from '../../store/app.state';
+import { selectSidebarOpen } from '../../store/navigation/navigation.selectors';
+import { selectUser, selectUserName } from '../../store/auth/auth.selectors';
 import { NavbarComponent } from '../navbar/navbar.component';
 import { SidebarComponent } from '../sidebar/sidebar.component';
 
@@ -13,24 +19,45 @@ import { SidebarComponent } from '../sidebar/sidebar.component';
     RouterLink,
     RouterOutlet,
     NavbarComponent,
-    SidebarComponent
+    SidebarComponent,
+    AsyncPipe
   ],
   templateUrl: './admin-template.component.html',
   styleUrls: ['./admin-template.component.css']
 })
-export class AdminTemplateComponent implements OnInit {
-  corpusId!: string;
+export class AdminTemplateComponent implements OnInit, OnDestroy {
+  
+  // Asset paths
   cheminLogo = "assets/IRD.png";
   cheminUser = "assets/user.png";
-  username!: string;
-  id: string = '';
-  menuOpen = false;
+  
+  // NgRx Observables
+  sidebarOpen$: Observable<boolean>;
+  user$: Observable<any>;
+  userName$: Observable<string | null>;
+  
+  private destroy$ = new Subject<void>();
 
-  constructor(private projetService: ProjetService) {}
+  constructor(private store: Store<AppState>) {
+    // Initialize observables from NgRx store
+    this.sidebarOpen$ = this.store.select(selectSidebarOpen);
+    this.user$ = this.store.select(selectUser);
+    this.userName$ = this.store.select(selectUserName);
+  }
 
   ngOnInit(): void {
-    // Récupère le nom complet depuis le service ou localStorage
-    const username = localStorage.getItem('prenom') || '';
-    const nom = localStorage.getItem('nom') || '';
+    // Subscribe to user data for any additional setup if needed
+    this.user$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(user => {
+        if (user) {
+          console.log('Admin template initialized for user:', user.email);
+        }
+      });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }

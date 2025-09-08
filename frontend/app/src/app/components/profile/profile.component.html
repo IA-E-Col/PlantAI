@@ -1,8 +1,36 @@
-<form [formGroup]="profileFormGroup" (ngSubmit)="onSubmitProfile()" class="container mt-4">
+<!-- Loading Indicator -->
+<div *ngIf="isLoading$ | async" class="text-center mb-4">
+  <div class="spinner-border text-primary" role="status">
+    <span class="visually-hidden">Loading profile...</span>
+  </div>
+  <p class="mt-2">Loading profile information...</p>
+</div>
+
+<!-- Error Messages -->
+<div *ngIf="error$ | async as error" class="alert alert-danger mb-4">
+  <strong>Error:</strong> {{ error }}
+</div>
+
+<!-- Profile Form -->
+<form 
+  *ngIf="profileFormGroup && !(isLoading$ | async)" 
+  [formGroup]="profileFormGroup" 
+  (ngSubmit)="onSubmitProfile()" 
+  class="container mt-4">
   <div class="mb-3 row">
     <label for="nom" class="col-sm-2 col-form-label">Last Name:</label>
     <div class="col-sm-10">
       <input type="text" id="nom" formControlName="nom" class="form-control" placeholder="Your last name">
+    </div>
+  </div>
+  <!--let's show the role to ensure only admin can work with certain features-->
+  <!--Remove this later -->
+  <!--This is missing something, i think the roles are not taken into consideration in the backend, anyway this needs investigation as all users are created with role null while we should have a basic logic, for example the role should have a default then give the admin the possibility to control all users and delegate their correct roles  -->
+  <div class="mb-3 row">
+    <label for="role" class="col-sm-2 col-form-label">Role:</label>
+    <div class="col-sm-10">
+      <input type="text" id="role" formControlName="role" class="form-control" placeholder="Your role" readonly>
+      <small class="form-text text-muted">Role is fetched from the backend and cannot be modified here.</small>
     </div>
   </div>
   
@@ -50,7 +78,13 @@
   
   <div class="mb-3 row">
     <div class="offset-sm-2 col-sm-10">
-      <button type="submit" class="btn btn-green">Save</button>
+      <button 
+        type="submit" 
+        class="btn btn-green" 
+        [disabled]="profileFormGroup.invalid || (isLoading$ | async)">
+        <span *ngIf="isLoading$ | async" class="spinner-border spinner-border-sm me-2" role="status"></span>
+        {{ (isLoading$ | async) ? 'Saving...' : 'Save' }}
+      </button>
     </div>
   </div>
 </form>

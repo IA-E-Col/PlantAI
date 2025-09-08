@@ -1,45 +1,99 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import { CommonModule } from '@angular/common';
-import { ProjetService } from '../../services/projet.service';
+import { CommonModule, AsyncPipe } from '@angular/common';
+import { Store } from '@ngrx/store';
+import { Observable, Subject, takeUntil } from 'rxjs';
 import Swal from 'sweetalert2';
+
+import { AppState } from '../../store/app.state';
+import { AuthActions } from '../../store';
+import { 
+  selectUser, 
+  selectIsLoading, 
+  selectAuthError,
+  selectIsAuthenticated 
+} from '../../store/auth/auth.selectors';
 
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [ReactiveFormsModule, RouterLink, CommonModule],
+  imports: [ReactiveFormsModule, RouterLink, CommonModule, AsyncPipe],
   templateUrl: './profile.component.html',
   styleUrls: ['./profile.component.css']
 })
-export class ProfileComponent implements OnInit {
+export class ProfileComponent implements OnInit, OnDestroy {
 
   profileFormGroup!: FormGroup;
-  profile: any;
+  
+  // NgRx Observables
+  user$: Observable<any>;
+  isLoading$: Observable<boolean>;
+  error$: Observable<string | null>;
+  isAuthenticated$: Observable<boolean>;
+  
+  private destroy$ = new Subject<void>();
 
   constructor(
     private fb: FormBuilder,
-    private projetService: ProjetService,
+    private store: Store<AppState>,
     private router: Router
-  ) {}
+  ) {
+    // Initialize observables from NgRx store
+    this.user$ = this.store.select(selectUser);
+    this.isLoading$ = this.store.select(selectIsLoading);
+    this.error$ = this.store.select(selectAuthError);
+    this.isAuthenticated$ = this.store.select(selectIsAuthenticated);
+  }
 
   ngOnInit(): void {
-    // Récupérer l'objet utilisateur stocké dans le localStorage sous "authUser"
-    const userString = localStorage.getItem('authUser');
-    if (userString) {
-      this.profile = JSON.parse(userString);
-    } else {
-      // Rediriger vers la page de connexion si aucune donnée n'est trouvée
-      this.router.navigate(['login']);
-      return;
-    }
+    // Check authentication status first
+    this.isAuthenticated$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(isAuth => {
+        if (!isAuth) {
+          this.router.navigate(['/login']);
+          return;
+        }
+      });
 
-    // Initialiser le formulaire avec les données du profil (les champs de mot de passe restent vides)
+    // Subscribe to user data from NgRx store
+    this.user$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(user => {
+        if (user) {
+          console.log('User data from NgRx store:', user);
+          this.initializeForm(user);
+        }
+      });
+
+    // Subscribe to errors and show notifications
+    this.error$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(error => {
+        if (error) {
+          Swal.fire({ 
+            icon: 'error', 
+            title: 'Error', 
+            text: `Profile error: ${error}` 
+          });
+        }
+      });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  private initializeForm(user: any): void {
+    // Initialize form with user data from NgRx store
     this.profileFormGroup = this.fb.group({
-      nom: [this.profile.nom || '', Validators.required],
-      prenom: [this.profile.prenom || '', Validators.required],
-      email: [this.profile.email || '', [Validators.required, Validators.email]],
-      departement: [this.profile.departement || '', Validators.required],
+      nom: [user.nom || '', Validators.required],
+      prenom: [user.prenom || '', Validators.required],
+      email: [user.email || '', [Validators.required, Validators.email]],
+      departement: [user.departement || '', Validators.required],
+      role: [{ value: user.role || '', disabled: true }], // Make role read-only
       passwordAncien: [''],
       passwordNouveau: [''],
       passwordNouveauConfirm: ['']
@@ -50,40 +104,77 @@ export class ProfileComponent implements OnInit {
     if (this.profileFormGroup.valid) {
       const formValues = this.profileFormGroup.value;
       
-      // Si l'utilisateur souhaite modifier son mot de passe, vérifier la cohérence
+      // Validate password fields if user wants to change password
       if (formValues.passwordAncien || formValues.passwordNouveau || formValues.passwordNouveauConfirm) {
         if (formValues.passwordNouveau !== formValues.passwordNouveauConfirm) {
-          Swal.fire({ icon: 'error', title: 'Error', text: 'The new password and the old password do not match.' });
+          Swal.fire({ 
+            icon: 'error', 
+            title: 'Error', 
+            text: 'The new password and confirmation password do not match.' 
+          });
           return;
         }
       }
       
-      // Construire l'objet profil mis à jour
-      const updatedProfile = {
-        ...this.profile,
-        nom: formValues.nom,
-        prenom: formValues.prenom,
-        email: formValues.email,
-        departement: formValues.departement,
-        passwordAncien: formValues.passwordAncien,
-        passwordNouveau: formValues.passwordNouveau
-      };
+      // Get current user from store to merge with form data
+      this.user$
+        .pipe(takeUntil(this.destroy$))
+        .subscribe(currentUser => {
+          if (currentUser) {
+            const updatedProfile = {
+              ...currentUser,
+              nom: formValues.nom,
+              prenom: formValues.prenom,
+              email: formValues.email,
+              departement: formValues.departement,
+              passwordAncien: formValues.passwordAncien,
+              passwordNouveau: formValues.passwordNouveau
+              // Note: role is not included as it's read-only and fetched from backend
+            };
 
-      this.projetService.func_modifer_profile(updatedProfile).subscribe({
-        next: (data) => {
-          console.log(data);
-          Swal.fire({ icon: 'success', title: 'Success', text: 'Profil modified successfully. Reconnect please.' })
-            .then(() => {
-              this.router.navigate(['login']);
-            });
-        },
-        error: (err) => {
-          console.error(err);
-          Swal.fire({ icon: 'error', title: 'Error', text: 'Error while modifying profile.' });
-        }
-      });
+            console.log('Updating profile with NgRx:', updatedProfile);
+            
+            // Dispatch update user action through NgRx
+            this.store.dispatch(AuthActions.updateProfile({ profile: updatedProfile }));
+
+            // Subscribe to success/error states
+            this.isLoading$
+              .pipe(takeUntil(this.destroy$))
+              .subscribe(isLoading => {
+                if (!isLoading) {
+                  // Check if update was successful
+                  this.error$
+                    .pipe(takeUntil(this.destroy$))
+                    .subscribe(error => {
+                      if (!error) {
+                        Swal.fire({ 
+                          icon: 'success', 
+                          title: 'Success', 
+                          text: 'Profile updated successfully. Please log in again.' 
+                        }).then(() => {
+                          this.store.dispatch(AuthActions.logout());
+                          this.router.navigate(['/login']);
+                        });
+                      }
+                    });
+                }
+              });
+          }
+        });
     } else {
-      Swal.fire({ icon: 'error', title: 'Error', text: 'The form is invalid' });
+      Swal.fire({ 
+        icon: 'error', 
+        title: 'Error', 
+        text: 'The form is invalid. Please check all required fields.' 
+      });
+      this.markFormGroupTouched();
     }
+  }
+
+  private markFormGroupTouched(): void {
+    Object.keys(this.profileFormGroup.controls).forEach(key => {
+      const control = this.profileFormGroup.get(key);
+      control?.markAsTouched();
+    });
   }
 }

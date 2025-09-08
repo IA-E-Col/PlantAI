@@ -1,17 +1,25 @@
-import {Component, OnInit} from '@angular/core';
-import {NgForOf} from "@angular/common";
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { NgForOf, AsyncPipe } from "@angular/common";
 import { FormsModule } from '@angular/forms';
 import { FilterPipe } from "../../filter.pipe";
 import { CommonModule } from '@angular/common';
-import {NgxPaginationModule} from 'ngx-pagination';
-import {ActivatedRoute, Router, RouterLink, RouterOutlet} from "@angular/router";
-import {ProjetService} from "../../services/projet.service";
+import { NgxPaginationModule } from 'ngx-pagination';
+import { ActivatedRoute, Router, RouterLink, RouterOutlet } from "@angular/router";
 import Swal from "sweetalert2";
-import {CreeModeleComponent} from "../cree-modele/cree-modele.component";
-import {catchError, of} from "rxjs";
-import {MatDialog} from "@angular/material/dialog";
+import { CreeModeleComponent } from "../cree-modele/cree-modele.component";
+import { Observable, Subject, takeUntil, combineLatest, map } from "rxjs";
+import { MatDialog } from "@angular/material/dialog";
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faCircleInfo, faEdit, faPlay, faSearch, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { Store } from '@ngrx/store';
+
+import { AppState } from '../../store/app.state';
+import { ModelsActions, NavigationActions } from '../../store';
+import { 
+  selectAllModels, 
+  selectModelsLoading, 
+  selectModelsError 
+} from '../../store/models/models.selectors';
 
 @Component({
   selector: 'app-modele',
@@ -24,37 +32,71 @@ import { faCircleInfo, faEdit, faPlay, faSearch, faTrash } from '@fortawesome/fr
     RouterLink,
     RouterOutlet,
     FormsModule,
-    FontAwesomeModule
+    FontAwesomeModule,
+    AsyncPipe
   ],
   templateUrl: './modele.component.html',
   styleUrl: './modele.component.css'
 })
-export class ModeleComponent implements OnInit{
-  modele! : Array<any>
+export class ModeleComponent implements OnInit, OnDestroy {
+  
+  // UI State
   p: number = 1;
   currentSortField: string = '';
   isAscending: boolean = true;
-  searchtext:any;
+  searchtext: any;
   selectedOption: string = "all";
-  private errorMessage!: string;
+  
+  // Font Awesome icons
   faCircleInfo = faCircleInfo;
   faSearch = faSearch;
   faEdit = faEdit;
   faTrash = faTrash;
-  constructor(private dialogRef: MatDialog,private route: ActivatedRoute , private router : Router ,private projetService : ProjetService ) { }
+  
+  // NgRx Observables
+  models$: Observable<any[]>;
+  isLoading$: Observable<boolean>;
+  error$: Observable<string | null>;
+  sortedFilteredModels$: Observable<any[]>;
+  
+  private destroy$ = new Subject<void>();
 
-  ngOnInit() {
-  this.projetService.func_get_All_models().subscribe({
-    next: (data) => {
-      this.modele=data;
-      console.log("model",data)
-      },
+  constructor(
+    private dialogRef: MatDialog,
+    private route: ActivatedRoute,
+    private router: Router,
+    private store: Store<AppState>
+  ) {
+    // Initialize observables from NgRx store
+    this.models$ = this.store.select(selectAllModels);
+    this.isLoading$ = this.store.select(selectModelsLoading);
+    this.error$ = this.store.select(selectModelsError);
+    
+    // Create reactive sorted and filtered models
+    this.sortedFilteredModels$ = combineLatest([
+      this.models$,
+    ]).pipe(
+      map(([models]) => this.sortModels(models))
+    );
+  }
 
-    error: (err) => {
-      Swal.fire('Error', 'Failed to load models', 'error');
-      console.error(err);
-    }
-  });
+  ngOnInit(): void {
+    // Load models through NgRx
+    this.store.dispatch(ModelsActions.loadModels());
+    
+    // Subscribe to error state for user feedback
+    this.error$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(error => {
+        if (error) {
+          Swal.fire('Error', `Failed to load models: ${error}`, 'error');
+        }
+      });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   ngAfterViewInit() {
@@ -79,11 +121,15 @@ export class ModeleComponent implements OnInit{
     });
   }
 
-  func_inf_m(id: any) {
+  func_inf_m(id: any): void {
+    // Dispatch navigation action to update NgRx state
+    this.store.dispatch(NavigationActions.setCurrentModelId({ modelId: id.toString() }));
+    
+    // Navigate to model details
     this.router.navigateByUrl(`/admin/models/${id}/model-library`);
   }
 
-  sortBy(field: string) {
+  sortBy(field: string): void {
     if (this.currentSortField === field) {
       this.isAscending = !this.isAscending;
     } else {
@@ -91,54 +137,67 @@ export class ModeleComponent implements OnInit{
       this.isAscending = true;
     }
 
-    this.modele.sort((a, b) => {
+    // Update the sorted models observable
+    this.sortedFilteredModels$ = combineLatest([
+      this.models$,
+    ]).pipe(
+      map(([models]) => this.sortModels(models))
+    );
+  }
+
+  private sortModels(models: any[]): any[] {
+    if (!models || !this.currentSortField) {
+      return models || [];
+    }
+
+    return [...models].sort((a, b) => {
       let comparison = 0;
-      if (typeof a[field] === 'string' && typeof b[field] === 'string') {
-        comparison = a[field].localeCompare(b[field]);
+      const valueA = a[this.currentSortField];
+      const valueB = b[this.currentSortField];
+      
+      if (typeof valueA === 'string' && typeof valueB === 'string') {
+        comparison = valueA.localeCompare(valueB);
       } else {
-        comparison = a[field] - b[field];
+        comparison = valueA - valueB;
       }
       return this.isAscending ? comparison : -comparison;
     });
   }
 
-  applyFilter(){
-
+  applyFilter(): void {
+    // Trigger re-filtering (will be enhanced later)
+    this.sortedFilteredModels$ = combineLatest([
+      this.models$,
+    ]).pipe(
+      map(([models]) => this.sortModels(models))
+    );
   }
 
- // func_ajout_Model(){
- //   this.router.navigateByUrl("/admin/NewModel")
- // }
-  func_ajout_Model(){
+  func_ajout_Model(): void {
     const dialogRef = this.dialogRef.open(CreeModeleComponent, {
       width: '700px',
       height: '480px',
-      data: { is_active : false }
+      data: { is_active: false }
     });
-    dialogRef.afterClosed().subscribe(result => {
-      // Réagir à la fermeture du dialogue si nécessaire
-      // Par exemple, rafraîchir la liste des classes
-      this.projetService.func_get_All_models()
-        .pipe(
-          catchError(error => {
-            this.errorMessage = 'An error occurred while fetching collections';
-            // Optionally, you can log the error or handle it as needed
-            console.error('Error fetching collections', error);
-            return of([]);
-          })
-        )
-        .subscribe(
-          (collections) => {
-            this.modele = collections;
-          }
-        );
-    });
+    
+    dialogRef.afterClosed()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(result => {
+        if (result) {
+          // Refresh models list after dialog closes
+          this.store.dispatch(ModelsActions.loadModels());
+        }
+      });
   }
-  func_update_m(p: any){
-    this.router.navigateByUrl("/admin/UpdateMode")
+  func_update_m(model: any): void {
+    // Set current model in navigation state
+    this.store.dispatch(NavigationActions.setCurrentModelId({ modelId: model.id.toString() }));
+    
+    // Navigate to update model page
+    this.router.navigateByUrl("/admin/UpdateMode");
   }
 
-  func_delete_m(id: any) {
+  func_delete_m(id: any): void {
     Swal.fire({
       title: 'Are you sure?',
       text: 'You are about to delete this model. This action cannot be undone.',
@@ -150,18 +209,32 @@ export class ModeleComponent implements OnInit{
       cancelButtonText: 'Cancel'
     }).then((result) => {
       if (result.isConfirmed) {
-        this.projetService.func_supp_modele(id).subscribe({
-          next: () => {
-            Swal.fire('Success', 'Model deleted successfully', 'success');
-            this.ngOnInit(); // Rafraîchir la liste des modèles après suppression
-          },
-          error: (err) => {
-            Swal.fire('Error', 'Failed to delete model', 'error');
-            console.error(err);
-          }
-        });
+        console.log('Deleting model with NgRx:', id);
+        
+        // Dispatch delete action through NgRx
+        this.store.dispatch(ModelsActions.deleteModel({ modelId: id }));
+        
+        // Listen for successful deletion
+        this.error$
+          .pipe(takeUntil(this.destroy$))
+          .subscribe(error => {
+            if (!error) {
+              // Success case - when no error and loading is false
+              this.isLoading$
+                .pipe(takeUntil(this.destroy$))
+                .subscribe(isLoading => {
+                  if (!isLoading) {
+                    Swal.fire('Success', 'Model deleted successfully', 'success');
+                  }
+                });
+            }
+          });
       }
     });
+  }
+
+  trackByModelId(index: number, model: any): number {
+    return model.id;
   }
   
   

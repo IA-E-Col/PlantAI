@@ -6,17 +6,34 @@
         <div class="row" style="width: 285%; margin-bottom: 20px;">
           <h5 id="exampleModalLabel" class="border-bottom-green pb-1 col-sm-3">New Dataset</h5>
         </div>
-        <form #collectionForm="ngForm" (ngSubmit)="soumettreCollection()">
+        <form [formGroup]="collectionFormGroup" (ngSubmit)="soumettreCollection()">
           <div class="mb-3 row">
             <label for="nom" class="form-label fw-bold col-sm-3">Dataset name:</label>
             <div class="col-sm-9">
-              <input type="text" id="nom" [(ngModel)]="nom" name="nom" required class="form-control" placeholder="Name of Dataset">
+              <input 
+                type="text" 
+                id="nom" 
+                formControlName="nom" 
+                class="form-control" 
+                placeholder="Name of Dataset"
+                [class.is-invalid]="isFieldInvalid('nom')">
+              <div class="invalid-feedback" *ngIf="isFieldInvalid('nom')">
+                {{ getFieldError('nom') }}
+              </div>
             </div>
           </div>
           <div class="mb-3 row">
             <label for="description" class="form-label fw-bold col-sm-3">Description:</label>
             <div class="col-sm-9">
-              <textarea id="description" [(ngModel)]="description" name="description" class="form-control" placeholder="Describe the Dataset"></textarea>
+              <textarea 
+                id="description" 
+                formControlName="description" 
+                class="form-control" 
+                placeholder="Describe the Dataset"
+                [class.is-invalid]="isFieldInvalid('description')"></textarea>
+              <div class="invalid-feedback" *ngIf="isFieldInvalid('description')">
+                {{ getFieldError('description') }}
+              </div>
             </div>
           </div>
           <div class="text-center">

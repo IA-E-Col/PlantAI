@@ -1,51 +1,24 @@
 <div class="container-fluid" style="height: 82%;">
   <div class="row" style="height: 100%;">
-    <!-- Sidebar -->
+    <!-- Project Navigation Bar -->
     <nav class="navbar border border-dark">
       <ul class="navbar__menu">
-        <li class="navbar__item">
-          <a class="navbar__link" [routerLink]="['details']">
-            <i class="bi bi-file-earmark-text-fill"></i>
-            <span style="width: 107px; padding-left: 7px;">
-              Information
+        <li *ngFor="let menuItem of menuItems; trackBy: trackByMenuItem" class="navbar__item">
+          <a class="navbar__link" 
+             [routerLink]="[menuItem.route]"
+             [class.active]="isMenuItemActive(menuItem.route) | async">
+            <i class="bi" [class]="menuItem.icon"></i>
+            <span [style.width]="menuItem.width" style="padding-left: 7px;">
+              {{ menuItem.label }}
             </span>
           </a>
         </li>
-        <li class="navbar__item">
-          <a class="navbar__link" [routerLink]="['datasets']">
-            <i class="bi bi-collection-fill"></i>
-            <span style="width: 85px; padding-left: 7px;">
-              Datasets
-            </span>
-          </a>
-        </li>
-        <li class="navbar__item">
-          <a class="navbar__link" [routerLink]="['dashboard']">
-            <i class="bi bi-pie-chart-fill"></i>
-            <span style="width: 97px; padding-left: 7px;">
-              Dashboard
-            </span>
-          </a>
-        </li>
-        <li class="navbar__item">
-          <a class="navbar__link" [routerLink]="['edit']">
-            <i class="bi bi-gear-wide-connected"></i>
-            <span style="width: 80px; padding-left: 7px;">
-              Manage
-            </span>
-          </a>
-        </li>
-        <!-- ✅ Bouton pour accéder à la validation-history -->
-        <li class="navbar__item">
-          <a class="navbar__link" [routerLink]="['validation-history']">
-            <i class="bi bi-clock-history"></i>
-            <span style="width: 120px; padding-left: 7px;">
-              Validation History
-            </span>
-          </a>
-        </li>
-        
       </ul>
+      
+      <!-- Project ID Display (for debugging/info) -->
+      <div *ngIf="projectId$ | async as projectId" class="navbar__info">
+        <small class="text-muted">Project: {{ projectId }}</small>
+      </div>
     </nav>
     <!-- Collection Content -->
     <div class="col-lg-10">

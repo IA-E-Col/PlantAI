@@ -8,5 +8,7 @@ export interface AuthenticationResponse {
   nom?: string;            // Nom de l'utilisateur
   prenom?: string;         // Prénom de l'utilisateur
   email?: string; 
-  departement?: string; 
+  departement?: string;
+  role?: string;           // User role
+  enabled?: boolean;       // Account enabled status
 }

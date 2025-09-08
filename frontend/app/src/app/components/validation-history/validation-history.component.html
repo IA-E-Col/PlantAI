@@ -5,9 +5,21 @@
     </div>
 
     <div class="filters">
-        <input type="text" [(ngModel)]="filterText" (input)="filterAnnotations()" placeholder="Search by annotation name">
-        <input type="text" [(ngModel)]="filterState" (input)="filterAnnotations()" placeholder="Search by state">
-        <input type="date" [(ngModel)]="filterDate" (input)="filterAnnotations()" placeholder="Filter by date">
+        <input type="text" 
+               [(ngModel)]="filterText" 
+               (ngModelChange)="onFilterTextChange()" 
+               placeholder="Search by annotation name"
+               class="form-control">
+        <input type="text" 
+               [(ngModel)]="filterState" 
+               (ngModelChange)="onFilterStateChange()" 
+               placeholder="Search by state"
+               class="form-control">
+        <input type="date" 
+               [(ngModel)]="filterDate" 
+               (ngModelChange)="onFilterDateChange()" 
+               placeholder="Filter by date"
+               class="form-control">
     </div>
 
     <table class="validation-table">
@@ -22,14 +34,40 @@
         </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let annotation of filteredAnnotations">
+          <!-- Loading State -->
+          <tr *ngIf="!(filteredAnnotations$ | async)">
+            <td colspan="4" class="text-center">
+              <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading validation history...</span>
+              </div>
+              <p class="mt-2">Loading validation history...</p>
+            </td>
+          </tr>
+          
+          <!-- No Data State -->
+          <tr *ngIf="(filteredAnnotations$ | async)?.length === 0">
+            <td colspan="4" class="text-center text-muted">
+              <p>No validation history found.</p>
+              <small>Try adjusting your search criteria.</small>
+            </td>
+          </tr>
+          
+          <!-- Data Rows -->
+          <tr *ngFor="let annotation of filteredAnnotations$ | async; trackBy: trackByAnnotationId"
+              [style.display]="!(filteredAnnotations$ | async) ? 'none' : 'table-row'">
             <td>{{ annotation.libelle }}</td>
-            <td [ngClass]="annotation.etat.toLowerCase()">
-                <span class="badge badge-green text-light p-2">{{ annotation.etat }}</span>
-              </td>
+            <td [ngClass]="getAnnotationStateClass(annotation.etat)">
+              <span class="badge text-light p-2"
+                    [class.badge-success]="annotation.etat.toLowerCase() === 'validated'"
+                    [class.badge-warning]="annotation.etat.toLowerCase() === 'pending'"
+                    [class.badge-danger]="annotation.etat.toLowerCase() === 'rejected'">
+                {{ annotation.etat }}
+              </span>
+            </td>
             <td>{{ annotation.modelName }}</td>
-            <td>{{ annotation.modelcat }}</td>
-
+            <td>
+              <span class="badge badge-info">{{ annotation.modelcat }}</span>
+            </td>
           </tr>
         </tbody>
       </table>

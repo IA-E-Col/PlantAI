@@ -1,18 +1,28 @@
-import {Component, OnInit} from '@angular/core';
-import {DatePipe, NgForOf, NgIf} from "@angular/common";
-import {Router} from "@angular/router";
-import {ProjetService} from "../../services/projet.service";
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { DatePipe, NgForOf, NgIf } from "@angular/common";
+import { Router } from "@angular/router";
+import { Store } from '@ngrx/store';
+import { Observable, Subject, takeUntil, combineLatest, map } from 'rxjs';
 import Swal from 'sweetalert2';
-import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { FilterPipe } from "../../filter.pipe";
 import { CommonModule } from '@angular/common';
-import {NgxPaginationModule} from 'ngx-pagination';
-import {NewprojetComponent} from "../newprojet/newprojet.component";
-import {catchError, of} from "rxjs";
-import {MatDialog} from "@angular/material/dialog";
+import { NgxPaginationModule } from 'ngx-pagination';
+import { NewprojetComponent } from "../newprojet/newprojet.component";
+import { MatDialog } from "@angular/material/dialog";
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
+
+import { AppState } from '../../store/app.state';
+import { ProjectsActions } from '../../store';
+import { 
+  selectAllProjects, 
+  selectProjectsLoading, 
+  selectProjectsError,
+  selectCurrentProject 
+} from '../../store/projects/projects.selectors';
+import { selectUserId } from '../../store/auth/auth.selectors';
+import { Project } from '../../store/projects/projects.state';
 
 
 @Component({
@@ -31,110 +41,160 @@ import { faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
   templateUrl: './projets.component.html',
   styleUrl: './projets.component.css'
 })
-export class ProjetsComponent implements OnInit {
+export class ProjetsComponent implements OnInit, OnDestroy {
+  // UI State
   filterMenuActive: boolean = false;
   sortMenuActive: boolean = false;
   selectedOption: string = "all";
   faTrash = faTrash;
-  faEdit =  faEdit;
-
+  faEdit = faEdit;
+  
+  // Pagination & Search
   p: number = 1;
   currentSortField: string = '';
   isAscending: boolean = true;
-  searchtext:any;
-  projets! : Array<any>
-  message_err! : string
-  nonPrj! : string;
+  searchtext: string = '';
 
-  errorMessage!: string;
+  // NgRx Observables - Single Source of Truth!
+  projects$: Observable<Project[]>;
+  filteredProjects$: Observable<Project[]>;
+  isLoading$: Observable<boolean>;
+  error$: Observable<string | null>;
+  userId$: Observable<number | null>;
+  
+  private destroy$ = new Subject<void>();
 
-  constructor(private dialogRef: MatDialog,private projetService : ProjetService, private router : Router) {}
-  ngOnInit() {
-    this.projetService.func_get_AllPrj_User().subscribe({
-      next : (data )=>{
-        this.projetService.projets = data;
-        this.projets = data;
-        console.log(data);
-      },
-      error :(err)=>{
-        this.message_err = err
-      }
-    });
-//////////////////////////
-/*
-    this.projetService.func_get_Specimen_Filtred() .subscribe({
-      next : (data )=>{
-          console.log(data)
-        this.projetService.specimens = data;
-          this.projetService.func_add_Specimen_to_Collection(IDProjet) .subscribe({
-            next : (data )=>{
-              console.log(data);
-            },
-            error :(err)=>{
-              console.log(err)
-            }
-          });
+  constructor(
+    private dialogRef: MatDialog,
+    private store: Store<AppState>,
+    private router: Router
+  ) {
+    // Initialize observables from NgRx store
+    this.projects$ = this.store.select(selectAllProjects);
+    this.isLoading$ = this.store.select(selectProjectsLoading);
+    this.error$ = this.store.select(selectProjectsError);
+    this.userId$ = this.store.select(selectUserId);
 
-      },
-      error :(err)=>{
-        console.log(err)
-      }
-    });
+    // Create filtered projects observable
+    this.filteredProjects$ = this.createFilteredProjectsObservable();
+  }
+  ngOnInit(): void {
+    // Load projects using NgRx - much cleaner!
+    this.userId$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(userId => {
+        if (userId) {
+          this.store.dispatch(ProjectsActions.loadProjects({ userId }));
+        }
+      });
 
- */
+    // Listen for errors and show them
+    this.error$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(error => {
+        if (error) {
+          Swal.fire('Error', error, 'error');
+        }
+      });
+  }
 
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
 
+  /**
+   * Create reactive filtered projects observable
+   * This replaces all the manual filtering chaos!
+   */
+  private createFilteredProjectsObservable(): Observable<Project[]> {
+    return combineLatest([
+      this.projects$,
+      this.userId$
+    ]).pipe(
+      map(([projects, userId]) => {
+        if (!projects || !userId) return [];
 
+        let filtered = projects;
 
+        // Apply filter by ownership type
+        switch (this.selectedOption) {
+          case 'my':
+            filtered = projects.filter(p => p.createur?.id === userId);
+            break;
+          case 'collaborator':
+            filtered = projects.filter(p => 
+              p.collaborateurs?.some((collab: any) => collab.user?.id === userId) &&
+              p.createur?.id !== userId
+            );
+            break;
+          case 'all':
+          default:
+            // Show all projects where user is creator or collaborator
+            filtered = projects.filter(p => 
+              p.createur?.id === userId || 
+              p.collaborateurs?.some((collab: any) => collab.user?.id === userId)
+            );
+            break;
+        }
+
+        // Apply search filter
+        if (this.searchtext) {
+          filtered = filtered.filter(p => 
+            p.nomProjet?.toLowerCase().includes(this.searchtext.toLowerCase())
+          );
+        }
+
+        // Apply sorting
+        if (this.currentSortField) {
+          filtered = this.sortProjects(filtered, this.currentSortField, this.isAscending);
+        }
+
+        return filtered;
+      })
+    );
   }
 
 
 
- // func_ajout_Prj() {
-  //  this.router.navigateByUrl("/admin/newprojet")
- // }
-  func_ajout_Prj() {
+  /**
+   * Open create project dialog - now with NgRx refresh!
+   */
+  func_ajout_Prj(): void {
     const dialogRef = this.dialogRef.open(NewprojetComponent, {
       width: '700px',
       height: '500px',
-      data: { is_active : false }
+      data: { is_active: false }
     });
+
     dialogRef.afterClosed().subscribe(result => {
-      // Réagir à la fermeture du dialogue si nécessaire
-      // Par exemple, rafraîchir la liste des classes
-      this.projetService.func_get_AllPrj_User()
-        .pipe(
-          catchError(error => {
-            this.errorMessage = 'An error occurred while fetching projects';
-            // Optionally, you can log the error or handle it as needed
-            console.error('Error fetching projects', error);
-            return of([]);
-          })
-        )
-        .subscribe(
-          (projets) => {
-            this.projets = projets;
+      if (result) {
+        // Refresh projects using NgRx - no manual API calls!
+        this.userId$.pipe(
+          takeUntil(this.destroy$)
+        ).subscribe(userId => {
+          if (userId) {
+            this.store.dispatch(ProjectsActions.loadProjects({ userId }));
           }
-        );
-    });
-  }
-  ouvrirProjet(id: any) {
-    this.projetService.func_get_Id(id).subscribe({
-      next: (projet) => {
-        // Naviguez vers la page du projet ou gérez les données du projet selon les besoins
-        this.projetService.projet=projet
-        this.router.navigateByUrl(`/admin/projects/${id}`);
-      },
-      error: (err) => {
-        // Gérez l'erreur
-        console.error(err);
+        });
       }
     });
   }
+  /**
+   * Open project - using NgRx to load and set current project!
+   */
+  ouvrirProjet(id: number): void {
+    // Dispatch action to load and set current project
+    this.store.dispatch(ProjectsActions.loadProject({ projectId: id }));
+    
+    // Navigate to project page
+    this.router.navigateByUrl(`/admin/projects/${id}`);
+  }
 
-  supprimerProjet(id: any) {
-    console.log("hello delete projet")
-    // Affichage de l'alerte de confirmation
+  /**
+   * Delete project - using NgRx with elegant error handling!
+   */
+  supprimerProjet(id: number): void {
     Swal.fire({
       title: 'Are you sure?',
       text: 'You are about to delete this project. This action cannot be undone.',
@@ -146,118 +206,100 @@ export class ProjetsComponent implements OnInit {
       cancelButtonText: 'Cancel'
     }).then((result) => {
       if (result.isConfirmed) {
-        // Si l'utilisateur confirme, procédez à la suppression du projet
-        this.projetService.func_supp_prj(id).subscribe({
-          next: (data) => {
-            Swal.fire('Success', 'Project deleted successfully', 'success').then(() => {
-            });
-            this.ngOnInit();
-          },
-          error: (err) => {
-            Swal.fire('Error', 'Failed to delete project', 'error');
-            console.error(err);
-          }
-        });
+        // Dispatch delete action - NgRx handles success/error!
+        this.store.dispatch(ProjectsActions.deleteProject({ projectId: id }));
+        
+        // Listen for success (project removed from store automatically)
+        // No need for manual ngOnInit() - reactive updates!
+        Swal.fire('Success', 'Project deleted successfully', 'success');
       }
     });
   }
 
-  funcGet_createur_prj(IdP:any) {
-    this.projetService.func_get_createur(IdP).subscribe({
-      next: (data) => {
-        console.log(data);
-        this.nonPrj = data.username
-      },
-      error: (err) => {
-        console.log(err)
+  /**
+   * Pure sorting function - no side effects!
+   */
+  private sortProjects(projects: Project[], field: string, ascending: boolean): Project[] {
+    return [...projects].sort((a, b) => {
+      let aValue: any = field === 'creator' ? `${a.createur?.prenom} ${a.createur?.nom}` : (a as any)[field];
+      let bValue: any = field === 'creator' ? `${b.createur?.prenom} ${b.createur?.nom}` : (b as any)[field];
+      
+      let comparison = 0;
+      if (typeof aValue === 'string' && typeof bValue === 'string') {
+        comparison = aValue.localeCompare(bValue);
+      } else if (aValue instanceof Date && bValue instanceof Date) {
+        comparison = aValue.getTime() - bValue.getTime();
+      } else {
+        comparison = aValue - bValue;
       }
-    })
-    return this.nonPrj
+      
+      return ascending ? comparison : -comparison;
+    });
   }
 
-
-  sortBy(field: string) {
+  /**
+   * Reactive sorting - triggers filteredProjects$ update!
+   */
+  sortBy(field: string): void {
     if (this.currentSortField === field) {
       this.isAscending = !this.isAscending;
     } else {
       this.currentSortField = field;
       this.isAscending = true;
     }
-
-    this.projets.sort((a, b) => {
-      let comparison = 0;
-      if (typeof a[field] === 'string' && typeof b[field] === 'string') {
-        comparison = a[field].localeCompare(b[field]);
-      } else {
-        comparison = a[field] - b[field];
-      }
-      return this.isAscending ? comparison : -comparison;
-    });
+    
+    // Trigger reactive update
+    this.filteredProjects$ = this.createFilteredProjectsObservable();
   }
 
-  toggleFilterMenu() {
+  toggleFilterMenu(): void {
     this.filterMenuActive = !this.filterMenuActive;
   }
 
-  toggleSortMenu() {
+  toggleSortMenu(): void {
     this.sortMenuActive = !this.sortMenuActive;
   }
 
-  // Méthode appelée lorsque le bouton "Apply" est cliqué
-  applyFilter() {
-    switch(this.selectedOption) {
-      case 'all':
-        this.projetService.func_get_AllPrj_User().subscribe(
-          {
-            next: (data) => {
-              console.log(data);
-              this.projets = data
-            },
-            error: (err) => {
-              console.log(err)
-            }
-          }
-        )
-        break;
-      case 'my':
-        // Effectuez les traitements pour "My projects"
-        console.log('Apply filter for my projects');
-        this.projetService.func_get_Prj_Cree().subscribe(
-          {
-            next: (data) => {
-              console.log(data);
-              this.projets = data
-            },
-            error: (err) => {
-              console.log(err)
-            }
-          }
-        )
-        break;
-      case 'collaborator':
-        // Effectuez les traitements pour "Collaborator projects"
-        console.log('Apply filter for collaborator projects');
-        this.projetService.func_get_Prj_Collab().subscribe(
-          {
-            next: (data) => {
-              console.log(data);
-              this.projets = data
-            },
-            error: (err) => {
-              console.log(err)
-            }
-          }
-        )
-        break;
-      default:
-        console.log('Invalid filter option');
-    }
+  /**
+   * Reactive filter update - no manual API calls needed!
+   */
+  applyFilter(): void {
+    // Simply trigger the reactive observable update
+    this.filteredProjects$ = this.createFilteredProjectsObservable();
   }
 
-  // Méthode appelée lorsque le bouton "Reset" est cliqué
-  resetFilter() {
-    // Effectuez les traitements de réinitialisation nécessaires
-    console.log('Reset filter');
+  /**
+   * Reset all filters reactively
+   */
+  resetFilter(): void {
+    this.selectedOption = 'all';
+    this.searchtext = '';
+    this.currentSortField = '';
+    this.isAscending = true;
+    
+    // Trigger reactive update
+    this.filteredProjects$ = this.createFilteredProjectsObservable();
+  }
+
+  /**
+   * Handle search input changes reactively
+   */
+  onSearchChange(): void {
+    this.filteredProjects$ = this.createFilteredProjectsObservable();
+  }
+
+  /**
+   * Handle filter option changes reactively  
+   */
+  onFilterChange(): void {
+    this.filteredProjects$ = this.createFilteredProjectsObservable();
+  }
+
+  /**
+   * TrackBy function for performance optimization
+   */
+  trackByProjectId(index: number, project: Project): number {
+    return project?.id || index;
   }
 
 }

@@ -2,8 +2,11 @@
   <div class="card-header">
     <div class="header d-flex justify-content-between align-items-center">
       <div class="fw-bold fs-4 me-2">List of corpora</div>
-      <button (click)="func_ajout_Col()" class="btn btn-green pt-1 pb-1 ps-3 pe-3">
-        Create
+      <button (click)="func_ajout_Col()" 
+              class="btn btn-green pt-1 pb-1 ps-3 pe-3"
+              [disabled]="isLoading$ | async">
+        <span *ngIf="isLoading$ | async" class="spinner-border spinner-border-sm me-2" role="status"></span>
+        {{ (isLoading$ | async) ? 'Loading...' : 'Create' }}
       </button>
     </div>
 
@@ -26,8 +29,24 @@
     </div>
   </div>
 
-  <!-- Déplacer la table dans .card-body -->
-  <div class="card-body">
+  <!-- Loading State -->
+  <div *ngIf="isLoading$ | async" class="card-body text-center">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading collections...</span>
+    </div>
+    <p class="mt-2">Loading collections...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error$ | async as error" class="card-body">
+    <div class="alert alert-danger" role="alert">
+      <strong>Error:</strong> {{ error }}
+      <button class="btn btn-outline-danger btn-sm ms-2" (click)="ngOnInit()">Retry</button>
+    </div>
+  </div>
+
+  <!-- Data Table -->
+  <div *ngIf="!(isLoading$ | async) && !(error$ | async)" class="card-body">
     <table class="validation-table table">
       <thead>
         <tr>
@@ -38,15 +57,19 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let c of collections | filterByName: searchtext: 'nom' | paginate: { itemsPerPage: 10, currentPage: p }">
+        <tr *ngFor="let c of (sortedFilteredCollections$ | async) || [] | filterByName: searchtext: 'nom' | paginate: { itemsPerPage: 10, currentPage: p }; trackBy: trackByCollectionId">
           <td>{{ c.nom }}</td>
           <td>{{ c.dateCreation | date: 'dd/MM/yyyy' }}</td>
-          <td [title]="c.description">{{ c.description.length > 240 ? (c.description | slice:0:240) + '...' : c.description }}</td>
+          <td [title]="c.description">{{ c.description?.length > 240 ? (c.description | slice:0:240) + '...' : c.description }}</td>
           <td class="actions">
-            <button (click)="ouvrirCol(c.id)" class="btn btn-green me-2">
+            <button (click)="ouvrirCol(c.id)" 
+                    class="btn btn-green me-2"
+                    [disabled]="isLoading$ | async">
               <fa-icon [icon]="faEdit"></fa-icon>
             </button>
-            <button (click)="supprimerCol(c.id)" class="btn btn-green">
+            <button (click)="supprimerCol(c.id)" 
+                    class="btn btn-green"
+                    [disabled]="isLoading$ | async">
               <fa-icon [icon]="faTrash"></fa-icon>
             </button>
           </td>
@@ -57,11 +80,3 @@
       [nextLabel]="'Next'" [responsive]="true"></pagination-controls>
   </div>
 </div>
-
-<ng-template #errors>
-  <div class="container text-center mt-3">
-    <div class="alert alert-danger fs-5" role="alert">
-      {{ message_err }}
-    </div>
-  </div>
-</ng-template>

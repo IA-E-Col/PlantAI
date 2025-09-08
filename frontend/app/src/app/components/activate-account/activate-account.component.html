@@ -8,7 +8,7 @@
       <div class="activation-error">
         <h2>Activation Failed!</h2>
         <p>{{ message }}</p>
-        <button class="btn btn-green" (click)="submitted = false">Try again</button>
+        <button class="btn btn-green" (click)="tryAgain()">Try again</button>
       </div>
     </ng-template>
   </div>
@@ -31,9 +31,15 @@
         >
       </div>
       <div>
-           <button type="button" class="btn btn-green" (click)="verifyCode()"
-                        [class.button-disabled]="otpCode.length < 6"
-    >Verify code</button></div>
+           <button type="button" 
+                   class="btn btn-green" 
+                   (click)="verifyCode()"
+                   [class.button-disabled]="otpCode.length < 6 || (isLoading$ | async)"
+                   [disabled]="otpCode.length < 6 || (isLoading$ | async)">
+             <span *ngIf="isLoading$ | async" class="spinner-border spinner-border-sm me-2" role="status"></span>
+             {{ (isLoading$ | async) ? 'Verifying...' : 'Verify code' }}
+           </button>
+      </div>
     </div>
   </ng-template>
   

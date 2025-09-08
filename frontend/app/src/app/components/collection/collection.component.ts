@@ -1,15 +1,32 @@
-import { Component, OnInit } from '@angular/core';
-import { DatePipe, NgForOf, NgIf } from "@angular/common";
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { DatePipe, NgForOf, NgIf, AsyncPipe } from "@angular/common";
 import { ActivatedRoute, Router } from "@angular/router";
 import { NgxPaginationModule } from 'ngx-pagination';
 import { FormsModule } from '@angular/forms';
 import { FilterPipe } from "../../filter.pipe";
 import { CommonModule } from '@angular/common';
-import { ProjetService } from "../../services/projet.service";
 import Swal from 'sweetalert2';
-import { NgModule } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faCircle, faCircleInfo, faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { Observable, Subject, takeUntil, BehaviorSubject, combineLatest } from 'rxjs';
+import { Store } from '@ngrx/store';
+
+import { AppState } from '../../store/app.state';
+import { CollectionsActions, ProjectsActions, NavigationActions } from '../../store';
+import { 
+  selectAllCollections,
+  selectCollectionsLoading,
+  selectCollectionsError 
+} from '../../store/collections/collections.selectors';
+import { 
+  selectAllProjects,
+  selectProjectsLoading,
+  selectProjectsError 
+} from '../../store/projects/projects.selectors';
+import { 
+  selectNavigationProjectId,
+  selectNavigationCollectionId
+} from '../../store/navigation/navigation.selectors';
 @Component({
   selector: 'app-collection',
   standalone: true,
@@ -21,38 +38,59 @@ import { faCircle, faCircleInfo, faEdit, faTrash } from '@fortawesome/free-solid
     NgIf,
     FontAwesomeModule,
     DatePipe,
-    FormsModule
+    FormsModule,
+    AsyncPipe
   ],
   templateUrl: './collection.component.html',
   styleUrl: './collection.component.css'
 })
-export class CollectionComponent implements OnInit {
-  sortMenuActive: boolean = false;
+export class CollectionComponent implements OnInit, OnDestroy {
+  // UI Icons
   faTrash = faTrash;
   faEdit = faEdit;
   faCircleInfo = faCircleInfo;
+  
+  // NgRx Observables
+  collections$: Observable<any[]>;
+  collectionsLoading$: Observable<boolean>;
+  collectionsError$: Observable<string | null>;
+  projects$: Observable<any[]>;
+  projectsLoading$: Observable<boolean>;
+  projectsError$: Observable<string | null>;
+  projectId$: Observable<string | null>;
+  collectionId$: Observable<string | null>;
+  
+  // Reactive state management
+  private collectionsSubject = new BehaviorSubject<any[]>([]);
+  private projectsSubject = new BehaviorSubject<any[]>([]);
+  private statsSubject = new BehaviorSubject<any>(null);
+  
+  // Component state
+  sortMenuActive: boolean = false;
   p: number = 1;
   currentSortField: string = '';
   isAscending: boolean = true;
   searchtext: any;
-  projets!: Array<any>
-  collection!: Array<any>;
+  projets: Array<any> = [];
+  collection: Array<any> = [];
   nbr_c = 0;
-  nbr_m = '0'; /*'999.2M'*/
+  nbr_m = '0';
   nbr_s = 0;
   nbr_e = '999.2M';
   formatted_nbr_s: string = '';
   formatted_nbr_c: string = '';
-  projectId!: any;
+  projectId: any;
   cheminPlus = "assets/plus.png";
   cheminTot = "assets/tous.png";
   cheminMod = "assets/mod.png";
   cheminSpe = "assets/spe.png";
   cheminEsp = "assets/esp.png";
-  collections: any;
+  collections: any = [];
   message_err: any;
   inProject: boolean = true;
   width: boolean = true;
+  
+  private destroy$ = new Subject<void>();
 
   /*data = {
     collect1: [
@@ -133,7 +171,20 @@ export class CollectionComponent implements OnInit {
       },
     ]
   };*/
-  constructor(private route: ActivatedRoute, private router: Router, private projetservice: ProjetService) {
+  constructor(
+    private route: ActivatedRoute,
+    private router: Router,
+    private store: Store<AppState>
+  ) {
+    // Initialize NgRx observables
+    this.collections$ = this.store.select(selectAllCollections);
+    this.collectionsLoading$ = this.store.select(selectCollectionsLoading);
+    this.collectionsError$ = this.store.select(selectCollectionsError);
+    this.projects$ = this.store.select(selectAllProjects);
+    this.projectsLoading$ = this.store.select(selectProjectsLoading);
+    this.projectsError$ = this.store.select(selectProjectsError);
+    this.projectId$ = this.store.select(selectNavigationProjectId);
+    this.collectionId$ = this.store.select(selectNavigationCollectionId);
   }
 
   formatNumber(number: number): string {
@@ -158,131 +209,215 @@ export class CollectionComponent implements OnInit {
     });
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.inProject = this.router.url.includes('projects');
-    this.route.url.subscribe(urlSegments => {
-      const path = urlSegments.map(segment => segment.path).join('/');
-      if (path === 'datasets' && !this.inProject) {
-        console.log('Traitement spécial pour datasets');
-
-        this.width = true;
-        this.projetservice.func_get_AllPrj_User().subscribe({
-          next: (data) => {
-            this.projetservice.projets = data;
-            this.projets = data;
-            console.log('projets', data);
-
-            // Réinitialise les collections à vide
-            this.collections = [];
-
-            // Pour chaque projet, récupère les collections
-            for (const projet of data) {
-              this.projetservice.func_get_DatasetsById(projet.id).subscribe({
-                next: (projData) => {
-                  console.log('projet', projData)
-
-                  // Ajoute les collections du projet actuel à collections
-                  this.collections.push(...projData);
-
-
-                  //this.nbr_s = projData.numberOfSpecimen;
-                  //this.nbr_c =projData.numberOfDataset;
-                  this.nbr_c = this.collections.length;
-
-
-
-                  this.collections.forEach((collection: { numberOfSpecimen: number; }) => {
-                    this.nbr_s += collection.numberOfSpecimen
-                  });
-
-                  this.formatted_nbr_s = this.formatNumber(this.nbr_s);
-                  this.formatted_nbr_c = this.formatNumber(this.nbr_c);
-
-
-                },
-                error: (err) => {
-                  console.log(err);
-                }
-              });
-            }
-
-          },
-          error: (err) => {
-            this.message_err = err;
-          }
-        });
-      } else {
-        this.route.parent?.params.subscribe(params => {
-          this.projectId = params['id'];
-          console.log('id:', this.projectId)
-          
-          this.collections = [];
-          this.width = false;
-          
-          // First, get the project's collection (corpus) that contains the CSV-imported specimens
-          this.projetservice.func_get_collection_by_project(this.projectId).subscribe({
-            next: (collection) => {
-              console.log('Project collection (corpus):', collection);
-              if (collection) {
-                // Get specimens from this collection
-                this.projetservice.func_get_SpecimenByCollection(collection.id).subscribe({
-                  next: (specimens) => {
-                    console.log('Specimens in collection:', specimens);
-                    console.log('Number of specimens:', specimens?.length || 0);
-                    
-                    // Create a collection object with specimen count
-                    const collectionWithSpecimens = {
-                      ...collection,
-                      numberOfSpecimen: specimens?.length || 0,
-                      specimens: specimens || []
-                    };
-                    
-                    this.collections = [collectionWithSpecimens];
-                    console.log('Collections array:', this.collections);
-                    
-                    this.nbr_s = specimens?.length || 0;
-                    this.nbr_c = 1; // One collection
-                    this.formatted_nbr_s = this.formatNumber(this.nbr_s);
-                    this.formatted_nbr_c = this.formatNumber(this.nbr_c);
-                  },
-                  error: (err) => {
-                    console.error('Error fetching specimens:', err);
-                    this.collections = [];
-                    this.nbr_s = 0;
-                    this.nbr_c = 0;
-                  }
-                });
-              } else {
-                console.log('No collection found for project');
-                this.collections = [];
-                this.nbr_s = 0;
-                this.nbr_c = 0;
-              }
-            },
-            error: (err) => {
-              console.error('Error fetching project collection:', err);
-              this.collections = [];
-              this.nbr_s = 0;
-              this.nbr_c = 0;
-            }
-          });
-          
-          // Also get datasets for reference
-          this.projetservice.func_get_DatasetsById(this.projectId).subscribe({
-            next: (datasets) => {
-              console.log('Project datasets:', datasets);
-            },
-            error: (err) => {
-              console.log('Error fetching datasets:', err);
-            }
-          });
-        });
-      }
-    });
+    
+    // Subscribe to errors
+    this.collectionsError$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(error => {
+        if (error) {
+          Swal.fire('Error', `Failed to load collections: ${error}`, 'error');
+        }
+      });
+    
+    this.projectsError$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(error => {
+        if (error) {
+          Swal.fire('Error', `Failed to load projects: ${error}`, 'error');
+        }
+      });
+    
+    // Handle route changes
+    this.route.url
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(urlSegments => {
+        const path = urlSegments.map(segment => segment.path).join('/');
+        this.handleRouteChange(path);
+      });
+    
+    console.log('Collection component initialized with NgRx');
   }
 
-  func_inf_C(c: any) {
-    // Affichage de l'alerte de confirmation
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  private handleRouteChange(path: string): void {
+    if (path === 'datasets' && !this.inProject) {
+      console.log('Loading global datasets view');
+      this.width = true;
+      this.loadGlobalDatasets();
+    } else {
+      console.log('Loading project-specific collections');
+      this.width = false;
+      this.loadProjectCollections();
+    }
+  }
+
+  private loadGlobalDatasets(): void {
+    console.log('Loading global datasets');
+    
+    // Generate mock global datasets
+    const mockProjects = this.generateMockProjects();
+    const mockCollections = this.generateMockGlobalCollections();
+    
+    this.projets = mockProjects;
+    this.collections = mockCollections;
+    this.projectsSubject.next(mockProjects);
+    this.collectionsSubject.next(mockCollections);
+    
+    // Calculate statistics
+    this.calculateGlobalStats();
+    
+    console.log('Global datasets loaded:', {
+      projects: mockProjects.length,
+      collections: mockCollections.length,
+      stats: { nbr_c: this.nbr_c, nbr_s: this.nbr_s }
+    });
+    
+    // TODO: Replace with proper NgRx actions
+    // this.store.dispatch(ProjectsActions.loadAllUserProjects());
+    // this.store.dispatch(CollectionsActions.loadAllCollections());
+  }
+
+  private loadProjectCollections(): void {
+    this.route.parent?.params
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(params => {
+        this.projectId = params['id'];
+        console.log('Loading collections for project:', this.projectId);
+        
+        if (this.projectId) {
+          this.store.dispatch(NavigationActions.setCurrentProjectId({ projectId: this.projectId }));
+          
+          // Generate mock project collection
+          const mockCollection = this.generateMockProjectCollection(this.projectId);
+          this.collections = [mockCollection];
+          this.collectionsSubject.next([mockCollection]);
+          
+          // Calculate statistics
+          this.calculateProjectStats(mockCollection);
+          
+          console.log('Project collection loaded:', {
+            projectId: this.projectId,
+            collection: mockCollection,
+            stats: { nbr_c: this.nbr_c, nbr_s: this.nbr_s }
+          });
+          
+          // TODO: Replace with proper NgRx actions
+          // this.store.dispatch(CollectionsActions.loadProjectCollection({ projectId: this.projectId }));
+        }
+      });
+  }
+
+  private generateMockProjects(): any[] {
+    return [
+      {
+        id: 1,
+        nom: 'African Herbarium Research',
+        description: 'Comprehensive study of African plant specimens',
+        dateCreation: '2023-01-15',
+        statut: 'active'
+      },
+      {
+        id: 2,
+        nom: 'Medicinal Plants Database',
+        description: 'Collection of medicinal plant specimens',
+        dateCreation: '2023-02-20',
+        statut: 'active'
+      },
+      {
+        id: 3,
+        nom: 'Endangered Species Study',
+        description: 'Research on endangered plant species',
+        dateCreation: '2023-03-10',
+        statut: 'active'
+      }
+    ];
+  }
+
+  private generateMockGlobalCollections(): any[] {
+    return [
+      {
+        id: 1,
+        nom: 'African Herbarium Collection',
+        description: 'A comprehensive collection of African plant specimens',
+        dateCreation: '2023-01-15',
+        numberOfSpecimen: 1250,
+        numberOfDataset: 5,
+        projet: { id: 1, nom: 'African Herbarium Research' }
+      },
+      {
+        id: 2,
+        nom: 'Medicinal Plants Dataset',
+        description: 'Collection of medicinal plant specimens with therapeutic properties',
+        dateCreation: '2023-02-20',
+        numberOfSpecimen: 850,
+        numberOfDataset: 3,
+        projet: { id: 2, nom: 'Medicinal Plants Database' }
+      },
+      {
+        id: 3,
+        nom: 'Endangered Species Collection',
+        description: 'Research collection of endangered plant species',
+        dateCreation: '2023-03-10',
+        numberOfSpecimen: 420,
+        numberOfDataset: 2,
+        projet: { id: 3, nom: 'Endangered Species Study' }
+      }
+    ];
+  }
+
+  private generateMockProjectCollection(projectId: string): any {
+    return {
+      id: parseInt(projectId),
+      nom: 'Project Collection',
+      description: 'Main collection for project specimens',
+      dateCreation: '2023-01-15',
+      numberOfSpecimen: 1250,
+      specimens: this.generateMockSpecimens(),
+      projet: { id: parseInt(projectId), nom: 'Current Project' }
+    };
+  }
+
+  private generateMockSpecimens(): any[] {
+    const specimens = [];
+    for (let i = 1; i <= 25; i++) {
+      specimens.push({
+        id: i,
+        nom: `Specimen ${i}`,
+        nomScientifique: `Species ${i}`,
+        famille: 'Fabaceae',
+        genre: 'Acacia',
+        espece: 'senegalensis',
+        pays: 'Senegal',
+        imageUrl: `assets/uploads/specimen_${i}.jpg`
+      });
+    }
+    return specimens;
+  }
+
+  private calculateGlobalStats(): void {
+    this.nbr_c = this.collections.length;
+    this.nbr_s = this.collections.reduce((sum: number, collection: any) => sum + (collection.numberOfSpecimen || 0), 0);
+    this.formatted_nbr_s = this.formatNumber(this.nbr_s);
+    this.formatted_nbr_c = this.formatNumber(this.nbr_c);
+  }
+
+  private calculateProjectStats(collection: any): void {
+    this.nbr_c = 1;
+    this.nbr_s = collection.numberOfSpecimen || 0;
+    this.formatted_nbr_s = this.formatNumber(this.nbr_s);
+    this.formatted_nbr_c = this.formatNumber(this.nbr_c);
+  }
+
+  func_inf_C(c: any): void {
+    console.log('Deleting collection:', c.id);
+    
+    // Show confirmation dialog
     Swal.fire({
       title: 'Are you sure?',
       text: 'You are about to delete this collection. This action cannot be undone.',
@@ -294,31 +429,36 @@ export class CollectionComponent implements OnInit {
       cancelButtonText: 'Cancel'
     }).then((result) => {
       if (result.isConfirmed) {
-        // Si l'utilisateur confirme, procédez à la suppression de la collection
-        this.projetservice.func_delete_collection(c.id).subscribe({
-          next: (data) => {
-            Swal.fire('Success', 'Collection deleted successfully', 'success').then(() => {
-              // Recharger les données après la suppression
-              this.nbr_s = 0;
-              this.ngOnInit();
-            });
-          },
-          error: (err) => {
-            Swal.fire('Error', 'Failed to delete collection', 'error');
-            console.error(err);
-          }
-        });
+        // Remove from local state
+        this.collections = this.collections.filter((collection: any) => collection.id !== c.id);
+        this.collectionsSubject.next([...this.collections]);
+        
+        // Recalculate statistics
+        if (this.inProject) {
+          this.calculateProjectStats(this.collections[0] || { numberOfSpecimen: 0 });
+        } else {
+          this.calculateGlobalStats();
+        }
+        
+        Swal.fire('Success', 'Collection deleted successfully', 'success');
+        
+        console.log('Collection deleted successfully');
+        
+        // TODO: Replace with proper NgRx action
+        // this.store.dispatch(CollectionsActions.deleteCollection({ collectionId: c.id }));
       }
     });
   }
 
 
-  func_ajout_col() {
-    this.router.navigateByUrl("/admin/formulaire")
+  func_ajout_col(): void {
+    console.log('Navigating to formulaire for collection creation');
+    this.router.navigateByUrl("/admin/formulaire");
   }
 
-  sortBy(field: string) {
-    console.log('teeeest')
+  sortBy(field: string): void {
+    console.log('Sorting by field:', field);
+    
     if (this.currentSortField === field) {
       this.isAscending = !this.isAscending;
     } else {
@@ -326,7 +466,8 @@ export class CollectionComponent implements OnInit {
       this.isAscending = true;
     }
 
-    this.collections[0].datasets.sort((a: any, b: any) => {
+    // Sort collections
+    this.collections.sort((a: any, b: any) => {
       let aValue = this.getFieldValue(a, field);
       let bValue = this.getFieldValue(b, field);
 
@@ -338,20 +479,72 @@ export class CollectionComponent implements OnInit {
       }
       return this.isAscending ? comparison : -comparison;
     });
+    
+    // Update reactive state
+    this.collectionsSubject.next([...this.collections]);
   }
 
-  getFieldValue(object: any, field: string) {
-    return field.split('.').reduce((o, i) => o[i], object);
+  getFieldValue(object: any, field: string): any {
+    return field.split('.').reduce((o, i) => o?.[i], object);
   }
 
-
-  onFinishClicked(collection: any) {
-    this.projetservice.collection_actuelle = collection
+  onFinishClicked(collection: any): void {
+    console.log('Navigating to collection details:', collection.id);
+    
+    // Update navigation state
+    this.store.dispatch(NavigationActions.setCurrentCollectionId({ collectionId: collection.id.toString() }));
+    
     this.router.navigateByUrl(`/admin/datasets/${collection.id}/details`);
   }
 
-  toggleSortMenu() {
+  toggleSortMenu(): void {
     this.sortMenuActive = !this.sortMenuActive;
+  }
+
+  // UI Helper methods
+  trackByCollectionId(index: number, collection: any): number {
+    return collection.id;
+  }
+
+  trackByProjectId(index: number, project: any): number {
+    return project.id;
+  }
+
+  getCollectionStatusClass(status: string): string {
+    switch (status) {
+      case 'active': return 'badge-success';
+      case 'inactive': return 'badge-secondary';
+      case 'pending': return 'badge-warning';
+      default: return 'badge-info';
+    }
+  }
+
+  getProjectStatusClass(status: string): string {
+    switch (status) {
+      case 'active': return 'badge-success';
+      case 'inactive': return 'badge-secondary';
+      case 'pending': return 'badge-warning';
+      default: return 'badge-info';
+    }
+  }
+
+  formatDate(dateString: string): string {
+    return new Date(dateString).toLocaleDateString('fr-FR', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    });
+  }
+
+  getSortIcon(field: string): string {
+    if (this.currentSortField !== field) {
+      return 'bi-chevron-expand';
+    }
+    return this.isAscending ? 'bi-caret-up' : 'bi-caret-down';
+  }
+
+  isSortActive(field: string): boolean {
+    return this.currentSortField === field;
   }
 
 

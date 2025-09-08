@@ -1,8 +1,17 @@
-import {Component, OnInit} from '@angular/core';
-import {ActivatedRoute, RouterOutlet} from "@angular/router";
-import {CollectionComponent} from "../collection/collection.component";
-import {ProjetService} from "../../services/projet.service";
-import {DatePipe, NgForOf, NgIf, NgStyle} from "@angular/common";
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { ActivatedRoute, RouterOutlet } from "@angular/router";
+import { Store } from '@ngrx/store';
+import { Observable, Subject, takeUntil, switchMap } from 'rxjs';
+import { DatePipe, NgForOf, NgIf, NgStyle, AsyncPipe } from "@angular/common";
+
+import { AppState } from '../../store/app.state';
+import { ProjectsActions } from '../../store';
+import { 
+  selectCurrentProject,
+  selectProjectsLoading,
+  selectProjectsError 
+} from '../../store/projects/projects.selectors';
+import { Project } from '../../store/projects/projects.state';
 
 @Component({
   selector: 'app-projet-inf',
@@ -13,51 +22,68 @@ import {DatePipe, NgForOf, NgIf, NgStyle} from "@angular/common";
     NgIf,
     NgForOf,
     NgStyle,
+    AsyncPipe,
   ],
   templateUrl: './projet-inf.component.html',
   styleUrl: './projet-inf.component.css'
 })
-export class ProjetInfComponent implements OnInit {
-  projectId!: string
-  message_err! : string;
-  projet! : any;
+export class ProjetInfComponent implements OnInit, OnDestroy {
+  // NgRx Observables - Single Source of Truth!
+  currentProject$: Observable<Project | null>;
+  isLoading$: Observable<boolean>;
+  error$: Observable<string | null>;
+  
+  // UI State
   etatDuProjet: string = 'enCours';
-  createurPrj! :any
-  collaborateurs! :any
-  collections:any;
-  nbr_c  = 0;
-  nbr_s = 0;
-  formatted_nbr_s: string = '';
-  formatted_nbr_c: string = '';
-  projets! : Array<any>
-
   cheminUser = "assets/user.png";
   cheminDtl = "assets/INFO1.png";
-  constructor(private route: ActivatedRoute, private projetService :ProjetService) {
+  
+  private destroy$ = new Subject<void>();
+
+  constructor(
+    private route: ActivatedRoute,
+    private store: Store<AppState>
+  ) {
+    // Initialize NgRx observables
+    this.currentProject$ = this.store.select(selectCurrentProject);
+    this.isLoading$ = this.store.select(selectProjectsLoading);
+    this.error$ = this.store.select(selectProjectsError);
   }
 
 
-  ngOnInit() {
-    this.route.parent?.params.subscribe({
-      next: (params) => {
-        // Récupère le projet par ID
-        this.projectId = params['id'];
-        this.projetService.func_get_Id(this.projectId).subscribe({
-          next: (data) => {
-            this.projet = data;
-            console.log('XXXXXXXxxxx', data);
-            this.nbr_s = data.numberOfSpecimen;
-            this.nbr_c =data.numberOfDataset;
-          },
-          error: (err) => {
-            this.message_err = err;
-            console.error(`Erreur lors de la récupération du projet par ID ${this.projectId}: `, err);
+  ngOnInit(): void {
+    // React to route changes and load project via NgRx!
+    this.route.parent?.params
+      .pipe(
+        takeUntil(this.destroy$),
+        switchMap(params => {
+          const projectId = +params['id'];
+          // Dispatch action to load project
+          this.store.dispatch(ProjectsActions.loadProject({ projectId }));
+          return this.currentProject$;
+        })
+      )
+      .subscribe({
+        next: (project) => {
+          if (project) {
+            console.log('Project loaded via NgRx:', project);
           }
-        });
-      },
-      error: (err) => {
-        console.error('Erreur lors de la récupération des paramètres de la route: ', err);
-      }
-    });
+        },
+        error: (err) => {
+          console.error('Error loading project:', err);
+        }
+      });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  /**
+   * TrackBy function for performance optimization
+   */
+  trackByCollaboratorId(index: number, collaborator: any): number {
+    return collaborator?.user?.id || index;
   }
 }

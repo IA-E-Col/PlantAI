@@ -1,140 +1,118 @@
-import { CommonModule } from '@angular/common';
-import { Component, Input, OnChanges, OnDestroy, OnInit } from '@angular/core';
+import { CommonModule, AsyncPipe } from '@angular/common';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faCircleInfo, faTachometerAlt, faGear, faDatabase, faMicrochip, faBars, faDiagramProject, faFile, faInfoCircle, faImage, faUserCircle, faRobot, faBrain, faHistory, faNetworkWired, faBook, faFileImport } from '@fortawesome/free-solid-svg-icons';
-import { filter, Subscription } from 'rxjs';
+import { filter, Subject, takeUntil, Observable } from 'rxjs';
 import { RouterLink } from '@angular/router';
-import { SharedServiceService } from '../../services/shared-service.service';
+import { Store } from '@ngrx/store';
+
+import { AppState } from '../../store/app.state';
+import { NavigationActions } from '../../store';
+import { 
+  selectActiveMenu, 
+  selectActiveSubmenu, 
+  selectCurrentRoute,
+  selectCurrentItemId,
+  selectSidebarOpen,
+  selectShouldShowSubmenu
+} from '../../store/navigation/navigation.selectors';
+import { MenuItem, SubmenuItem } from '../../store/navigation/navigation.state';
 @Component({
   selector: 'app-sidebar',
   standalone: true,
-  imports: [CommonModule,FontAwesomeModule,RouterLink],
+  imports: [CommonModule, FontAwesomeModule, RouterLink, AsyncPipe],
   templateUrl: './sidebar.component.html',
   styleUrls: ['./sidebar.component.css']
 })
-export class SidebarComponent implements OnDestroy, OnInit{
-  currentRoute: string = '';
-  corpusId : string | null = null;
-  private routerSubscription: Subscription;
-  constructor(private router: Router,private route: ActivatedRoute,private sharedServiceService: SharedServiceService) {
-    this.routerSubscription = this.router.events
-      .pipe(filter(event => event instanceof NavigationEnd)) 
-      .subscribe((event: any) => {
-        const currentRoute = this.route.firstChild;  
-      if (currentRoute) {
-        this.currentRoute = event.urlAfterRedirects;
-        this.getRouteMatcher();
+export class SidebarComponent implements OnDestroy, OnInit {
+  
+  // NgRx Observables
+  activeMenu$: Observable<string>;
+  activeSubmenu$: Observable<string>;
+  currentRoute$: Observable<string>;
+  currentItemId$: Observable<string | null>;
+  sidebarOpen$: Observable<boolean>;
+  shouldShowSubmenu$: Observable<boolean>;
+  
+  private destroy$ = new Subject<void>();
 
-        currentRoute.paramMap.subscribe(params => {
-           this.itemId = params.get('id');  // Get the 'id' parameter from the route
-          if (this.itemId == null)
-            this.itemId = params.get('Id');
-            console.log('Current ID in Sidebar:', this.itemId);
-        });
-        this.submenus = {
-          corpus : [
-            { name: 'Details', icon: faCircleInfo, path: `/admin/corpus/${this.itemId}/details`  },
-            { name: 'Images', icon: faImage, path: `/admin/corpus/${this.itemId}/images` },
-            { name: 'Dashboard', icon: faTachometerAlt, path: `/admin/corpus/${this.itemId}/dashboard` },
-            { name: 'Settings', icon: faGear, path: `/admin/corpus/${this.itemId}/edit`  }
-          ],
-          projects :  [
-            { name: 'Details', icon: faUserCircle, path: `/admin/projects/${this.itemId}/details`},
-            { name: 'Datasets', icon: faDatabase, path: `/admin/projects/${this.itemId}/datasets` },
-            { name: 'Dashboard', icon: faTachometerAlt, path: `/admin/projects/${this.itemId}/dashboard` },
-            { name: 'Collaborators', icon: faUserCircle, path: `/admin/projects/${this.itemId}/collaborators`},
-            { name: 'Settings', icon: faGear, path: `/admin/projects/${this.itemId}/edit`},
-          ],
-          models :  [
-            { name: 'Model Library', icon: faBook, path: `/admin/models/${this.itemId}/model-library`},
-            { name: 'Settings', icon: faGear, path: `/admin/models/${this.itemId}/edit`},
-            { name: 'Collaborative Validation', icon: faBrain, path: `/admin/annotation_validation`},
-          ],
-          datasets : [
-            { name: 'Details', icon: faUserCircle, path: `/admin/datasets/${this.itemId}/details`},
-            { name: 'Images', icon: faImage, path: `/admin/datasets/${this.itemId}/images` },
-            { name: 'Dashboard', icon: faTachometerAlt, path: `/admin/datasets/${this.itemId}/dashboard` },
-            { name: 'Models', icon: faMicrochip, path: `/admin/datasets/${this.itemId}/models`},
-            { name: 'Validation History', icon: faHistory, path: `/admin/datasets/${this.itemId}/validation_history`},
-            { name: 'Import/Export Annotations', icon: faFileImport, path: `/admin/datasets/${this.itemId}/import_export_annotation`},
-            { name: 'Settings', icon: faGear, path: `/admin/datasets/${this.itemId}/edit`},
-          ]
-          
-        }
-      }
-        console.log('Current Route:', this.currentRoute);
+  constructor(
+    private router: Router,
+    private route: ActivatedRoute,
+    private store: Store<AppState>
+  ) {
+    // Initialize observables from NgRx store
+    this.activeMenu$ = this.store.select(selectActiveMenu);
+    this.activeSubmenu$ = this.store.select(selectActiveSubmenu);
+    this.currentRoute$ = this.store.select(selectCurrentRoute);
+    this.currentItemId$ = this.store.select(selectCurrentItemId);
+    this.sidebarOpen$ = this.store.select(selectSidebarOpen);
+    this.shouldShowSubmenu$ = this.store.select(selectShouldShowSubmenu);
+    
+    // Listen to router events and update NgRx state
+    this.router.events
+      .pipe(
+        filter(event => event instanceof NavigationEnd),
+        takeUntil(this.destroy$)
+      )
+      .subscribe((event) => {
+        const route = (event as NavigationEnd).urlAfterRedirects;
+        console.log('Router navigation detected:', route);
+        
+        // Update route in NgRx store and detect menu
+        this.store.dispatch(NavigationActions.detectMenuFromRoute({ route }));
+        
+        // Extract route parameters and update NgRx state
+        this.extractRouteParams(route);
       });
   }
+
+  private extractRouteParams(route: string): void {
+    const routeParts = route.split('/').filter(Boolean);
+    const adminIndex = routeParts.indexOf('admin');
+    
+    if (adminIndex !== -1 && adminIndex + 1 < routeParts.length) {
+      const entityType = routeParts[adminIndex + 1];
+      const entityId = routeParts[adminIndex + 2] || null;
+      
+      console.log('Extracted route params:', { entityType, entityId });
+      
+      // Update the appropriate ID in NgRx state
+      switch (entityType) {
+        case 'projects':
+          this.store.dispatch(NavigationActions.setCurrentProjectId({ projectId: entityId }));
+          break;
+        case 'corpus':
+          this.store.dispatch(NavigationActions.setCurrentCollectionId({ collectionId: entityId }));
+          break;
+        case 'datasets':
+          this.store.dispatch(NavigationActions.setCurrentDatasetId({ datasetId: entityId }));
+          break;
+        case 'models':
+          this.store.dispatch(NavigationActions.setCurrentModelId({ modelId: entityId }));
+          break;
+        case 'classes':
+          this.store.dispatch(NavigationActions.setCurrentClassId({ classId: entityId }));
+          break;
+      }
+    }
+  }
   ngOnInit(): void {
-    console.log(this.submenus)
-    this.sharedServiceService.corpusId$.subscribe(id => {
-      if (id){
-      this.itemId = id
-      console.log(id);
-      this.submenus = {
-        corpus : [
-          { name: 'Details', icon: faCircleInfo, path: `/admin/corpus/${id}/details`  },
-          { name: 'Images', icon: faImage, path: `/admin/corpus/${id}/images` },
-          { name: 'Dashboard', icon: faTachometerAlt, path: `/admin/corpus/${id}/dashboard` },
-          { name: 'Settings', icon: faGear, path: `/admin/corpus/${id}/edit`  }
-        ]
-      }
-    }
-    console.log(this.currentRoute.includes(this.submenus.routeMatcher))
-
-    });
-    this.sharedServiceService.projectId$.subscribe(id => {
-      if (id){
-      this.itemId = id;
-      this.submenus = {
-        projects :  [
-          { name: 'Details', icon: faUserCircle, path: `/admin/projects/${id}/details`},
-          { name: 'Datasets', icon: faDatabase, path: `/admin/projects/${id}/datasets` },
-          { name: 'Dashboard', icon: faTachometerAlt, path: `/admin/projects/${id}/dashboard` },
-          { name: 'Collaborators', icon: faUserCircle, path: `/admin/projects/${id}/collaborators`},
-          { name: 'Settings', icon: faGear, path: `/admin/projects/${id}/edit}`},
-
-        ]
-      }
-    }
-    });
-    this.sharedServiceService.datasetId$.subscribe(id => {
-      if (id){
-      this.itemId = id
-      this.submenus = {
-        datasets :  []
-    }
-      console.log(id);
-  }
-    });
-    this.sharedServiceService.modelId$.subscribe(id => {
-      if (id){
-      this.itemId = id
-      this.submenus = {
-        models :  [
-        { name: 'Model Library', icon: faBook, path: `/admin/models/${id}/model-library`},
-        { name: 'Settings', icon: faGear, path: `/admin/models/${id}/edit`},
-        { name: 'Collaborative Validation', icon: faBrain, path: `/admin/annotation_validation`},
-      ]
-    }
-  }
-    });
-    this.sharedServiceService.classeId$.subscribe(id => {
-      if (id){
-      this.itemId = id
-      console.log(id);
-      }
-    });
+    // Initialize current route from URL
+    const currentRoute = this.router.url;
+    this.store.dispatch(NavigationActions.detectMenuFromRoute({ route: currentRoute }));
+    this.extractRouteParams(currentRoute);
+    
+    console.log('Sidebar component initialized with NgRx state');
   }
 
   ngOnDestroy(): void {
-    if (this.routerSubscription) {
-      this.routerSubscription.unsubscribe();
-    }
+    this.destroy$.next();
+    this.destroy$.complete();
   }
-  active : String = 'Projects';
-  isOpen = true;
+
+  // FontAwesome icons
   faBars = faBars;
   faFile = faFile;
   faBook = faBook;
@@ -151,49 +129,80 @@ export class SidebarComponent implements OnDestroy, OnInit{
   faBrain = faBrain;
   faHistory = faHistory;
   faNetworkWired = faNetworkWired;
-  itemId : string | null = null;
-  menuItems : any = [
-    { name: 'Corpus', icon: faFile, path: '/admin/corpus'},
-    { name: 'Projects', icon: faDiagramProject, path : '/admin/projects' },
-    { name: 'Datasets', icon: faDatabase, path : '/admin/datasets' },
+  faFileImport = faFileImport;
+
+  // Static menu items
+  menuItems: MenuItem[] = [
+    { name: 'Corpus', icon: faFile, path: '/admin/corpus' },
+    { name: 'Projects', icon: faDiagramProject, path: '/admin/projects' },
+    { name: 'Datasets', icon: faDatabase, path: '/admin/datasets' },
     { name: 'Models', icon: faMicrochip, path: '/admin/models' },
-    { name: 'Classes', icon: faNetworkWired, path: '/admin/classes' }, 
+    { name: 'Classes', icon: faNetworkWired, path: '/admin/classes' },
   ];
-  submenus : any = [
+
+  // Method to get submenus based on current state
+  getSubmenus(activeMenu: string, itemId: string | null): SubmenuItem[] {
+    if (!itemId || !activeMenu) return [];
     
-  ];
-
-  getCurrentRouteMatcher(selectedMenu : string) : string{
-    return this.menuItems.map((menuItem:any) => menuItem.name == selectedMenu).routeMatcher;
-
+    const menuKey = activeMenu.toLowerCase();
+    
+    switch (menuKey) {
+      case 'corpus':
+        return [
+          { name: 'Details', icon: faCircleInfo, path: `/admin/corpus/${itemId}/details` },
+          { name: 'Images', icon: faImage, path: `/admin/corpus/${itemId}/images` },
+          { name: 'Dashboard', icon: faTachometerAlt, path: `/admin/corpus/${itemId}/dashboard` },
+          { name: 'Settings', icon: faGear, path: `/admin/corpus/${itemId}/edit` }
+        ];
+      case 'projects':
+        return [
+          { name: 'Details', icon: faUserCircle, path: `/admin/projects/${itemId}/details` },
+          { name: 'Datasets', icon: faDatabase, path: `/admin/projects/${itemId}/datasets` },
+          { name: 'Dashboard', icon: faTachometerAlt, path: `/admin/projects/${itemId}/dashboard` },
+          { name: 'Collaborators', icon: faUserCircle, path: `/admin/projects/${itemId}/collaborators` },
+          { name: 'Settings', icon: faGear, path: `/admin/projects/${itemId}/edit` }
+        ];
+      case 'models':
+        return [
+          { name: 'Model Library', icon: faBook, path: `/admin/models/${itemId}/model-library` },
+          { name: 'Settings', icon: faGear, path: `/admin/models/${itemId}/edit` },
+          { name: 'Collaborative Validation', icon: faBrain, path: `/admin/annotation_validation` }
+        ];
+      case 'datasets':
+        return [
+          { name: 'Details', icon: faUserCircle, path: `/admin/datasets/${itemId}/details` },
+          { name: 'Images', icon: faImage, path: `/admin/datasets/${itemId}/images` },
+          { name: 'Dashboard', icon: faTachometerAlt, path: `/admin/datasets/${itemId}/dashboard` },
+          { name: 'Models', icon: faMicrochip, path: `/admin/datasets/${itemId}/models` },
+          { name: 'Validation History', icon: faHistory, path: `/admin/datasets/${itemId}/validation_history` },
+          { name: 'Import/Export Annotations', icon: faFileImport, path: `/admin/datasets/${itemId}/import_export_annotation` },
+          { name: 'Settings', icon: faGear, path: `/admin/datasets/${itemId}/edit` }
+        ];
+      default:
+        return [];
+    }
   }
 
- getFirstSegmentAfterAdmin(url : string) : string | null{
-    const parts = url.split('/').filter(Boolean); // Remove empty parts
-    const adminIndex = parts.indexOf('admin');
-    return adminIndex !== -1 && adminIndex + 1 < parts.length ? parts[adminIndex + 1] : null;
-}
-
-  getRouteMatcher() : void{
-    if (this.getFirstSegmentAfterAdmin(this.currentRoute) == 'corpus')
-      this.setActive('Corpus');
-    else if (this.getFirstSegmentAfterAdmin(this.currentRoute) == 'models')
-       this.setActive('Models');
-    else if (this.getFirstSegmentAfterAdmin(this.currentRoute) == 'projects')
-       this.setActive('Projects');
-    else if (this.getFirstSegmentAfterAdmin(this.currentRoute) == 'datasets')
-       this.setActive('Datasets');
-  }
-  activeSub : string = '';
-
-  setActive(name: string) {
-    this.active = name;
-  }
-  setActiveSub(name: string){
-    this.activeSub = name; 
+  // NgRx action methods
+  setActive(name: string): void {
+    this.store.dispatch(NavigationActions.setActiveMenu({ menu: name }));
   }
 
-  toggleSidebar() {
-    this.isOpen = !this.isOpen;
+  setActiveSub(name: string): void {
+    this.store.dispatch(NavigationActions.setActiveSubmenu({ submenu: name }));
+  }
+
+  toggleSidebar(): void {
+    this.store.dispatch(NavigationActions.toggleSidebar());
+  }
+
+  // Utility method to track menu items in *ngFor
+  trackByMenuItem(index: number, item: MenuItem): string {
+    return item.name;
+  }
+
+  // Utility method to track submenu items in *ngFor
+  trackBySubmenuItem(index: number, item: SubmenuItem): string {
+    return item.name;
   }
 }

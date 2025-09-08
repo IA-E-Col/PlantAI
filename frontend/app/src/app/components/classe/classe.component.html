@@ -2,7 +2,7 @@
     <div class="row">
         <div class="p-3 col-lg-3 col-6">
             <div class="Statistique p-3" [class.active]="currentStep === 1" (click)="goToStep(1)">
-                <div class="Circle">{{collections.length}}</div>
+                <div class="Circle">{{(collections$ | async)?.length || 0}}</div>
                 <div class="Content">
                     <div class="Title">Corpora</div>
                     <div class="Underline"></div>
@@ -12,7 +12,7 @@
         </div>
         <div class=" p-3 col-lg-3 col-6">
             <div class="Statistique p-3" [class.active]="currentStep === 2" (click)="goToStep(2)">
-                <div class="Circle">{{modele.length}}</div>
+                <div class="Circle">{{(models$ | async)?.length || 0}}</div>
                 <div class="Content">
                     <div class="Title">Models</div>
                     <div class="Underline"></div>
@@ -80,7 +80,7 @@
                             <div class="container mt-5">
                                 <div class="card">
                                     <div class="card-body"
-                                        *ngFor="let c of collections | filterByName: searchtext1: 'nom'| paginate: { itemsPerPage: 3, currentPage: p3 }">
+                                        *ngFor="let c of ((collections$ | async) || []) | filterByName: searchtext1: 'nom'| paginate: { itemsPerPage: 3, currentPage: p3 }; trackBy: trackByCollectionId">
                                         <div class="Grp">
                                             <div class="Inf">
                                                 <h4>{{c.nom}}</h4>
@@ -142,7 +142,7 @@
                             <div class="container mt-5">
                                 <div class="card mb-3 p-3">
                                     <div class="card-body"
-                                        *ngFor="let m of modele | filterByName: searchtext2: 'name'| paginate: { itemsPerPage: 10, currentPage: p2 }">
+                                        *ngFor="let m of ((models$ | async) || []) | filterByName: searchtext2: 'nom'| paginate: { itemsPerPage: 10, currentPage: p2 }; trackBy: trackByModelId">
                                         <div class="Grp">
                                             <div class="Inf">
                                                 <h4>{{m.name}}</h4>

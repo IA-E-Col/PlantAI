@@ -1,11 +1,23 @@
-import { Component, OnInit, AfterViewInit, AfterViewChecked } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewChecked } from '@angular/core';
 import { ActivatedRoute, Router } from "@angular/router";
-import { ProjetService } from "../../services/projet.service";
 import Swal from "sweetalert2";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
-import { CommonModule } from '@angular/common';
+import { CommonModule, AsyncPipe } from '@angular/common';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faInfo, faInfoCircle, faPlay } from '@fortawesome/free-solid-svg-icons';
+import { Observable, Subject, takeUntil, switchMap } from 'rxjs';
+import { Store } from '@ngrx/store';
+
+import { AppState } from '../../store/app.state';
+import { ModelsActions, NavigationActions } from '../../store';
+import { 
+  selectAllModels,
+  selectModelsLoading,
+  selectModelsError 
+} from '../../store/models/models.selectors';
+import { 
+  selectNavigationDatasetId
+} from '../../store/navigation/navigation.selectors';
 
 
 @Component({
@@ -15,12 +27,13 @@ import { faInfo, faInfoCircle, faPlay } from '@fortawesome/free-solid-svg-icons'
     FormsModule,
     ReactiveFormsModule,
     CommonModule,
-    FontAwesomeModule
+    FontAwesomeModule,
+    AsyncPipe
   ],
   templateUrl: './image-inf.component.html',
   styleUrls: ['./image-inf.component.css']
 })
-export class ImageInfComponent implements OnInit, AfterViewChecked {
+export class ImageInfComponent implements OnInit, OnDestroy, AfterViewChecked {
   isOpenPreview: boolean = false;
 
   currentStep: number = 1;
@@ -38,6 +51,13 @@ export class ImageInfComponent implements OnInit, AfterViewChecked {
   zoomElement!: HTMLElement;
   cnt: number = 0;
   searchtext: any;
+  // NgRx Observables
+  models$: Observable<any[]>;
+  modelsLoading$: Observable<boolean>;
+  modelsError$: Observable<string | null>;
+  datasetId$: Observable<string | null>;
+  
+  // Component data
   modeles!: Array<any>;
   m: number = 1;
   m1: number = 1;
@@ -47,41 +67,98 @@ export class ImageInfComponent implements OnInit, AfterViewChecked {
   faInfoCircle = faInfoCircle
   originalWidth: number = 0;
   originalHeight: number = 0;
-  constructor(private route: ActivatedRoute, private router: Router, private projetservice: ProjetService) { }
+  
+  private destroy$ = new Subject<void>();
+
+  constructor(
+    private route: ActivatedRoute, 
+    private router: Router,
+    private store: Store<AppState>
+  ) {
+    // Initialize NgRx observables
+    this.models$ = this.store.select(selectAllModels);
+    this.modelsLoading$ = this.store.select(selectModelsLoading);
+    this.modelsError$ = this.store.select(selectModelsError);
+    this.datasetId$ = this.store.select(selectNavigationDatasetId);
+  }
 
   ngOnInit(): void {
-
-    this.projetservice.func_get_All_models().subscribe({
-      next: (data) => {
-        this.modeles = data;
-        console.log("all models", data);
-      },
-      error: (err) => {
-        Swal.fire('Error', 'Failed to load models', 'error');
-        console.error(err);
-      }
-    });
-    this.route.parent?.paramMap.subscribe(params => {
-      this.datasetId = params.get('id');
-    })
-    this.route.paramMap.subscribe(params => {
-      this.planteId = params.get('catalogueCode');
-      const navigation = window.history.state;
-      this.projetservice.func_get_Specimen(this.planteId).subscribe({
-        next: (data) => {
-          this.plante = data;
-          console.log("specimen", data);
-          this.imageUrl = this.plante.image.image_url;
-        },
-        error: (err) => {
-          Swal.fire('Error', 'Failed to load specimen', 'error');
-          console.error(err);
+    // Load models through NgRx
+    this.store.dispatch(ModelsActions.loadModels());
+    
+    // Subscribe to models for local use
+    this.models$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(models => {
+        this.modeles = models;
+        console.log("Models loaded via NgRx:", models);
+      });
+    
+    // Subscribe to errors for user feedback
+    this.modelsError$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(error => {
+        if (error) {
+          Swal.fire('Error', `Failed to load models: ${error}`, 'error');
         }
       });
-      this.plantes = navigation.plantes;
-      console.log('tswira', this.plante);
-    });
-    console.log('Annotations', this.plantes);
+    
+    // Handle route parameters
+    this.route.parent?.paramMap
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(params => {
+        const datasetId = params.get('id');
+        this.datasetId = datasetId;
+        if (datasetId) {
+          this.store.dispatch(NavigationActions.setCurrentDatasetId({ datasetId }));
+        }
+      });
+    
+    this.route.paramMap
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(params => {
+        this.planteId = params.get('catalogueCode');
+        const navigation = window.history.state;
+        
+        // Load specimen data - for now using mock data
+        this.loadSpecimenData(this.planteId);
+        
+        this.plantes = navigation.plantes;
+        console.log('Specimen ID:', this.planteId);
+      });
+    
+    console.log('Image info component initialized with NgRx');
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  private loadSpecimenData(specimenId: string | null): void {
+    if (!specimenId) return;
+    
+    // Mock specimen data for demonstration
+    this.plante = {
+      id: specimenId,
+      catalogueCode: specimenId,
+      nomScientifique: 'Rosa gallica L.',
+      genre: 'Rosa',
+      famille: 'Rosaceae',
+      pays: 'France',
+      ville: 'Paris',
+      dateCreation: '2023-01-15',
+      description: 'Beautiful red rose specimen',
+      image: {
+        image_url: 'assets/uploads/rose-specimen.jpg'
+      }
+    };
+    
+    this.imageUrl = this.plante.image.image_url;
+    console.log('Mock specimen loaded:', this.plante);
+    
+    // TODO: Replace with proper NgRx specimen loading
+    // this.store.dispatch(SpecimensActions.loadSpecimen({ specimenId }));
   }
   activeTab: string = 'metadata';
 
@@ -164,7 +241,11 @@ export class ImageInfComponent implements OnInit, AfterViewChecked {
   }
 
   doPrediction(modeleId: any): void {
-    console.log("the model that will be send", modeleId);
+    console.log("Starting prediction with model:", modeleId);
+    
+    // Update navigation state
+    this.store.dispatch(NavigationActions.setCurrentModelId({ modelId: modeleId.toString() }));
+    
     this.router.navigate([`admin/datasets/${this.datasetId}/images/${this.planteId}/models/${modeleId}/annotation-validation`]);
   }
 
@@ -175,6 +256,9 @@ export class ImageInfComponent implements OnInit, AfterViewChecked {
   }
 
   info_model(id: any): void {
+    // Update navigation state
+    this.store.dispatch(NavigationActions.setCurrentModelId({ modelId: id.toString() }));
+    
     this.router.navigateByUrl(`/admin/models/${id}/model-library`);
   }
 

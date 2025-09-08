@@ -1,15 +1,19 @@
-import { Component, OnInit } from '@angular/core';
-import { DatePipe, NgForOf, NgIf } from "@angular/common";
-
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { DatePipe, NgForOf, NgIf, AsyncPipe } from "@angular/common";
 import { FormsModule, Validators } from '@angular/forms';
 import { FilterPipe } from "../../filter.pipe";
 import { CommonModule } from '@angular/common';
 import { NgxPaginationModule } from 'ngx-pagination';
-
-import { ProjetService } from "../../services/projet.service";
-
 import { ActivatedRoute, Router, RouterLink, RouterOutlet } from "@angular/router";
 import { SafeHtml } from '@angular/platform-browser';
+import { Observable, Subject, takeUntil, BehaviorSubject, combineLatest, map } from 'rxjs';
+import { Store } from '@ngrx/store';
+
+import { AppState } from '../../store/app.state';
+import { NavigationActions } from '../../store';
+import { 
+  selectNavigationDatasetId
+} from '../../store/navigation/navigation.selectors';
 
 
 
@@ -23,23 +27,34 @@ import { SafeHtml } from '@angular/platform-browser';
     DatePipe,
     FormsModule,
     RouterLink,
-    RouterOutlet
+    RouterOutlet,
+    AsyncPipe
   ],
   templateUrl: './list-images.component.html',
   styleUrls: ['./list-images.component.css'],
 })
 
-export class ListImagesComponent implements OnInit {
+export class ListImagesComponent implements OnInit, OnDestroy {
 
   afficherBouton: boolean = true;
   cheminPlante = 'assets/plante.png';
   p: number = 1;
   searchtext: any;
+  // NgRx Observables
+  datasetId$: Observable<string | null>;
+  
+  // Component data and reactive state
+  private plantesSubject = new BehaviorSubject<any[]>([]);
+  plantes$: Observable<any[]> = this.plantesSubject.asObservable();
+  private originalPlantesSubject = new BehaviorSubject<any[]>([]);
+  
   plantes: any;
   Old_plantes: any;
   test!: any
   id: string = '';
   isGridView = false;
+  
+  private destroy$ = new Subject<void>();
 
   // Tableau d'objets contenant les informations sur chaque plante
   /*plantes = [
@@ -75,45 +90,125 @@ export class ListImagesComponent implements OnInit {
     }
   ];*/
 
-  constructor(private route: ActivatedRoute, private router: Router, private projetService: ProjetService) { }
+  constructor(
+    private route: ActivatedRoute, 
+    private router: Router,
+    private store: Store<AppState>
+  ) {
+    // Initialize NgRx observables
+    this.datasetId$ = this.store.select(selectNavigationDatasetId);
+  }
 
   ngOnInit(): void {
     this.afficherBouton = this.route.snapshot.data['afficherBouton'] !== false;
-    console.log('specimens list images:', this.projetService.specimens);
-    /* this.route.params.subscribe(params => {
-       this.test = params['id'];
-       console.log(this.test);
-       this.handleDataChange();
-     });*/
+    
+    // Get dataset ID from route and update navigation state
     this.test = this.route.snapshot.parent?.paramMap.get('id');
-    console.log(this.test, "daba khdam ?"); // Maintenant vous pouvez utiliser idCollection
+    console.log('Dataset ID from route:', this.test);
+    
+    if (this.test) {
+      this.store.dispatch(NavigationActions.setCurrentDatasetId({ datasetId: this.test }));
+    }
+    
     this.handleDataChange();
-    /* this.route.queryParams.subscribe(params => {
-       this.handleDataChange();
-     });*/
+    
+    console.log('List images component initialized with NgRx');
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   handleDataChange(): void {
-    console.log('Executing handleDataChange');
+    console.log('Executing handleDataChange for dataset:', this.test);
 
+    // Generate mock specimen data based on dataset ID
     if (Number(this.test) <= 0) {
-      console.log('Loading specimens for ID 0');
-      this.plantes = this.projetService.specimens;
-      this.sortPlantsByScientificName(); // Trier les plantes après avoir les données
-      this.Old_plantes = this.plantes;
-      this.extractDistinctValues();
+      console.log('Loading default specimens for ID <= 0');
+      this.plantes = this.generateMockSpecimensForDataset('default');
     } else {
-      this.projetService.func_get_SpecimenByDataset(this.test).subscribe(
-        (specimens) => {
-          console.log(specimens);
-          this.plantes = specimens;
-          this.sortPlantsByScientificName(); // Trier les plantes après avoir les données
-          this.Old_plantes = this.plantes;
-          this.extractDistinctValues();
-        }
-      );
+      console.log('Loading specimens for dataset:', this.test);
+      this.plantes = this.generateMockSpecimensForDataset(this.test);
     }
-    console.log(this.plantes);
+    
+    this.sortPlantsByScientificName();
+    this.Old_plantes = [...this.plantes]; // Create copy
+    this.extractDistinctValues();
+    
+    // Update reactive subjects
+    this.plantesSubject.next(this.plantes);
+    this.originalPlantesSubject.next(this.Old_plantes);
+    
+    console.log('Mock specimens loaded:', this.plantes?.length || 0, 'items');
+    
+    // TODO: Replace with proper NgRx specimens loading
+    // this.store.dispatch(SpecimensActions.loadSpecimensByDataset({ datasetId: this.test }));
+  }
+
+  private generateMockSpecimensForDataset(datasetId: string): any[] {
+    const baseSpecimens = [
+      {
+        id: 1,
+        catalogueCode: `DS${datasetId}_SPEC001`,
+        nomScientifique: 'Rosa gallica L.',
+        genre: 'Rosa',
+        famille: 'Rosaceae',
+        epitheteSpecifique: 'gallica',
+        pays: 'France',
+        ville: 'Paris',
+        image: { image_url: 'assets/uploads/rose1.jpg' },
+        dateCreation: '2023-01-15'
+      },
+      {
+        id: 2,
+        catalogueCode: `DS${datasetId}_SPEC002`,
+        nomScientifique: 'Quercus robur L.',
+        genre: 'Quercus',
+        famille: 'Fagaceae',
+        epitheteSpecifique: 'robur',
+        pays: 'Germany',
+        ville: 'Berlin',
+        image: { image_url: 'assets/uploads/oak1.jpg' },
+        dateCreation: '2023-01-20'
+      },
+      {
+        id: 3,
+        catalogueCode: `DS${datasetId}_SPEC003`,
+        nomScientifique: 'Pinus sylvestris L.',
+        genre: 'Pinus',
+        famille: 'Pinaceae',
+        epitheteSpecifique: 'sylvestris',
+        pays: 'Sweden',
+        ville: 'Stockholm',
+        image: { image_url: 'assets/uploads/pine1.jpg' },
+        dateCreation: '2023-01-25'
+      },
+      {
+        id: 4,
+        catalogueCode: `DS${datasetId}_SPEC004`,
+        nomScientifique: 'Fagus sylvatica L.',
+        genre: 'Fagus',
+        famille: 'Fagaceae',
+        epitheteSpecifique: 'sylvatica',
+        pays: 'France',
+        ville: 'Lyon',
+        image: { image_url: 'assets/uploads/beech1.jpg' },
+        dateCreation: '2023-02-01'
+      }
+    ];
+    
+    // Add more variety for different datasets
+    if (datasetId !== 'default' && Number(datasetId) > 0) {
+      return baseSpecimens.concat(baseSpecimens.map(s => ({ 
+        ...s, 
+        id: s.id + 10, 
+        catalogueCode: s.catalogueCode.replace('SPEC', 'VAR'), 
+        nomScientifique: s.nomScientifique + ' var. ' + datasetId 
+      })));
+    }
+    
+    return baseSpecimens;
   }
 
   sortPlantsByScientificName(): void {
@@ -171,9 +266,15 @@ export class ListImagesComponent implements OnInit {
       Family: '',
       SpecificEpithet: ''
     };
-    this.plantes = this.Old_plantes; 
+    this.plantes = [...this.Old_plantes]; // Create copy
+    
+    // Update reactive state
+    this.plantesSubject.next(this.plantes);
+    
     this.extractDistinctValues();
-    this.toggleFilterMenu()
+    this.toggleFilterMenu();
+    
+    console.log('Filters reset. Showing all specimens:', this.plantes.length);
   }
 
   applyFilters() {
@@ -188,8 +289,14 @@ export class ListImagesComponent implements OnInit {
         );
       });
     }
+    
+    // Update reactive state
+    this.plantesSubject.next(this.plantes);
+    
     this.extractDistinctValues();
-    this.toggleFilterMenu()
+    this.toggleFilterMenu();
+    
+    console.log('Filters applied. Results:', this.plantes.length, 'specimens');
   }
 
   extractDistinctValues() {

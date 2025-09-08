@@ -1,25 +1,38 @@
 <div class="sidebar d-flex flex-column">
   <ul class="nav flex-column">
-    <li *ngFor="let item of menuItems" class="nav-item">
-      <a class="nav-link d-flex align-items-center" [routerLink]="item.path"
-         [class.active]="active === item.name" 
+    <li *ngFor="let item of menuItems; trackBy: trackByMenuItem" class="nav-item">
+      <a class="nav-link d-flex align-items-center" 
+         [routerLink]="item.path"
+         [class.active]="(activeMenu$ | async) === item.name" 
          (click)="setActive(item.name)">
         <fa-icon [icon]="item.icon" class="me-2"></fa-icon>
-        <span *ngIf="isOpen">{{ item.name }}</span>
+        <span *ngIf="sidebarOpen$ | async">{{ item.name }}</span>
       </a>
 
-      <!-- Submenu: Show only if the menu is active -->
-      <ul class="p-0" *ngIf="active === item.name && submenus[active.toLowerCase()] && itemId">
-        <li *ngFor="let sub of submenus[active.toLowerCase()]" class="nav-item">
+      <!-- Submenu: Show only if the menu is active and has submenu items -->
+      <ul class="p-0" 
+          *ngIf="(activeMenu$ | async) === item.name && 
+                 getSubmenus((activeMenu$ | async) || '', (currentItemId$ | async)).length > 0">
+        <li *ngFor="let sub of getSubmenus((activeMenu$ | async) || '', (currentItemId$ | async)); 
+                    trackBy: trackBySubmenuItem" 
+            class="nav-item">
           <a class="nav-link d-flex align-items-center ps-5"
-          (click)="setActiveSub(sub.name)"
-          [class.active]="activeSub === sub.name" 
-          [routerLink]="sub.path">
+             (click)="setActiveSub(sub.name)"
+             [class.active]="(activeSubmenu$ | async) === sub.name" 
+             [routerLink]="sub.path">
             <fa-icon [icon]="sub.icon" class="me-2"></fa-icon>
-            <span *ngIf="isOpen">{{ sub.name }}</span>
+            <span *ngIf="sidebarOpen$ | async">{{ sub.name }}</span>
           </a>
         </li>
       </ul>
     </li>
   </ul>
+
+  <!-- Debug info (remove in production) -->
+  <div *ngIf="false" class="mt-3 p-2 small text-muted">
+    <div>Active Menu: {{ activeMenu$ | async }}</div>
+    <div>Active Submenu: {{ activeSubmenu$ | async }}</div>
+    <div>Current Item ID: {{ currentItemId$ | async }}</div>
+    <div>Current Route: {{ currentRoute$ | async }}</div>
+  </div>
 </div>

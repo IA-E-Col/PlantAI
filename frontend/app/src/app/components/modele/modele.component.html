@@ -1,7 +1,12 @@
 <div class="model-list-container">
   <div class="header">
     <div _ngcontent-ng-c2565222890="" class="fw-bold fs-4 me-2">List of Models</div>
-    <button class="create-btn" (click)="func_ajout_Model()">Create</button>
+    <button class="create-btn" 
+            (click)="func_ajout_Model()"
+            [disabled]="isLoading$ | async">
+      <span *ngIf="isLoading$ | async" class="spinner-border spinner-border-sm me-2" role="status"></span>
+      {{ (isLoading$ | async) ? 'Loading...' : 'Create' }}
+    </button>
   </div>
   <div class="fltr">
     <div class="form-outline" style="width: 100%; margin-bottom: 5px;">
@@ -22,16 +27,50 @@
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let m of modele | filterByName: searchtext: 'nom' | paginate: { itemsPerPage: 5, currentPage: p }">
+      <!-- Loading State -->
+      <tr *ngIf="isLoading$ | async">
+        <td colspan="3" class="text-center">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading models...</span>
+          </div>
+          <p class="mt-2">Loading models...</p>
+        </td>
+      </tr>
+      
+      <!-- Error State -->
+      <tr *ngIf="error$ | async as error">
+        <td colspan="3" class="text-center">
+          <div class="alert alert-danger" role="alert">
+            <strong>Error:</strong> {{ error }}
+            <button class="btn btn-outline-danger btn-sm ms-2" (click)="ngOnInit()">Retry</button>
+          </div>
+        </td>
+      </tr>
+      
+      <!-- Data Rows -->
+      <tr *ngFor="let m of (sortedFilteredModels$ | async) || [] | filterByName: searchtext: 'name' | paginate: { itemsPerPage: 5, currentPage: p }; trackBy: trackByModelId" 
+          [style.display]="(isLoading$ | async) || (error$ | async) ? 'none' : 'table-row'">
         <td>{{ m.name }}</td>
         <td><strong>{{ m.categorie }}</strong></td>
         <td>
-          <button class="info-btn text-white" (click)="func_inf_m(m.id)"><fa-icon [icon]="faCircleInfo"></fa-icon></button>
-          <button class="play-btn" (click)="func_update_m(m)"><fa-icon [icon]="faEdit"></fa-icon></button>
-          <button class="play-btn" (click)="func_delete_m(m.id)">
+          <button class="info-btn text-white" 
+                  (click)="func_inf_m(m.id)"
+                  [disabled]="isLoading$ | async"
+                  title="View model details">
+            <fa-icon [icon]="faCircleInfo"></fa-icon>
+          </button>
+          <button class="play-btn" 
+                  (click)="func_update_m(m)"
+                  [disabled]="isLoading$ | async"
+                  title="Edit model">
+            <fa-icon [icon]="faEdit"></fa-icon>
+          </button>
+          <button class="play-btn" 
+                  (click)="func_delete_m(m.id)"
+                  [disabled]="isLoading$ | async"
+                  title="Delete model">
             <fa-icon [icon]="faTrash"></fa-icon>
-        </button>
-        
+          </button>
         </td>
       </tr>
     </tbody>

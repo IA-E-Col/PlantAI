@@ -7,10 +7,10 @@
     
     <!-- Section utilisateur -->
     <div class="user-section">
-      <!-- Infos utilisateur cliquables (avatar + nom) -->
+      <!-- Infos utilisateur cliquables (avatar + nom) - NgRx Powered! -->
       <div class="user-info" (click)="navigateToProfile()" style="cursor: pointer;">
         <img [src]="userImageUrl" alt="Avatar utilisateur" class="user-avatar" />
-        <span class="user-name text-light">{{ username }}</span>
+        <span class="user-name text-light">{{ userName$ | async }}</span>
       </div>
       
       <!-- Dropdown minimal pour Modifier Profil et Déconnexion -->

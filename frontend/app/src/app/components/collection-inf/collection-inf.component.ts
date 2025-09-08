@@ -1,9 +1,26 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import {ActivatedRoute, Router, RouterLink, RouterOutlet} from "@angular/router";
-import {ProjetService} from "../../services/projet.service";
 import { FilterPipe } from "../../filter.pipe";
 import { CommonModule } from '@angular/common';
 import {NgxPaginationModule} from 'ngx-pagination';
+import { Observable, Subject, takeUntil } from 'rxjs';
+import { Store } from '@ngrx/store';
+
+import { AppState } from '../../store/app.state';
+import { CollectionsActions, ModelsActions, NavigationActions } from '../../store';
+import { 
+  selectAllCollections,
+  selectCollectionsLoading,
+  selectCollectionsError 
+} from '../../store/collections/collections.selectors';
+import { 
+  selectAllModels,
+  selectModelsLoading,
+  selectModelsError 
+} from '../../store/models/models.selectors';
+import { 
+  selectNavigationCollectionId
+} from '../../store/navigation/navigation.selectors';
 
 
 
@@ -20,22 +37,110 @@ import {NgxPaginationModule} from 'ngx-pagination';
   templateUrl: './collection-inf.component.html',
   styleUrl: './collection-inf.component.scss'
 })
-export class CollectionInfComponent {
-  collection:any;
-  IdCollection:any;
-  searchtext:any;
-  modeles! : Array<any>
+export class CollectionInfComponent implements OnInit, OnDestroy {
+  // NgRx Observables
+  collections$: Observable<any[]>;
+  collectionsLoading$: Observable<boolean>;
+  collectionsError$: Observable<string | null>;
+  models$: Observable<any[]>;
+  modelsLoading$: Observable<boolean>;
+  modelsError$: Observable<string | null>;
+  collectionId$: Observable<string | null>;
+  
+  // Component state
+  collection: any = null;
+  IdCollection: any;
+  searchtext: any;
+  modeles: Array<any> = [];
   m: number = 1;
 
-  constructor(private route: ActivatedRoute, private router : Router,private projetService:ProjetService) {
+  private destroy$ = new Subject<void>();
+
+  constructor(
+    private route: ActivatedRoute,
+    private router: Router,
+    private store: Store<AppState>
+  ) {
+    // Initialize NgRx observables
+    this.collections$ = this.store.select(selectAllCollections);
+    this.collectionsLoading$ = this.store.select(selectCollectionsLoading);
+    this.collectionsError$ = this.store.select(selectCollectionsError);
+    this.models$ = this.store.select(selectAllModels);
+    this.modelsLoading$ = this.store.select(selectModelsLoading);
+    this.modelsError$ = this.store.select(selectModelsError);
+    this.collectionId$ = this.store.select(selectNavigationCollectionId);
   }
 
-  ngOnInit() {
-    this.route.params.subscribe(params => {
-      this.IdCollection = params['id'];
-    });
-    console.log("ID:", this.IdCollection)
-    this.modeles = [
+  ngOnInit(): void {
+    // Subscribe to errors
+    this.collectionsError$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(error => {
+        if (error) {
+          console.error('Collection loading error:', error);
+        }
+      });
+
+    this.modelsError$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(error => {
+        if (error) {
+          console.error('Models loading error:', error);
+        }
+      });
+
+    // Get collection ID from route
+    this.route.params
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(params => {
+        this.IdCollection = params['id'];
+        if (this.IdCollection) {
+          this.store.dispatch(NavigationActions.setCurrentCollectionId({ collectionId: this.IdCollection }));
+          this.loadCollectionData(this.IdCollection);
+        }
+      });
+    
+    console.log('Collection-inf component initialized with NgRx');
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  private loadCollectionData(collectionId: string): void {
+    console.log('Loading collection data:', collectionId);
+    
+    // Generate mock collection data
+    this.collection = this.generateMockCollection(parseInt(collectionId));
+    
+    // Generate mock models data
+    this.modeles = this.generateMockModels();
+    
+    console.log('Collection data loaded:', this.collection);
+    console.log('Models loaded:', this.modeles);
+    
+    // TODO: Replace with proper NgRx actions
+    // this.store.dispatch(CollectionsActions.loadCollection({ collectionId }));
+    // this.store.dispatch(ModelsActions.loadModels());
+  }
+
+  private generateMockCollection(collectionId: number): any {
+    return {
+      id: collectionId,
+      nom: `Collection ${collectionId}`,
+      description: `Description for collection ${collectionId}`,
+      dateCreation: new Date().toISOString(),
+      statut: 'active',
+      nbrSpecimens: Math.floor(Math.random() * 1000) + 100,
+      nbrImages: Math.floor(Math.random() * 2000) + 200,
+      projectId: 1,
+      createdBy: 1
+    };
+  }
+
+  private generateMockModels(): Array<any> {
+    return [
       {
         id: 'ML001',
         nom: 'ResNet-50',
@@ -79,4 +184,30 @@ export class CollectionInfComponent {
     ];
   }
 
+  // UI Helper methods
+  onModelClick(model: any): void {
+    console.log('Model clicked:', model);
+    this.router.navigate(['/admin/models', model.id]);
+  }
+
+  onSearchChange(searchText: string): void {
+    this.searchtext = searchText;
+    console.log('Search text changed:', searchText);
+  }
+
+  onBackToList(): void {
+    this.router.navigate(['/admin/collections']);
+  }
+
+  onEditCollection(): void {
+    this.router.navigate(['/admin/collections/edit', this.IdCollection]);
+  }
+
+  onViewSpecimens(): void {
+    this.router.navigate(['/admin/collections', this.IdCollection, 'specimens']);
+  }
+
+  trackByModelId(index: number, model: any): any {
+    return model.id;
+  }
 }

@@ -1,15 +1,26 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Chart, registerables, ChartType, ChartTypeRegistry } from 'chart.js';
 import { CommonModule } from '@angular/common';
-import { ProjetService } from "../../services/projet.service";
 import { ActivatedRoute, Router } from "@angular/router";
-import { DatePipe, NgForOf, NgIf } from "@angular/common";
+import { DatePipe, NgForOf, NgIf, AsyncPipe } from "@angular/common";
 import { FormsModule } from '@angular/forms';
 import { FilterPipe } from "../../filter.pipe";
 import { NgxPaginationModule } from 'ngx-pagination';
 import { catchError } from 'rxjs/operators';
-import { of, Subscription } from 'rxjs';
+import { of, Subscription, Observable, Subject, takeUntil } from 'rxjs';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { Store } from '@ngrx/store';
+
+import { AppState } from '../../store/app.state';
+import { CollectionsActions, NavigationActions } from '../../store';
+import { 
+  selectAllCollections,
+  selectCollectionsLoading,
+  selectCollectionsError 
+} from '../../store/collections/collections.selectors';
+import { 
+  selectNavigationCollectionId
+} from '../../store/navigation/navigation.selectors';
 
 Chart.register(...registerables);
 
@@ -36,12 +47,13 @@ interface ConfusionMatrices {
     NgIf,
     DatePipe,
     FormsModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    AsyncPipe
   ],
   templateUrl: './collection-dashboard.component.html',
   styleUrl: './collection-dashboard.component.css'
 })
-export class CollectionDashboardComponent implements OnInit {
+export class CollectionDashboardComponent implements OnInit, OnDestroy {
 
   statistics = ['Genre', 'Family', 'Country', 'City', 'Department', 'Specific Epithet', 'Location', 'Scientific Name', 'Date'];
   chartTypesOptions = [
@@ -52,19 +64,25 @@ export class CollectionDashboardComponent implements OnInit {
     { label: 'Doughnut Chart', value: 'doughnut' },
     { label: 'Polar Area Chart', value: 'polarArea' }
   ];
-  /*************************/
+  
+  // NgRx Observables
+  collections$: Observable<any[]>;
+  collectionsLoading$: Observable<boolean>;
+  collectionsError$: Observable<string | null>;
+  collectionId$: Observable<string | null>;
+
+  // Component properties
   specimensl: Set<any> = new Set<any>();
   specimens_l: any;
   confusionMatrices: ConfusionMatrices = {};
   matrixColors: { [key: string]: string } = {};
-  /*************************/
-
 
   datasets: any;
   collectionId: any;
   specimens: any;
   errorMessage!: string;
   private routeSub!: Subscription;
+  private destroy$ = new Subject<void>();
 
   chartData: { labels: string[], realdata: number[], colordata: string[], chartLabel: string }[] = [];
   additionalChartData: { libelle: string, labels: string[], realdata: number[], colordata: string[], chartLabel: string }[] = [];
@@ -78,279 +96,158 @@ export class CollectionDashboardComponent implements OnInit {
   isActive3: boolean = true;
   isLoad: boolean = true;
 
-
-  toggleActive() {
-    /********************************/
-    this.additionalChartTypes[10] = 'bar' as ChartType;
-    this.renderAdditionalCharts();
-    /********************************/
-    this.isActive = true;
-    this.isActive3 = true;
-    this.isActive2 = false;
-  }
-
-  toggleActive2() {
-    this.isActive = false;
-    this.isActive2 = true;
-    this.isActive3 = true;
-  }
-
-  toggleActive3() {
-    this.isActive = true;
-    this.isActive2 = true;
-    this.isActive3 = false;
-  }
-
-  constructor(private route: ActivatedRoute, private router: Router, private projetservice: ProjetService) {
+  constructor(
+    private route: ActivatedRoute,
+    private router: Router,
+    private store: Store<AppState>
+  ) {
+    this.collections$ = this.store.select(selectAllCollections);
+    this.collectionsLoading$ = this.store.select(selectCollectionsLoading);
+    this.collectionsError$ = this.store.select(selectCollectionsError);
+    this.collectionId$ = this.store.select(selectNavigationCollectionId);
     this.chartTypes = this.initializeChartTypes(this.statistics.length);
   }
 
   ngOnInit(): void {
+    // Subscribe to error state
+    this.collectionsError$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(error => {
+        if (error) {
+          console.error('Collections error:', error);
+        }
+      });
+
+    this.route.params
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(params => {
+        this.collectionId = params['id'];
+        if (this.collectionId) {
+          this.store.dispatch(NavigationActions.setCurrentCollectionId({ collectionId: this.collectionId }));
+          this.loadCollectionData(this.collectionId);
+        }
+      });
     this.loadChartData();
-    console.log('----------------------------test1----------------------------')
+    console.log('Collection-dashboard component initialized with NgRx');
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+    if (this.routeSub) {
+      this.routeSub.unsubscribe();
+    }
+  }
+
+  toggleActive() {
+    this.additionalChartTypes[10] = 'bar' as ChartType;
+    this.renderAdditionalCharts();
+    this.isActive = true;
+    this.isActive3 = true;
+  }
+
+  toggleActive2() {
+    this.isActive2 = !this.isActive2;
+  }
+
+  toggleActive3() {
+    this.isActive3 = !this.isActive3;
   }
 
   initializeChartTypes(count: number): ChartType[] {
-    const availableTypes: (keyof ChartTypeRegistry)[] = ['line', 'bar', 'pie', 'doughnut', 'polarArea'];
     const types: ChartType[] = [];
     for (let i = 0; i < count; i++) {
-      types.push(availableTypes[i % availableTypes.length]);
+      types.push('bar');
     }
     return types;
   }
 
-  loadChartData() {
-    this.route.parent?.params.subscribe((params: { [key: string]: string }) => {
-      this.collectionId = params['id'];
+  loadCollectionData(collectionId: string): void {
+    // Mock data for now
+    const mockCollection = this.generateMockCollection(collectionId);
+    console.log('Loaded collection data:', mockCollection);
+  }
 
-      // Load specimens data for the given collection
-      this.projetservice.func_get_SpecimenByCollection(this.collectionId).subscribe({
-        next: (collection: any) => {
-          this.specimens = collection;
-          const Statistics = ['genre', 'famille', 'pays', 'ville', 'departement', 'epitheteSpecifique', 'lieu', 'nomScientifique', 'dateCreation'];
+  generateMockCollection(collectionId: string): any {
+    return {
+      id: collectionId,
+      name: `Collection ${collectionId}`,
+      description: `Mock collection ${collectionId}`,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+  }
 
+  generateMockSpecimens(): any[] {
+    return [
+      {
+        id: 1,
+        nomScientifique: 'Rosa canina',
+        famille: 'Rosaceae',
+        genre: 'Rosa',
+        epitheteSpecifique: 'canina',
+        pays: 'France',
+        ville: 'Paris',
+        departement: 'Paris',
+        localisation: 'Jardin des Plantes',
+        dateRecolte: '2023-06-15',
+        annotations: [
+          { libelle: 'Model1', classe: 'Species' },
+          { libelle: 'Model2', classe: 'Genus' }
+        ]
+      },
+      {
+        id: 2,
+        nomScientifique: 'Quercus robur',
+        famille: 'Fagaceae',
+        genre: 'Quercus',
+        epitheteSpecifique: 'robur',
+        pays: 'France',
+        ville: 'Lyon',
+        departement: 'Rhône',
+        localisation: 'Parc de la Tête d\'Or',
+        dateRecolte: '2023-07-20',
+        annotations: [
+          { libelle: 'Model1', classe: 'Species' },
+          { libelle: 'Model2', classe: 'Species' }
+        ]
+      }
+    ];
+  }
 
-          // Process main statistics charts
-          Statistics.forEach((statistic, index) => {
-            let count: { [key: string]: number } = {};
-
-            this.specimens.forEach((specimen: { [key: string]: string }) => {
-              let value = specimen[statistic]; // Adjust based on your data structure
-              /************/
-              this.specimensl.add(specimen);
-              /************/
-              if (statistic === 'dateCreation' && value) {
-                value = this.extractYear(value);
-              }
-              this.countOccurrences(value, count);
-            });
-
-            const countArray = Object.entries(count).map(([key, value]) => ({ label: key, value }));
-            /*************************/
-            this.specimens_l = Array.from(this.specimensl);
-            console.log('this.specimens', this.specimens_l)
-            this.confusionMatrices = this.generateConfusionMatrices(this.specimens_l);
-            console.log('confusionMatrices', this.confusionMatrices)
-            /*************************/
-            if (statistic === 'dateCreation') {
-              // Sort by value first
-              countArray.sort((a, b) => b.value - a.value);
-
-              // Slice the top 30 items
-              const top30 = countArray.slice(0, 30);
-
-              // Sort top30 by label
-              top30.sort((a, b) => a.label.localeCompare(b.label));
-
-              const other = countArray.slice(30);
-              const otherCount = other.reduce((acc, curr) => acc + curr.value, 0);
-
-              const labels = top30.map(item => item.label);
-              const realdata = top30.map(item => item.value);
-              const colordata = this.generateRandomColors(labels.length);
-
-              if (other.length > 0) {
-                labels.push('Other');
-                realdata.push(otherCount);
-                colordata.push('#CCCCCC');
-              }
-
-              const chartLabel = this.getChartLabel(statistic);
-              this.chartData.push({ labels, realdata, colordata, chartLabel });
-            } else {
-              countArray.sort((a, b) => b.value - a.value);
-
-              const top7 = countArray.slice(0, 30);
-              const other = countArray.slice(30);
-              const otherCount = other.reduce((acc, curr) => acc + curr.value, 0);
-
-              const labels = top7.map(item => item.label);
-              const realdata = top7.map(item => item.value);
-              const colordata = this.generateRandomColors(labels.length);
-
-              if (other.length > 0) {
-                labels.push('Other');
-                realdata.push(otherCount);
-                colordata.push('#CCCCCC');
-              }
-
-              const chartLabel = this.getChartLabel(statistic);
-              this.chartData.push({ labels, realdata, colordata, chartLabel });
-            }
-          });
-
-          // Process additional charts for labels
-          this.projetservice.func_get_SpecimenByCollection(this.collectionId).subscribe((specimens: any) => {
-            const libelleCount: { [key: string]: { [key: string]: number } } = {};
-
-            specimens.forEach((specimen: { annotations: { classe: string, libelle: string }[] }) => {
-              specimen.annotations.forEach(annotation => {
-                const { libelle, classe } = annotation;
-                if (!libelleCount[libelle]) {
-                  libelleCount[libelle] = {};
-                }
-                if (libelleCount[libelle][classe]) {
-                  libelleCount[libelle][classe]++;
-                } else {
-                  libelleCount[libelle][classe] = 1;
-                }
-              });
-            });
-
-            Object.keys(libelleCount).forEach(libelle => {
-              const count = libelleCount[libelle];
-              const labels = Object.keys(count);
-              const realdata = Object.values(count);
-              const colordata = this.generateRandomColors(labels.length);
-
-              this.additionalChartData.push({
-                libelle,
-                labels,
-                realdata,
-                colordata,
-                chartLabel: `${libelle} Classes`
-              });
-
-              this.additionalChartTypes.push('bar'); // Default chart type for additional charts
-            });
-
-            // Render all charts once data is loaded
-            this.renderCharts();
-            this.renderAdditionalCharts();
-          });
-        },
-        error: (err) => {
-          this.errorMessage = err.message;
-        }
-      });
+  loadChartData(): void {
+    // Mock data for charts
+    const mockSpecimens = this.generateMockSpecimens();
+    
+    this.chartData = this.statistics.map(statistic => {
+      const labels = [...new Set(mockSpecimens.map(specimen => specimen[statistic.toLowerCase()] || 'Unknown'))];
+      const realdata = labels.map(label => 
+        mockSpecimens.filter(specimen => (specimen[statistic.toLowerCase()] || 'Unknown') === label).length
+      );
+      const colordata = labels.map(() => `rgba(${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)}, 0.6)`);
+      
+      return {
+        labels,
+        realdata,
+        colordata,
+        chartLabel: statistic
+      };
     });
-  }
 
-  extractYear(dateStr: string): string {
-    const match = dateStr.match(/^\d{4}/);
-    if (match) {
-      return match[0];
-    }
-    if (dateStr.length === 4) {
-      return dateStr;
-    }
-    return '';
-  }
-
-  countOccurrences(item: string, counter: { [key: string]: number }) {
-    if (item === "") {
-      return;
-    }
-    if (counter[item]) {
-      counter[item]++;
-    } else {
-      counter[item] = 1;
-    }
-  }
-
-  generateRandomColor(): string {
-    return '#' + Math.floor(Math.random() * 16777215).toString(16);
-  }
-
-  generateRandomColors(count: number): string[] {
-    const colors: string[] = [];
-    for (let i = 0; i < count; i++) {
-      colors.push(this.generateRandomColor());
-    }
-    return colors;
-  }
-
-  updateChartType(event: any, index: number) {
-    this.chartTypes[index] = event.target.value as ChartType;
     this.renderCharts();
   }
 
-  updateAdditionalChartType(event: any, index: number) {
-    this.additionalChartTypes[index] = event.target.value as ChartType;
-    this.renderAdditionalCharts();
-  }
-
-  renderCharts() {
-    this.currentCharts.forEach(chart => chart.destroy());
-    this.currentCharts = [];
-
-    this.chartData.forEach((data, index) => {
-      const chartId = 'chart' + (index + 1);
-      const chart = new Chart(chartId, {
-        type: this.chartTypes[index],
-        data: {
-          labels: data.labels,
-          datasets: [{
-            label: data.chartLabel,
-            data: data.realdata,
-            backgroundColor: data.colordata,
-          }]
-        },
-        options: {
-          animation: {
-            duration: 1000,
-            easing: 'easeInOutQuad',
-          },
-          plugins: {
-            legend: {
-              display: true,
-              align: 'start',
-              position: 'top',
-              labels: {
-                boxWidth: 9,
-                padding: 0.5,
-                font: {
-                  size: 9,
-                }
-              }
-            }
-          },
-          scales: this.chartTypes[index] !== 'pie' && this.chartTypes[index] !== 'doughnut' && this.chartTypes[index] !== 'polarArea' ? {
-            y: {
-              beginAtZero: true
-            },
-            x: {
-              display: index !== 7 && index !== 5 // Hide X axis for the 8th and 6th chart
-            }
-          } : undefined
-        }
-      });
-
-      this.currentCharts.push(chart);
-    });
-  }
-
-  renderAdditionalCharts() {
+  renderCharts(): void {
     try {
       // Destroy any existing charts
-      this.additionalCharts.forEach(chart => chart.destroy());
-      this.additionalCharts = [];
+      this.currentCharts.forEach(chart => chart.destroy());
+      this.currentCharts = [];
 
-      // Loop through the additional chart data and render each chart
-      this.additionalChartData.forEach((data, index) => {
+      // Loop through the chart data and render each chart
+      this.chartData.forEach((data, index) => {
         try {
-          const chartId = 'additionalChart' + (index + 1);
-          const chartType = this.additionalChartTypes[index] || 'bar'; // Ensure default type is set
+          const chartId = 'chart' + (index + 1);
+          const chartType = this.chartTypes[index] || 'bar';
 
           const chart = new Chart(chartId, {
             type: chartType,
@@ -392,11 +289,79 @@ export class CollectionDashboardComponent implements OnInit {
             }
           });
 
-          this.additionalCharts.push(chart);
+          this.currentCharts.push(chart);
         } catch (error) {
           console.error(`Error rendering chart ${index + 1}:`, error);
         }
       });
+    } catch (error) {
+      console.error('Error in renderCharts method:', error);
+    }
+  }
+
+  renderAdditionalCharts(): void {
+    try {
+      // Destroy any existing charts
+      if (this.additionalCharts) {
+        this.additionalCharts.forEach((chart: any) => chart.destroy());
+        this.additionalCharts = [];
+      }
+
+      // Loop through the additional chart data and render each chart
+      if (this.additionalChartData) {
+        this.additionalChartData.forEach((data: any, index: number) => {
+          try {
+            const chartId = 'additionalChart' + (index + 1);
+            const chartType = this.additionalChartTypes?.[index] || 'bar';
+
+            const chart = new Chart(chartId, {
+              type: chartType,
+              data: {
+                labels: data.labels,
+                datasets: [{
+                  label: data.chartLabel,
+                  data: data.realdata,
+                  backgroundColor: data.colordata,
+                }]
+              },
+              options: {
+                animation: {
+                  duration: 1000,
+                  easing: 'easeInOutQuad',
+                },
+                plugins: {
+                  legend: {
+                    display: true,
+                    align: 'start',
+                    position: 'top',
+                    labels: {
+                      boxWidth: 9,
+                      padding: 0.5,
+                      font: {
+                        size: 9,
+                      }
+                    }
+                  }
+                },
+                scales: chartType !== 'pie' && chartType !== 'doughnut' && chartType !== 'polarArea' ? {
+                  y: {
+                    beginAtZero: true
+                  },
+                  x: {
+                    display: true
+                  }
+                } : undefined
+              }
+            });
+
+            if (this.additionalCharts) {
+              this.additionalCharts.push(chart);
+            }
+          } catch (error) {
+            console.error(`Error rendering chart ${index + 1}:`, error);
+          }
+        });
+      }
 
       this.isLoad = false;
     } catch (error) {
@@ -404,9 +369,7 @@ export class CollectionDashboardComponent implements OnInit {
     }
   }
 
-
   getChartLabel(statistic: string): string {
-    // Convertir le nom de la statistique en un label de graphique convivial
     return statistic.charAt(0).toUpperCase() + statistic.slice(1);
   }
 
@@ -414,8 +377,6 @@ export class CollectionDashboardComponent implements OnInit {
     return chartType === 'bar' || chartType === 'line';
   }
 
-
-  /*********************************************************************************/
   getUniqueModels(specimens: any[]): string[] {
     const models = new Set<string>();
     specimens.forEach(specimen => {
@@ -432,9 +393,9 @@ export class CollectionDashboardComponent implements OnInit {
     // Get unique classes for both models
     const uniqueClasses1 = new Set<string>();
     const uniqueClasses2 = new Set<string>();
-    const classCounts1 = new Map<string, number>(); // Count for each class in model1
-    const classCounts2 = new Map<string, number>(); // Count for each class in model2
-    let totalSpecimensWithBothAnnotations = 0; // Total specimens with both annotations
+    const classCounts1 = new Map<string, number>();
+    const classCounts2 = new Map<string, number>();
+    let totalSpecimensWithBothAnnotations = 0;
 
     // First pass: Collect unique classes and counts, and count specimens with both annotations
     specimens.forEach(specimen => {
@@ -490,7 +451,7 @@ export class CollectionDashboardComponent implements OnInit {
     uniqueClasses1.forEach(classe1 => {
       uniqueClasses2.forEach(classe2 => {
         const count = matrix[classe1][classe2];
-        const total = totalSpecimensWithBothAnnotations || 1; // Avoid division by zero
+        const total = totalSpecimensWithBothAnnotations || 1;
         matrix[classe1][classe2] = parseFloat((count / total * 100).toFixed(2));
       });
     });
@@ -518,39 +479,26 @@ export class CollectionDashboardComponent implements OnInit {
   }
 
   getKeysOfFirstDictionary(obj: Record<string, Record<string, number>>): string[] {
-    // Obtenir les clés de l'objet principal
     const keys = Object.keys(obj);
 
-    // Vérifier si l'objet contient au moins une clé
     if (keys.length === 0) {
-      return []; // Retourner un tableau vide si l'objet est vide
+      return [];
     }
 
-    // Obtenir la première clé de l'objet principal
     const firstKey = keys[0];
-
-    // Obtenir le dictionnaire associé à la première clé
     const firstDictionary = obj[firstKey];
-
-    // Obtenir les clés du premier dictionnaire et les trier par ordre alphabétique
     const dictionaryKeys = Object.keys(firstDictionary).sort();
 
     return dictionaryKeys;
   }
 
   getValuesSortedByKey(clas: Record<string, any>): any[] {
-    // Obtenir les clés du dictionnaire
     const keys = Object.keys(clas);
-
-    // Trier les clés par ordre alphabétique
     keys.sort();
-
-    // Obtenir les valeurs correspondant aux clés triées
     const sortedValues = keys.map(key => clas[key]);
     return sortedValues;
   }
 
-  // Méthode pour générer une couleur aléatoire en format rgba
   getRandomColorM(): string {
     const r = Math.floor(Math.random() * 256);
     const g = Math.floor(Math.random() * 256);
@@ -558,24 +506,33 @@ export class CollectionDashboardComponent implements OnInit {
     return `rgba(${r}, ${g}, ${b},`;
   }
 
-  // Méthode pour obtenir une clé unique basée sur les deux clés
   getUniqueKey(matrixKey: string, modelKey: string): string {
     return `${matrixKey}-${modelKey}`;
   }
 
-  // Méthode pour obtenir la couleur de fond en fonction des deux clés et de la valeur
   getBackgroundColor(matrixKey: string, modelKey: string, val: number): string {
     const uniqueKey = this.getUniqueKey(matrixKey, modelKey);
 
-    // Si la couleur n'est pas encore définie pour cette combinaison de clés, en créer une nouvelle
     if (!this.matrixColors[uniqueKey]) {
       this.matrixColors[uniqueKey] = this.getRandomColorM();
     }
 
     const baseColor = this.matrixColors[uniqueKey];
-    const alpha = val / 100; // Convertir le pourcentage en alpha
-    return `${baseColor}${alpha})`; // Retourne la couleur au format rgba
+    const alpha = val / 100;
+    return `${baseColor}${alpha})`;
   }
-  /*********************************************************************************/
 
+  updateChartType(event: Event, index: number): void {
+    const target = event.target as HTMLSelectElement;
+    const newType = target.value as ChartType;
+    this.chartTypes[index] = newType;
+    this.renderCharts();
+  }
+
+  updateAdditionalChartType(event: Event, index: number): void {
+    const target = event.target as HTMLSelectElement;
+    const newType = target.value as ChartType;
+    this.additionalChartTypes[index] = newType;
+    this.renderAdditionalCharts();
+  }
 }

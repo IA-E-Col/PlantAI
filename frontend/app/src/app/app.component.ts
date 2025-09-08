@@ -5,12 +5,13 @@ import {ReactiveFormsModule} from "@angular/forms";
 import {LoginComponent} from "./components/login/login.component";
 import {HttpClientModule} from "@angular/common/http";
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { GlobalErrorNotificationComponent } from './components/global-error-notification/global-error-notification.component';
 
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, RouterOutlet ,RouterLink, RouterLinkActive, ReactiveFormsModule, LoginComponent ,HttpClientModule, FontAwesomeModule  ],
+  imports: [CommonModule, RouterOutlet ,RouterLink, RouterLinkActive, ReactiveFormsModule, LoginComponent ,HttpClientModule, FontAwesomeModule, GlobalErrorNotificationComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css',
 

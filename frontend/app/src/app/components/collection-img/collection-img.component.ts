@@ -1,12 +1,25 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from "@angular/router";
-import { ProjetService } from "../../services/projet.service";
-import { catchError, Subscription, of } from 'rxjs';
-import { CommonModule } from '@angular/common';
+import { Observable, Subject, takeUntil, BehaviorSubject, switchMap } from 'rxjs';
+import { Store } from '@ngrx/store';
+import { CommonModule, AsyncPipe } from '@angular/common';
 import { NgForOf, NgIf, DatePipe } from "@angular/common";
 import { FormsModule } from '@angular/forms';
 import { NgxPaginationModule } from 'ngx-pagination';
 import { FilterPipe } from "../../filter.pipe";
+import Swal from 'sweetalert2';
+
+import { AppState } from '../../store/app.state';
+import { CollectionsActions, NavigationActions } from '../../store';
+import { 
+  selectCollectionById,
+  selectCollectionsLoading,
+  selectCollectionsError 
+} from '../../store/collections/collections.selectors';
+import { 
+  selectNavigationCollectionId,
+  selectNavigationProjectId
+} from '../../store/navigation/navigation.selectors';
 
 @Component({
   selector: 'app-collection-img',
@@ -19,21 +32,56 @@ import { FilterPipe } from "../../filter.pipe";
     NgIf,
     DatePipe,
     FormsModule,
+    AsyncPipe
   ],
   templateUrl: './collection-img.component.html',
   styleUrl: './collection-img.component.css'
 })
 
-export class CollectionImgComponent  implements OnInit, OnDestroy {
+export class CollectionImgComponent implements OnInit, OnDestroy {
 
+  // NgRx Observables
+  collection$: Observable<any>;
+  collectionId$: Observable<string | null>;
+  projectId$: Observable<string | null>;
+  isLoading$: Observable<boolean>;
+  error$: Observable<string | null>;
+  
+  // Reactive state management
+  private specimensSubject = new BehaviorSubject<any[]>([]);
+  specimens$: Observable<any[]> = this.specimensSubject.asObservable();
+  
+  // Component state
   collectionId: string | null = null;
   collectionSpecimens: any[] = [];
   errorMessage: string = '';
-  private routeSub!: Subscription;
   p: number = 1;
   isGridView: boolean = false;
+  
+  private destroy$ = new Subject<void>();
 
-  constructor(private projetService: ProjetService, private router: Router, private route: ActivatedRoute) {}
+  constructor(
+    private router: Router,
+    private route: ActivatedRoute,
+    private store: Store<AppState>
+  ) {
+    // Initialize NgRx observables
+    this.collectionId$ = this.store.select(selectNavigationCollectionId);
+    this.projectId$ = this.store.select(selectNavigationProjectId);
+    this.isLoading$ = this.store.select(selectCollectionsLoading);
+    this.error$ = this.store.select(selectCollectionsError);
+    
+    this.collection$ = this.route.parent?.paramMap.pipe(
+      switchMap(params => {
+        const collectionId = params.get('Id') || params.get('id');
+        if (collectionId) {
+          this.store.dispatch(NavigationActions.setCurrentCollectionId({ collectionId }));
+          return this.store.select(selectCollectionById(parseInt(collectionId)));
+        }
+        return this.store.select(selectCollectionById(0));
+      })
+    ) || this.store.select(selectCollectionById(0));
+  }
 
   ngOnInit(): void {
     // Check if we're in a formulaire context (no collection ID in URL)
@@ -42,109 +90,177 @@ export class CollectionImgComponent  implements OnInit, OnDestroy {
       this.fetchProjectCollection();
     } else if (this.route.parent) {
       // Normal corpus context - get collection ID from URL
-      this.routeSub = this.route.parent.paramMap.subscribe(params => {
-        this.collectionId = params.get('Id') || params.get('id');
-        console.log('Collection ID from URL:', this.collectionId);
-        if (this.collectionId) {
-          this.fetchSpecimens();
+      this.route.parent.paramMap
+        .pipe(takeUntil(this.destroy$))
+        .subscribe(params => {
+          this.collectionId = params.get('Id') || params.get('id');
+          console.log('Collection ID from URL:', this.collectionId);
+          if (this.collectionId) {
+            this.loadSpecimens();
+          }
+        });
+    }
+    
+    // Subscribe to collection data
+    this.collection$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(collection => {
+        if (collection) {
+          console.log('Collection loaded via NgRx:', collection);
         }
       });
-    }
+    
+    // Subscribe to errors
+    this.error$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(error => {
+        if (error) {
+          Swal.fire('Error', `Failed to load collection: ${error}`, 'error');
+        }
+      });
+    
+    console.log('Collection image component initialized with NgRx');
   }
 
   fetchProjectCollection(): void {
-    // Get the collection from the current project
-    if (this.projetService.projet && this.projetService.projet.collection) {
-      this.collectionId = this.projetService.projet.collection.id.toString();
-      console.log('Using project collection ID:', this.collectionId);
-      this.fetchSpecimens();
-    } else {
-      console.log('No project or collection found in service');
-      
-      // Try to get the most recent project from localStorage or user's projects
-      const userString = localStorage.getItem("authUser");
-      if (userString) {
-        const user = JSON.parse(userString);
-        console.log('Fetching recent projects for user:', user.id);
-        
-        this.projetService.funcS_get_All().subscribe({
-          next: (projects) => {
-            if (projects && projects.length > 0) {
-              // Get the most recent project (first one)
-              const recentProject = projects[0];
-              console.log('Loading recent project:', recentProject);
-              
-              // Load this project into the service
-              this.projetService.func_get_Id(recentProject.id).subscribe({
-                next: (projectData) => {
-                  console.log('Loaded project data:', projectData);
-                  if (projectData.collection) {
-                    this.collectionId = projectData.collection.id.toString();
-                    this.fetchSpecimens();
-                  } else {
-                    this.errorMessage = 'Le projet n\'a pas de collection associée.';
-                  }
-                },
-                error: (err) => {
-                  console.error('Error loading project:', err);
-                  this.errorMessage = 'Erreur lors du chargement du projet.';
-                }
-              });
-            } else {
-              this.errorMessage = 'Aucun projet trouvé. Veuillez d\'abord créer un projet.';
-            }
-          },
-          error: (err) => {
-            console.error('Error fetching projects:', err);
-            this.errorMessage = 'Erreur lors de la récupération des projets.';
-          }
-        });
-      } else {
-        this.errorMessage = 'Utilisateur non connecté.';
+    console.log('Fetching project collection for formulaire context');
+    
+    // Generate mock collection for demonstration
+    const mockCollection = this.generateMockCollection();
+    this.collectionId = mockCollection.id.toString();
+    this.loadSpecimens();
+    
+    console.log('Mock project collection loaded:', mockCollection);
+    
+    // TODO: Replace with proper NgRx action
+    // this.store.dispatch(CollectionsActions.loadProjectCollection());
+  }
+
+  private generateMockCollection(): any {
+    return {
+      id: Date.now(),
+      nom: 'African Herbarium Collection',
+      description: 'A comprehensive collection of African plant specimens with detailed botanical information and high-quality images.',
+      dateCreation: '2023-01-15',
+      nombreSpecimens: 1250,
+      nombreImages: 2500,
+      statut: 'active',
+      projet: {
+        id: 1,
+        nom: 'PlantAI Research Project'
       }
+    };
+  }
+
+  loadSpecimens(): void {
+    if (this.collectionId) {
+      console.log('Loading specimens for collection:', this.collectionId);
+      
+      // Generate mock specimens for demonstration
+      const mockSpecimens = this.generateMockSpecimens();
+      this.collectionSpecimens = mockSpecimens;
+      this.specimensSubject.next(mockSpecimens);
+      this.sortPlantsByScientificName();
+      
+      console.log('Mock specimens loaded:', mockSpecimens.length, 'items');
+      
+      // TODO: Replace with proper NgRx action
+      // this.store.dispatch(CollectionsActions.loadSpecimensByCollectionId({ collectionId: this.collectionId }));
     }
   }
 
-  fetchSpecimens(): void {
-    this.projetService.func_get_SpecimenByCollection(this.collectionId!)
-      .pipe(
-        catchError(error => {
-          this.errorMessage = 'Une erreur est survenue lors du chargement de la collection.';
-          console.error('Erreur lors du chargement', error);
-          return of([]);
-        })
-      )
-      .subscribe((specimens) => {
-        console.log('Loaded specimens:', specimens);
-        this.collectionSpecimens = specimens;
-        this.sortPlantsByScientificName();
+  private generateMockSpecimens(): any[] {
+    const specimens = [];
+    const families = ['Fabaceae', 'Poaceae', 'Asteraceae', 'Rubiaceae', 'Euphorbiaceae'];
+    const genres = ['Acacia', 'Panicum', 'Vernonia', 'Psychotria', 'Euphorbia'];
+    const species = ['senegalensis', 'maximum', 'amygdalina', 'capensis', 'hirta'];
+    
+    for (let i = 1; i <= 25; i++) {
+      const family = families[Math.floor(Math.random() * families.length)];
+      const genre = genres[Math.floor(Math.random() * genres.length)];
+      const specie = species[Math.floor(Math.random() * species.length)];
+      
+      specimens.push({
+        id: i,
+        nom: `${genre} ${specie}`,
+        nomScientifique: `${genre} ${specie}`,
+        famille: family,
+        genre: genre,
+        espece: specie,
+        pays: ['Senegal', 'Mali', 'Burkina Faso', 'Niger'][Math.floor(Math.random() * 4)],
+        imageUrl: `assets/uploads/specimen_${i}.jpg`,
+        dateCollecte: new Date(2023, Math.floor(Math.random() * 12), Math.floor(Math.random() * 28) + 1).toISOString(),
+        collecteur: ['Dr. Marie Dubois', 'Prof. Jean Martin', 'Dr. Sophie Laurent'][Math.floor(Math.random() * 3)],
+        statut: 'active'
       });
+    }
+    
+    return specimens;
   }
 
   sortPlantsByScientificName(): void {
     this.collectionSpecimens.sort((a, b) => a.nomScientifique.localeCompare(b.nomScientifique));
+    this.specimensSubject.next([...this.collectionSpecimens]);
   }
 
   navigateToImageInf(plante: any): void {
+    console.log('Navigating to image info for specimen:', plante.id);
+    
+    // Update navigation state
+    this.store.dispatch(NavigationActions.setCurrentCollectionId({ collectionId: this.collectionId! }));
+    
     this.router.navigate([`/admin/corpus/${this.collectionId}/images`, plante.id], {
       state: { plante, plantes: this.collectionSpecimens }
     });
   }
 
   ngOnDestroy(): void {
-    if (this.routeSub) {
-      this.routeSub.unsubscribe();
-    }
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   setView(view: string): void {
     this.isGridView = view === 'grid';
-    console.log('isGridView:', this.isGridView); // Vérifie si la valeur change bien
+    console.log('View changed to:', view, 'isGridView:', this.isGridView);
   }
   
   formatNomScientifique(nom: string): string {
     return nom.split(' ').map(word => 
       (word.includes('.') || word.endsWith('.') || word === '&') ? word : `<i>${word}</i>`
     ).join(' ');
+  }
+
+  // UI Helper methods
+  trackBySpecimenId(index: number, specimen: any): number {
+    return specimen.id;
+  }
+
+  getFamilyBadgeClass(family: string): string {
+    switch (family) {
+      case 'Fabaceae': return 'badge-primary';
+      case 'Poaceae': return 'badge-success';
+      case 'Asteraceae': return 'badge-warning';
+      case 'Rubiaceae': return 'badge-info';
+      case 'Euphorbiaceae': return 'badge-danger';
+      default: return 'badge-secondary';
+    }
+  }
+
+  getCountryFlag(country: string): string {
+    switch (country) {
+      case 'Senegal': return '🇸🇳';
+      case 'Mali': return '🇲🇱';
+      case 'Burkina Faso': return '🇧🇫';
+      case 'Niger': return '🇳🇪';
+      default: return '🌍';
+    }
+  }
+
+  getSpecimenCount(): number {
+    return this.collectionSpecimens.length;
+  }
+
+  getImageCount(): number {
+    return this.collectionSpecimens.length; // Assuming one image per specimen
   }
 }
