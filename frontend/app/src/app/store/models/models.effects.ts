@@ -23,7 +23,7 @@ export class ModelsEffects {
     this.actions$.pipe(
       ofType(ModelsActions.loadModels),
       switchMap(() =>
-        this.http.get<Model[]>(`${this.apiUrl}/models`).pipe(
+        this.http.get<Model[]>(`${this.apiUrl}/models/`).pipe(
           map(models => ModelsActions.loadModelsSuccess({ models })),
           catchError(error => of(ModelsActions.loadModelsFailure({ 
             error: error.message || 'Failed to load models' 
@@ -52,7 +52,7 @@ export class ModelsEffects {
     this.actions$.pipe(
       ofType(ModelsActions.createModel),
       switchMap(action =>
-        this.http.post<Model>(`${this.apiUrl}/models`, action.model).pipe(
+        this.http.post<Model>(`${this.apiUrl}/models/addModel`, action.model).pipe(
           map(model => ModelsActions.createModelSuccess({ model })),
           catchError(error => of(ModelsActions.createModelFailure({ 
             error: error.message || 'Failed to create model' 

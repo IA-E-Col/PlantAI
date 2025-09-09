@@ -51,7 +51,6 @@ import { ErrorNotification } from '../../store/error/error.state';
         [class]="'notification-' + notification.type"
         [class.notification-dismissible]="notification.dismissible"
         [class.notification-auto-dismiss]="notification.autoDismiss"
-        [@slideInOut]
       >
         <div class="notification-content">
           <div class="notification-icon">
