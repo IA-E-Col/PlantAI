@@ -16,7 +16,8 @@ export const modelsReducer = createReducer(
     ...state,
     models,
     isLoading: false,
-    error: null
+    error: null,
+    lastFetched: Date.now()
   })),
 
   on(ModelsActions.loadModelsFailure, (state, { error }) => ({

@@ -99,6 +99,7 @@ export interface ModelsState {
   // UI State
   isLoading: boolean;
   error: string | null;
+  lastFetched: number | null;
   
   // Filter State
   filters: {
@@ -122,5 +123,6 @@ export const initialModelsState: ModelsState = {
   modelMetrics: {},
   isLoading: false,
   error: null,
+  lastFetched: null,
   filters: {},
 };

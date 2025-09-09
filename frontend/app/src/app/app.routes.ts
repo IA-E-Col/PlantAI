@@ -1,52 +1,52 @@
 import { Routes } from '@angular/router';
-import { ScoresComponent } from './components/scores/scores.component';
-import { ProjetsComponent } from "./components/projets/projets.component";
-import { ModeleComponent } from "./components/modele/modele.component";
-import { ClasseComponent } from "./components/classe/classe.component";
-import { ExplorerComponent } from "./components/explorer/explorer.component";
-import { CollectionComponent } from "./components/collection/collection.component";
-import { NewprojetComponent } from "./components/newprojet/newprojet.component";
-import { ProjbarComponent } from "./components/projbar/projbar.component";
-import { ProjetInfComponent } from "./components/projet-inf/projet-inf.component";
 import { LoginComponent } from "./components/login/login.component";
-import { AdminTemplateComponent } from "./components/admin-template/admin-template.component";
 import { authenticationGuard } from "./guards/authentication.guard";
-import { AjouterCollabComponent } from "./components/ajouter-collab/ajouter-collab.component";
-import { GererprojetComponent } from "./components/gererprojet/gererprojet.component";
-import { SupprimerCollabComponent } from "./components/supprimer-collab/supprimer-collab.component";
-import { FormulaireComponent } from "./components/formulaire/formulaire.component";
-import { ImageInfComponent } from './components/image-inf/image-inf.component';
-import { AnnotationDetailComponent } from "./components/annotation-detail/annotation-detail.component";
-import { ProfileComponent } from "./components/profile/profile.component";
-import { DashboardComponent } from "./components/dashboard/dashboard.component";
-import { DatasetInfComponent } from "./components/dataset-inf/dataset-inf.component";
-import { DatasetModelComponent } from "./components/dataset-model/dataset-model.component";
-import { DashboardDatasetComponent } from "./components/dashboard-dataset/dashboard-dataset.component";
-import { UpdateModeleComponent } from "./components/update-modele/update-modele.component";
-
-import {ActivateAccountComponent} from "./components/activate-account/activate-account.component";
-import { ExportannotationComponent } from './components/exportannotation/exportannotation.component';
-
-import { ExplorerDetailsComponent } from "./components/explorer-details/explorer-details.component";
-import { CollectionInfoComponent } from "./components/collection-info/collection-info.component";
-import { CollectionImgComponent } from "./components/collection-img/collection-img.component";
-import { CollectionDashboardComponent } from "./components/collection-dashboard/collection-dashboard.component";
-import { GererCollectionComponent } from "./components/gerer-collection/gerer-collection.component";
-import { ValidationHistoryComponent } from "./components/validation-history/validation-history.component";
-
-import { ListImagesComponent } from "./components/list-images/list-images.component";
-import { ImagesFormComponent } from "./components/images-form/images-form.component";
-import { CollectionInfComponent } from "./components/collection-inf/collection-inf.component";
-import { CreateCollectionModalComponent } from "./components/create-collection-modal/create-collection-modal.component";
-import { ModelInfComponent } from "./components/model-inf/model-inf.component";
-import { GererDatasetComponent } from "./components/gerer-dataset/gerer-dataset.component";
-import { DatasetPredictionComponent } from "./components/dataset-prediction/dataset-prediction.component";
-import { CreeModeleComponent } from "./components/cree-modele/cree-modele.component";
-import { CreeCollectionComponent } from "./components/cree-collection/cree-collection.component";
-import { AnnotationValidationComponent } from './components/annotation-validation/annotation-validation.component';
+import { ActivateAccountComponent } from './components/activate-account/activate-account.component';
 import { SignUpComponent } from './components/sign-up/sign-up.component';
+
+// Lazy load components using dynamic imports
+const loadAdminTemplate = () => import('./components/admin-template/admin-template.component').then(m => m.AdminTemplateComponent);
+const loadProjets = () => import('./components/projets/projets.component').then(m => m.ProjetsComponent);
+const loadModele = () => import('./components/modele/modele.component').then(m => m.ModeleComponent);
+const loadClasse = () => import('./components/classe/classe.component').then(m => m.ClasseComponent);
+const loadExplorer = () => import('./components/explorer/explorer.component').then(m => m.ExplorerComponent);
+const loadCollection = () => import('./components/collection/collection.component').then(m => m.CollectionComponent);
+const loadNewprojet = () => import('./components/newprojet/newprojet.component').then(m => m.NewprojetComponent);
+const loadProjbar = () => import('./components/projbar/projbar.component').then(m => m.ProjbarComponent);
+const loadProjetInf = () => import('./components/projet-inf/projet-inf.component').then(m => m.ProjetInfComponent);
+const loadAjouterCollab = () => import('./components/ajouter-collab/ajouter-collab.component').then(m => m.AjouterCollabComponent);
+const loadGererprojet = () => import('./components/gererprojet/gererprojet.component').then(m => m.GererprojetComponent);
+const loadSupprimerCollab = () => import('./components/supprimer-collab/supprimer-collab.component').then(m => m.SupprimerCollabComponent);
+const loadFormulaire = () => import('./components/formulaire/formulaire.component').then(m => m.FormulaireComponent);
+const loadImageInf = () => import('./components/image-inf/image-inf.component').then(m => m.ImageInfComponent);
+const loadAnnotationDetail = () => import('./components/annotation-detail/annotation-detail.component').then(m => m.AnnotationDetailComponent);
+const loadProfile = () => import('./components/profile/profile.component').then(m => m.ProfileComponent);
+const loadDashboard = () => import('./components/dashboard/dashboard.component').then(m => m.DashboardComponent);
+const loadDatasetInf = () => import('./components/dataset-inf/dataset-inf.component').then(m => m.DatasetInfComponent);
+const loadDatasetModel = () => import('./components/dataset-model/dataset-model.component').then(m => m.DatasetModelComponent);
+const loadDashboardDataset = () => import('./components/dashboard-dataset/dashboard-dataset.component').then(m => m.DashboardDatasetComponent);
+const loadUpdateModele = () => import('./components/update-modele/update-modele.component').then(m => m.UpdateModeleComponent);
+const loadCreeModele = () => import('./components/cree-modele/cree-modele.component').then(m => m.CreeModeleComponent);
+const loadCreeCollection = () => import('./components/cree-collection/cree-collection.component').then(m => m.CreeCollectionComponent);
+const loadCreateCollectionModal = () => import('./components/create-collection-modal/create-collection-modal.component').then(m => m.CreateCollectionModalComponent);
+const loadExplorerDetails = () => import('./components/explorer-details/explorer-details.component').then(m => m.ExplorerDetailsComponent);
+const loadCollectionInfo = () => import('./components/collection-info/collection-info.component').then(m => m.CollectionInfoComponent);
+const loadCollectionImg = () => import('./components/collection-img/collection-img.component').then(m => m.CollectionImgComponent);
+const loadCollectionDashboard = () => import('./components/collection-dashboard/collection-dashboard.component').then(m => m.CollectionDashboardComponent);
+const loadGererCollection = () => import('./components/gerer-collection/gerer-collection.component').then(m => m.GererCollectionComponent);
+const loadValidationHistory = () => import('./components/validation-history/validation-history.component').then(m => m.ValidationHistoryComponent);
+const loadListImages = () => import('./components/list-images/list-images.component').then(m => m.ListImagesComponent);
+const loadImagesForm = () => import('./components/images-form/images-form.component').then(m => m.ImagesFormComponent);
+const loadCollectionInf = () => import('./components/collection-inf/collection-inf.component').then(m => m.CollectionInfComponent);
+const loadModelInf = () => import('./components/model-inf/model-inf.component').then(m => m.ModelInfComponent);
+const loadGererDataset = () => import('./components/gerer-dataset/gerer-dataset.component').then(m => m.GererDatasetComponent);
+const loadDatasetPrediction = () => import('./components/dataset-prediction/dataset-prediction.component').then(m => m.DatasetPredictionComponent);
+const loadAnnotationValidation = () => import('./components/annotation-validation/annotation-validation.component').then(m => m.AnnotationValidationComponent);
+const loadScores = () => import('./components/scores/scores.component').then(m => m.ScoresComponent);
+const loadExportannotation = () => import('./components/exportannotation/exportannotation.component').then(m => m.ExportannotationComponent);
+
 export const routes: Routes = [
-  {path : 'signup', component: SignUpComponent},
+  { path: 'signup', component: SignUpComponent },
   { path: 'login', component: LoginComponent },
   { path: '', component: LoginComponent },
   {
@@ -54,99 +54,100 @@ export const routes: Routes = [
     component: ActivateAccountComponent
   },
   {
-    path: 'admin', component: AdminTemplateComponent, canActivate: [authenticationGuard], children: [
-      { path: 'projects', component: ProjetsComponent },
-      { path: 'profile', component: ProfileComponent },
-      { path: 'validation-history', component: ValidationHistoryComponent },
-      { path: '', component: ProjetsComponent },
-      { path: 'corpus', component: ExplorerComponent },
-      { path: 'datasets', component: CollectionComponent },
-      { path: 'models', component: ModeleComponent ,},
-      { path: 'classes', component: ClasseComponent },
+    path: 'admin', 
+    loadComponent: loadAdminTemplate, 
+    canActivate: [authenticationGuard], 
+    children: [
+      { path: 'projects', loadComponent: loadProjets },
+      { path: 'profile', loadComponent: loadProfile },
+      { path: 'validation-history', loadComponent: loadValidationHistory },
+      { path: '', loadComponent: loadProjets },
+      { path: 'corpus', loadComponent: loadExplorer },
+      { path: 'datasets', loadComponent: loadCollection },
+      { path: 'models', loadComponent: loadModele },
+      { path: 'classes', loadComponent: loadClasse },
       {
-        path: 'formulaire', component: FormulaireComponent,
+        path: 'formulaire', 
+        loadComponent: loadFormulaire,
         children: [
           {
             path: 'images-form/:id',
-            component: ImagesFormComponent,
+            loadComponent: loadImagesForm,
             children: [
-              { path: 'cree', component: CreateCollectionModalComponent },
+              { path: 'cree', loadComponent: loadCreateCollectionModal },
             ]
           },
-          { path: '', component: CollectionImgComponent }
+          { path: '', loadComponent: loadCollectionImg }
         ]
-      }, // modifier
-      { path: 'newprojet', component: NewprojetComponent },
-      { path: 'image-inf/:catalogueCode', component: ImageInfComponent },
-      { path: 'datasets/:datasetId/images/:specimenId/models/:modelId/annotation-validation', component: AnnotationDetailComponent },
-      { path: 'NewModel', component: CreeModeleComponent },
-      { path: 'UpdateMode', component: UpdateModeleComponent },
-      { path: 'NewCollection', component: CreeCollectionComponent },
+      },
+      { path: 'newprojet', loadComponent: loadNewprojet },
+      { path: 'image-inf/:catalogueCode', loadComponent: loadImageInf },
+      { path: 'datasets/:datasetId/images/:specimenId/models/:modelId/annotation-validation', loadComponent: loadAnnotationDetail },
+      { path: 'NewModel', loadComponent: loadCreeModele },
+      { path: 'UpdateMode', loadComponent: loadUpdateModele },
+      { path: 'NewCollection', loadComponent: loadCreeCollection },
       {
         path: 'projects/:id',
-        component: ProjbarComponent,
+        loadComponent: loadProjbar,
         children: [
-          { path: 'datasets', component: CollectionComponent },
-          { path: 'dashboard', component: DashboardComponent },
-          { path: 'details', component: ProjetInfComponent },
-          { path: 'edit', component: GererprojetComponent },
-          { path: 'collaborators', component: AjouterCollabComponent },
-          { path: 'supprcollab/:id', component: SupprimerCollabComponent },
-          { path: '', component: ProjetInfComponent },
+          { path: 'datasets', loadComponent: loadCollection },
+          { path: 'dashboard', loadComponent: loadDashboard },
+          { path: 'details', loadComponent: loadProjetInf },
+          { path: 'edit', loadComponent: loadGererprojet },
+          { path: 'collaborators', loadComponent: loadAjouterCollab },
+          { path: 'supprcollab/:id', loadComponent: loadSupprimerCollab },
+          { path: '', loadComponent: loadProjetInf },
         ]
       },
       {
         path: 'models/:id/model-library',
-        component: ModelInfComponent,
+        loadComponent: loadModelInf,
       },
       {
         path: 'models/:id/edit',
-        component: UpdateModeleComponent,
+        loadComponent: loadUpdateModele,
       },
       {
         path: 'corpus/:id',
-        component: ExplorerDetailsComponent,
+        loadComponent: loadExplorerDetails,
         children: [
-          { path: 'details', component: CollectionInfoComponent },
-          { path: 'images', component: CollectionImgComponent },
-          { path: 'dashboard', component: CollectionDashboardComponent },
-          { path: 'edit', component: GererCollectionComponent },
-          {path: 'images/:catalogueCode', component: ImageInfComponent}
+          { path: 'details', loadComponent: loadCollectionInfo },
+          { path: 'images', loadComponent: loadCollectionImg },
+          { path: 'dashboard', loadComponent: loadCollectionDashboard },
+          { path: 'edit', loadComponent: loadGererCollection },
+          { path: 'images/:catalogueCode', loadComponent: loadImageInf }
         ]
       },
       {
         path: 'list_images/:id',
-        component: ListImagesComponent,
+        loadComponent: loadListImages,
         children: [
-          { path: 'cree', component: CreateCollectionModalComponent },
+          { path: 'cree', loadComponent: loadCreateCollectionModal },
         ]
       },
       {
         path: 'datasets/:id',
-        component: CollectionInfComponent,
+        loadComponent: loadCollectionInf,
         children: [
-        //  { path: '', component: ListImagesComponent, data: { afficherBouton: false } },
-          { path: 'images', component: ListImagesComponent, data: { afficherBouton: false } },
-          { path: 'dashboard', component: DashboardDatasetComponent },
-          { path: 'details', component: DatasetInfComponent },
-          { path: 'models', component: DatasetModelComponent },
-          { path: 'edit', component: GererDatasetComponent },
-          { path: 'validation_history', component: ValidationHistoryComponent },
-          { path: 'images/:catalogueCode', component: ImageInfComponent },
-          { path: 'import_export_annotation', component: ExportannotationComponent },
+          { path: 'images', loadComponent: loadListImages, data: { afficherBouton: false } },
+          { path: 'dashboard', loadComponent: loadDashboardDataset },
+          { path: 'details', loadComponent: loadDatasetInf },
+          { path: 'models', loadComponent: loadDatasetModel },
+          { path: 'edit', loadComponent: loadGererDataset },
+          { path: 'validation_history', loadComponent: loadValidationHistory },
+          { path: 'images/:catalogueCode', loadComponent: loadImageInf },
+          { path: 'import_export_annotation', loadComponent: loadExportannotation },
           {
-            path: 'datasetPrediction/:modelId', component: DatasetPredictionComponent,
+            path: 'datasetPrediction/:modelId', 
+            loadComponent: loadDatasetPrediction,
             children: [
-              { path: 'cree', component: CreateCollectionModalComponent },
+              { path: 'cree', loadComponent: loadCreateCollectionModal },
             ]
           },
         ]
       },
-      { path: 'annotation_validation', component: AnnotationValidationComponent },
-      { path: 'scores', component: ScoresComponent },
-      
-
+      { path: 'annotation_validation', loadComponent: loadAnnotationValidation },
+      { path: 'scores', loadComponent: loadScores },
     ]
-  },  
-
+  },
 ];

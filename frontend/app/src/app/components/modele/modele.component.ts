@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
 import { NgForOf, AsyncPipe } from "@angular/common";
 import { FormsModule } from '@angular/forms';
 import { FilterPipe } from "../../filter.pipe";
@@ -24,6 +24,7 @@ import {
 @Component({
   selector: 'app-modele',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,
     FilterPipe,
@@ -59,6 +60,10 @@ export class ModeleComponent implements OnInit, OnDestroy {
   error$: Observable<string | null>;
   sortedFilteredModels$: Observable<any[]>;
   
+  // Optimized template properties
+  paginatedModels: any[] = [];
+  shouldShowData: boolean = false;
+  
   private destroy$ = new Subject<void>();
 
   constructor(
@@ -91,6 +96,20 @@ export class ModeleComponent implements OnInit, OnDestroy {
         if (error) {
           Swal.fire('Error', `Failed to load models: ${error}`, 'error');
         }
+      });
+
+    // Subscribe to sorted and filtered models for optimized template rendering
+    this.sortedFilteredModels$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(models => {
+        this.paginatedModels = this.paginateModels(models, this.p, 5);
+      });
+
+    // Subscribe to loading and error states for optimized template rendering
+    combineLatest([this.isLoading$, this.error$])
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(([isLoading, error]) => {
+        this.shouldShowData = !isLoading && !error;
       });
   }
 
@@ -236,6 +255,11 @@ export class ModeleComponent implements OnInit, OnDestroy {
   trackByModelId(index: number, model: any): number {
     return model.id;
   }
-  
-  
+
+  // Optimized pagination method
+  private paginateModels(models: any[], currentPage: number, itemsPerPage: number): any[] {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    return models.slice(startIndex, endIndex);
+  }
 }

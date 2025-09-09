@@ -7,17 +7,10 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faInfo, faInfoCircle, faPlay } from '@fortawesome/free-solid-svg-icons';
 import { Observable, Subject, takeUntil, switchMap } from 'rxjs';
 import { Store } from '@ngrx/store';
-
 import { AppState } from '../../store/app.state';
-import { ModelsActions, NavigationActions } from '../../store';
-import { 
-  selectAllModels,
-  selectModelsLoading,
-  selectModelsError 
-} from '../../store/models/models.selectors';
-import { 
-  selectNavigationDatasetId
-} from '../../store/navigation/navigation.selectors';
+import { NavigationActions } from '../../store';
+import { selectNavigationDatasetId } from '../../store/navigation/navigation.selectors';
+import { SharedDataService } from '../../services/shared-data.service';
 
 
 @Component({
@@ -73,18 +66,19 @@ export class ImageInfComponent implements OnInit, OnDestroy, AfterViewChecked {
   constructor(
     private route: ActivatedRoute, 
     private router: Router,
-    private store: Store<AppState>
+    private store: Store<AppState>,
+    private sharedDataService: SharedDataService
   ) {
-    // Initialize NgRx observables
-    this.models$ = this.store.select(selectAllModels);
-    this.modelsLoading$ = this.store.select(selectModelsLoading);
-    this.modelsError$ = this.store.select(selectModelsError);
+    // Initialize NgRx observables using shared service
+    this.models$ = this.sharedDataService.getModels();
+    this.modelsLoading$ = this.sharedDataService.getModelsLoading();
+    this.modelsError$ = this.sharedDataService.getModelsError();
     this.datasetId$ = this.store.select(selectNavigationDatasetId);
   }
 
   ngOnInit(): void {
-    // Load models through NgRx
-    this.store.dispatch(ModelsActions.loadModels());
+    // Load models using smart loading (only if not already loaded)
+    this.sharedDataService.loadModelsIfNeeded();
     
     // Subscribe to models for local use
     this.models$

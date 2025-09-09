@@ -48,8 +48,8 @@
       </tr>
       
       <!-- Data Rows -->
-      <tr *ngFor="let m of (sortedFilteredModels$ | async) || [] | filterByName: searchtext: 'name' | paginate: { itemsPerPage: 5, currentPage: p }; trackBy: trackByModelId" 
-          [style.display]="(isLoading$ | async) || (error$ | async) ? 'none' : 'table-row'">
+      <tr *ngFor="let m of paginatedModels; trackBy: trackByModelId" 
+          [style.display]="shouldShowData ? 'table-row' : 'none'">
         <td>{{ m.name }}</td>
         <td><strong>{{ m.categorie }}</strong></td>
         <td>

@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
 import { NgForOf, AsyncPipe } from "@angular/common";
 import { FormsModule } from '@angular/forms';
 import { FilterPipe } from "../../filter.pipe";
@@ -14,23 +14,14 @@ import { CreeModeleComponent } from '../cree-modele/cree-modele.component';
 import { faEdit, faEye, faSearch, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { Store } from '@ngrx/store';
-
 import { AppState } from '../../store/app.state';
-import { ModelsActions, CollectionsActions, NavigationActions } from '../../store';
-import { 
-  selectAllModels,
-  selectModelsLoading,
-  selectModelsError 
-} from '../../store/models/models.selectors';
-import { 
-  selectAllCollections,
-  selectCollectionsLoading,
-  selectCollectionsError 
-} from '../../store/collections/collections.selectors';
+import { NavigationActions, CollectionsActions, ModelsActions } from '../../store';
+import { SharedDataService } from '../../services/shared-data.service';
 
 @Component({
   selector: 'app-classe',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,
     FilterPipe,
@@ -98,22 +89,23 @@ export class ClasseComponent implements OnInit, OnDestroy {
   constructor(
     private dialogRef: MatDialog,
     private router: Router,
-    private store: Store<AppState>
+    private store: Store<AppState>,
+    private sharedDataService: SharedDataService
   ) {
-    // Initialize observables from NgRx store
-    this.models$ = this.store.select(selectAllModels);
-    this.modelsLoading$ = this.store.select(selectModelsLoading);
-    this.modelsError$ = this.store.select(selectModelsError);
+    // Initialize observables using shared service
+    this.models$ = this.sharedDataService.getModels();
+    this.modelsLoading$ = this.sharedDataService.getModelsLoading();
+    this.modelsError$ = this.sharedDataService.getModelsError();
     
-    this.collections$ = this.store.select(selectAllCollections);
-    this.collectionsLoading$ = this.store.select(selectCollectionsLoading);
-    this.collectionsError$ = this.store.select(selectCollectionsError);
+    this.collections$ = this.sharedDataService.getCollections();
+    this.collectionsLoading$ = this.sharedDataService.getCollectionsLoading();
+    this.collectionsError$ = this.sharedDataService.getCollectionsError();
   }
 
   ngOnInit(): void {
-    // Load data through NgRx
-    this.store.dispatch(CollectionsActions.loadCollections());
-    this.store.dispatch(ModelsActions.loadModels());
+    // Load data using smart loading (only if not already loaded)
+    this.sharedDataService.loadCollectionsIfNeeded();
+    this.sharedDataService.loadModelsIfNeeded();
     
     // Subscribe to errors for user feedback
     this.collectionsError$
