@@ -16,7 +16,8 @@ import { CollectionsActions, NavigationActions } from '../../store';
 import { 
   selectDatasetById,
   selectCollectionsLoading,
-  selectCollectionsError 
+  selectCollectionsError,
+  selectSpecimensByDataset
 } from '../../store/collections/collections.selectors';
 import { 
   selectNavigationDatasetId,
@@ -211,50 +212,46 @@ export class DatasetPredictionComponent implements OnInit, OnDestroy {
     if (this.IdDataset) {
       console.log('Loading dataset for prediction:', this.IdDataset);
       
-      // Generate mock dataset with specimens for demonstration
-      const mockDataset = this.generateMockDatasetWithSpecimens();
-      this.Dataset = mockDataset;
-      this.Specimens = mockDataset.specimens;
-      this.Old_Specimens = [...this.Specimens];
-      this.filteredSpecimensSubject.next(this.Specimens);
+      // Load real dataset using NgRx action
+      this.store.dispatch(CollectionsActions.loadDataset({ datasetId: parseInt(this.IdDataset) }));
       
-      this.isCalculated = true;
-      this.extractFilterOptions();
+      // Subscribe to real dataset data
+      this.store.select(selectDatasetById(parseInt(this.IdDataset)))
+        .pipe(takeUntil(this.destroy$))
+        .subscribe(dataset => {
+          if (dataset) {
+            this.Dataset = dataset;
+            this.Specimens = dataset.specimens || [];
+            this.Old_Specimens = [...this.Specimens];
+            this.filteredSpecimensSubject.next(this.Specimens);
+            
+            this.isCalculated = true;
+            this.extractFilterOptions();
+            
+            console.log('Real dataset loaded for prediction:', dataset);
+          }
+        });
       
-      console.log('Mock dataset loaded for prediction:', mockDataset);
+      // Also load specimens by dataset
+      this.store.dispatch(CollectionsActions.loadSpecimensByDataset({ datasetId: this.IdDataset }));
       
-      // TODO: Replace with proper NgRx action
-      // this.store.dispatch(CollectionsActions.loadDatasetById({ datasetId: this.IdDataset }));
+      // Subscribe to specimens data
+      this.store.select(selectSpecimensByDataset(this.IdDataset))
+        .pipe(takeUntil(this.destroy$))
+        .subscribe(specimens => {
+          if (specimens && specimens.length > 0) {
+            this.Specimens = specimens;
+            this.Old_Specimens = [...this.Specimens];
+            this.filteredSpecimensSubject.next(this.Specimens);
+            this.extractFilterOptions();
+            
+            console.log('Real specimens loaded for prediction:', specimens.length);
+          }
+        });
     }
   }
 
-  private generateMockDatasetWithSpecimens(): any {
-    const specimens = [];
-    const families = ['Fabaceae', 'Poaceae', 'Asteraceae', 'Rubiaceae', 'Euphorbiaceae'];
-    const genres = ['Acacia', 'Panicum', 'Vernonia', 'Psychotria', 'Euphorbia'];
-    
-    for (let i = 1; i <= 50; i++) {
-      specimens.push({
-        id: i,
-        nom: `Specimen ${i}`,
-        famille: families[Math.floor(Math.random() * families.length)],
-        genre: genres[Math.floor(Math.random() * genres.length)],
-        espece: `species_${i}`,
-        pays: ['Senegal', 'Mali', 'Burkina Faso', 'Niger'][Math.floor(Math.random() * 4)],
-        imageUrl: `assets/uploads/specimen_${i}.jpg`,
-        accuracy: Math.random() * 0.4 + 0.6, // 60-100% accuracy
-        validation: ['VALIDATED', 'PENDING', 'REJECTED'][Math.floor(Math.random() * 3)]
-      });
-    }
-    
-    return {
-      id: this.IdDataset,
-      name: 'African Plant Dataset',
-      description: 'Dataset for prediction analysis',
-      specimens: specimens,
-      numberOfSpecimen: specimens.length
-    };
-  }
+  // Mock dataset generation method removed - now using real API calls
 
   private extractFilterOptions(): void {
     this.familyOptions = [];

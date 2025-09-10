@@ -46,7 +46,7 @@ export const addCollectionFailure = createAction(
 
 export const updateCollection = createAction(
   '[Collections] Update Collection',
-  props<{ collectionId: number; changes: Partial<Collection> }>()
+  props<{ collectionId: number; changes: Collection }>()
 );
 
 export const updateCollectionSuccess = createAction(
@@ -131,7 +131,8 @@ export const setCurrentSpecimen = createAction(
 
 // Dataset Actions
 export const loadDatasets = createAction(
-  '[Collections] Load Datasets'
+  '[Collections] Load Datasets',
+  props<{ projectId: number }>()
 );
 
 export const loadDatasetsSuccess = createAction(
@@ -174,6 +175,22 @@ export const addSpecimensToDatasetFailure = createAction(
   props<{ error: string }>()
 );
 
+// Dataset Creation Actions
+export const createDataset = createAction(
+  '[Collections] Create Dataset',
+  props<{ projectId: number; dataset: Omit<Dataset, 'id'> }>()
+);
+
+export const createDatasetSuccess = createAction(
+  '[Collections] Create Dataset Success',
+  props<{ dataset: Dataset }>()
+);
+
+export const createDatasetFailure = createAction(
+  '[Collections] Create Dataset Failure',
+  props<{ error: string }>()
+);
+
 // Filter Actions
 export const setFilters = createAction(
   '[Collections] Set Filters',
@@ -198,3 +215,36 @@ export const setCurrentDataset = createAction(
 export const clearError = createAction(
   '[Collections] Clear Error'
 );
+
+// CSV Import Actions
+export const importCsv = createAction(
+  '[Collections] Import CSV',
+  props<{ collectionId: number; file: File }>()
+);
+
+export const importCsvSuccess = createAction(
+  '[Collections] Import CSV Success',
+  props<{ collectionId: number; specimenCount: number }>()
+);
+
+export const importCsvFailure = createAction(
+  '[Collections] Import CSV Failure',
+  props<{ error: string }>()
+);
+
+// Annotation Import Actions
+export const importAnnotations = createAction(
+  '[Collections] Import Annotations',
+  props<{ file: File; format: string; datasetId: number }>()
+);
+
+export const importAnnotationsSuccess = createAction(
+  '[Collections] Import Annotations Success',
+  props<{ annotations: any[] }>()
+);
+
+export const importAnnotationsFailure = createAction(
+  '[Collections] Import Annotations Failure',
+  props<{ error: string }>()
+);
+

@@ -11,10 +11,14 @@ import { Observable, Subject, takeUntil } from 'rxjs';
 import { Store } from '@ngrx/store';
 
 import { AppState } from '../../store/app.state';
-import { NavigationActions } from '../../store';
+import { NavigationActions, CollectionsActions } from '../../store';
 import { 
   selectNavigationDatasetId
 } from '../../store/navigation/navigation.selectors';
+import { 
+  selectCollectionsLoading,
+  selectCollectionsError
+} from '../../store/collections/collections.selectors';
 @Component({
   selector: 'app-import-annotations',
   standalone: true,
@@ -39,6 +43,7 @@ export class ImportAnnotationsComponent implements OnInit, OnDestroy {
     
     // NgRx Observables
     datasetId$: Observable<string | null>;
+    collectionsError$: Observable<string | null>;
     
     private destroy$ = new Subject<void>();
   
@@ -51,6 +56,7 @@ export class ImportAnnotationsComponent implements OnInit, OnDestroy {
     ) {
       // Initialize NgRx observables
       this.datasetId$ = this.store.select(selectNavigationDatasetId);
+      this.collectionsError$ = this.store.select(selectCollectionsError);
     }
   
     ngOnInit() {
@@ -92,82 +98,55 @@ export class ImportAnnotationsComponent implements OnInit, OnDestroy {
       
       const format = this.annotationFormGroup.get('selectedFormatName')?.value;
       
-      console.log('Starting import process:', {
+      console.log('Starting real annotation import process:', {
         format,
         fileName: this.file.name,
         fileSize: this.file.size,
         datasetId: this.data.datasetId
       });
       
-      // For now, simulate import process with mock data
-      this.simulateImportProcess(format);
-      
-      // TODO: Replace with proper NgRx annotation import action
-      // const formData = new FormData();
-      // formData.append('file', this.file);
-      // formData.append('format', format);
-      // formData.append('datasetId', this.data.datasetId);
-      // this.store.dispatch(AnnotationsActions.importAnnotations({ 
-      //   formData, 
-      //   datasetId: this.data.datasetId 
-      // }));
-    }
-    
-    private simulateImportProcess(format: string): void {
       // Show loading
       Swal.fire({
         title: 'Importing Annotations',
-        text: `Processing ${format} file...`,
+        text: 'Please wait while we import your annotation data...',
         allowOutsideClick: false,
         didOpen: () => {
           Swal.showLoading();
         }
       });
       
-      // Simulate processing time
-      setTimeout(() => {
-        const mockImportedAnnotations = this.generateMockImportedAnnotations(format);
-        
-        Swal.fire({
-          title: 'Import Successful!',
-          text: `Successfully imported ${mockImportedAnnotations.length} annotations`,
-          icon: 'success',
-          timer: 2000
+      // Use real NgRx annotation import action
+      this.store.dispatch(CollectionsActions.importAnnotations({ 
+        file: this.file,
+        format: format,
+        datasetId: parseInt(this.data.datasetId)
+      }));
+      
+      // Subscribe to import success
+      this.store.select(selectCollectionsLoading)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe(isLoading => {
+          if (!isLoading) {
+            this.collectionsError$
+              .pipe(takeUntil(this.destroy$))
+              .subscribe((error: string | null) => {
+                if (!error) {
+                  Swal.fire({
+                    title: 'Annotations Imported!',
+                    text: 'Your annotation data has been imported successfully.',
+                    icon: 'success',
+                    timer: 3000
+                  }).then(() => {
+                    this.dialogRef.close();
+                  });
+                } else {
+                  Swal.fire('Error', 'Failed to import annotations: ' + error, 'error');
+                }
+              });
+          }
         });
-        
-        console.log('Mock import completed:', mockImportedAnnotations);
-        this.dialogRef.close(mockImportedAnnotations);
-      }, 2000);
     }
     
-    private generateMockImportedAnnotations(format: string): any[] {
-      const baseAnnotations = [
-        {
-          id: Date.now() + 1,
-          libelle: 'Imported Leaf Classification',
-          valeurPrecision: 0.95,
-          valeurPredite: 'Oval',
-          media: { id: 1, url: 'assets/uploads/leaf1.jpg' },
-          model: { id: 1, name: 'LeafNet Imported' },
-          dataset: { id: this.data.datasetId },
-          importedAt: new Date().toISOString(),
-          format: format
-        },
-        {
-          id: Date.now() + 2,
-          libelle: 'Imported Flower Color',
-          valeurPrecision: 0.89,
-          valeurPredite: 'Red',
-          media: { id: 2, url: 'assets/uploads/flower1.jpg' },
-          model: { id: 2, name: 'FlowerNet Imported' },
-          dataset: { id: this.data.datasetId },
-          importedAt: new Date().toISOString(),
-          format: format
-        }
-      ];
-      
-      return baseAnnotations;
-    }
   formats = [
     {
       name: "JSON",

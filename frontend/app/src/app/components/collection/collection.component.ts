@@ -258,29 +258,35 @@ export class CollectionComponent implements OnInit, OnDestroy {
   }
 
   private loadGlobalDatasets(): void {
-    console.log('Loading global datasets');
+    console.log('Loading global datasets from real API');
     
-    // Generate mock global datasets
-    const mockProjects = this.generateMockProjects();
-    const mockCollections = this.generateMockGlobalCollections();
+    // Load real data using NgRx actions
+    this.store.dispatch(ProjectsActions.loadProjects({ userId: 1 })); // TODO: Get real user ID
+    this.store.dispatch(CollectionsActions.loadCollections());
     
-    this.projets = mockProjects;
-    this.collections = mockCollections;
-    this.projectsSubject.next(mockProjects);
-    this.collectionsSubject.next(mockCollections);
+    // Subscribe to real data from store
+    this.store.select(selectAllProjects)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(projects => {
+        if (projects && projects.length > 0) {
+          this.projets = projects;
+          this.projectsSubject.next(projects);
+          console.log('Real projects loaded:', projects.length);
+        }
+      });
     
-    // Calculate statistics
-    this.calculateGlobalStats();
-    
-    console.log('Global datasets loaded:', {
-      projects: mockProjects.length,
-      collections: mockCollections.length,
-      stats: { nbr_c: this.nbr_c, nbr_s: this.nbr_s }
-    });
-    
-    // TODO: Replace with proper NgRx actions
-    // this.store.dispatch(ProjectsActions.loadAllUserProjects());
-    // this.store.dispatch(CollectionsActions.loadAllCollections());
+    this.store.select(selectAllCollections)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(collections => {
+        if (collections && collections.length > 0) {
+          this.collections = collections;
+          this.collectionsSubject.next(collections);
+          console.log('Real collections loaded:', collections.length);
+          
+          // Calculate statistics from real data
+          this.calculateGlobalStats();
+        }
+      });
   }
 
   private loadProjectCollections(): void {
@@ -293,22 +299,31 @@ export class CollectionComponent implements OnInit, OnDestroy {
         if (this.projectId) {
           this.store.dispatch(NavigationActions.setCurrentProjectId({ projectId: this.projectId }));
           
-          // Generate mock project collection
-          const mockCollection = this.generateMockProjectCollection(this.projectId);
-          this.collections = [mockCollection];
-          this.collectionsSubject.next([mockCollection]);
+          // Load real collections using NgRx action
+          this.store.dispatch(CollectionsActions.loadCollections());
           
-          // Calculate statistics
-          this.calculateProjectStats(mockCollection);
-          
-          console.log('Project collection loaded:', {
-            projectId: this.projectId,
-            collection: mockCollection,
-            stats: { nbr_c: this.nbr_c, nbr_s: this.nbr_s }
-          });
-          
-          // TODO: Replace with proper NgRx actions
-          // this.store.dispatch(CollectionsActions.loadProjectCollection({ projectId: this.projectId }));
+          // Subscribe to real collections data
+          this.store.select(selectAllCollections)
+            .pipe(takeUntil(this.destroy$))
+            .subscribe(collections => {
+              if (collections && collections.length > 0) {
+                this.collections = collections;
+                this.collectionsSubject.next(collections);
+                
+                // Calculate statistics from real data
+                this.calculateProjectStats(collections[0]); // Use first collection for stats
+                
+                console.log('Real project collections loaded:', {
+                  projectId: this.projectId,
+                  collections: collections.length,
+                  stats: { nbr_c: this.nbr_c, nbr_s: this.nbr_s }
+                });
+              } else {
+                console.log('No collections found for project:', this.projectId);
+                this.collections = [];
+                this.collectionsSubject.next([]);
+              }
+            });
         }
       });
   }
@@ -371,34 +386,7 @@ export class CollectionComponent implements OnInit, OnDestroy {
     ];
   }
 
-  private generateMockProjectCollection(projectId: string): any {
-    return {
-      id: parseInt(projectId),
-      nom: 'Project Collection',
-      description: 'Main collection for project specimens',
-      dateCreation: '2023-01-15',
-      numberOfSpecimen: 1250,
-      specimens: this.generateMockSpecimens(),
-      projet: { id: parseInt(projectId), nom: 'Current Project' }
-    };
-  }
-
-  private generateMockSpecimens(): any[] {
-    const specimens = [];
-    for (let i = 1; i <= 25; i++) {
-      specimens.push({
-        id: i,
-        nom: `Specimen ${i}`,
-        nomScientifique: `Species ${i}`,
-        famille: 'Fabaceae',
-        genre: 'Acacia',
-        espece: 'senegalensis',
-        pays: 'Senegal',
-        imageUrl: `assets/uploads/specimen_${i}.jpg`
-      });
-    }
-    return specimens;
-  }
+  // Mock data generation methods removed - now using real API calls
 
   private calculateGlobalStats(): void {
     this.nbr_c = this.collections.length;
@@ -429,23 +417,42 @@ export class CollectionComponent implements OnInit, OnDestroy {
       cancelButtonText: 'Cancel'
     }).then((result) => {
       if (result.isConfirmed) {
-        // Remove from local state
-        this.collections = this.collections.filter((collection: any) => collection.id !== c.id);
-        this.collectionsSubject.next([...this.collections]);
+        console.log('User confirmed deletion, calling backend API');
         
-        // Recalculate statistics
-        if (this.inProject) {
-          this.calculateProjectStats(this.collections[0] || { numberOfSpecimen: 0 });
-        } else {
-          this.calculateGlobalStats();
-        }
+        // Dispatch NgRx action to delete from backend
+        this.store.dispatch(CollectionsActions.deleteCollection({ collectionId: c.id }));
         
-        Swal.fire('Success', 'Collection deleted successfully', 'success');
-        
-        console.log('Collection deleted successfully');
-        
-        // TODO: Replace with proper NgRx action
-        // this.store.dispatch(CollectionsActions.deleteCollection({ collectionId: c.id }));
+        // Subscribe to delete success/failure
+        this.store.select(selectCollectionsLoading)
+          .pipe(takeUntil(this.destroy$))
+          .subscribe(isLoading => {
+            if (!isLoading) {
+              // Check if there's an error
+              this.store.select(selectCollectionsError)
+                .pipe(takeUntil(this.destroy$))
+                .subscribe(error => {
+                  if (!error) {
+                    // Success - remove from local state
+                    this.collections = this.collections.filter((collection: any) => collection.id !== c.id);
+                    this.collectionsSubject.next([...this.collections]);
+                    
+                    // Recalculate statistics
+                    if (this.inProject) {
+                      this.calculateProjectStats(this.collections[0] || { numberOfSpecimen: 0 });
+                    } else {
+                      this.calculateGlobalStats();
+                    }
+                    
+                    Swal.fire('Success', 'Collection deleted successfully', 'success');
+                    console.log('Collection deleted successfully from backend');
+                  } else {
+                    // Error - show error message
+                    Swal.fire('Error', `Failed to delete collection: ${error}`, 'error');
+                    console.error('Failed to delete collection:', error);
+                  }
+                });
+            }
+          });
       }
     });
   }

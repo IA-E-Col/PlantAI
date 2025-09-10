@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
+import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { map, switchMap, catchError, withLatestFrom, tap } from 'rxjs/operators';
 import { AppState } from '../app.state';
@@ -9,6 +10,13 @@ import { User, Collaborator, UserInvitation, UserStats } from './users.state';
 
 @Injectable()
 export class UserEffects {
+  private baseUrl = 'http://localhost:8080/api';
+
+  constructor(
+    private actions$: Actions,
+    private store: Store<AppState>,
+    private http: HttpClient
+  ) {}
 
   // Load Users Effect
   loadUsers$ = createEffect(() =>
@@ -17,17 +25,34 @@ export class UserEffects {
       switchMap(({ filters, page = 1, pageSize = 20 }) => {
         console.log('Loading users with filters:', { filters, page, pageSize });
         
-        // Generate mock users based on filters
-        const mockUsers = this.generateMockUsers(filters, page, pageSize);
-        
-        return of(UserActions.loadUsersSuccess({
-          users: mockUsers.users,
-          total: mockUsers.total,
-          page,
-          pageSize
-        }));
-      }),
-      catchError(error => of(UserActions.loadUsersFailure({ error: error.message })))
+        return this.http.get<User[]>(`${this.baseUrl}/users/`).pipe(
+          map((users) => {
+            // Apply client-side filtering if needed
+            let filteredUsers = users;
+            if (filters && filters.searchTerm) {
+              const searchTerm = filters.searchTerm.toLowerCase();
+              filteredUsers = users.filter(user => 
+                user.nom?.toLowerCase().includes(searchTerm) ||
+                user.prenom?.toLowerCase().includes(searchTerm) ||
+                user.email?.toLowerCase().includes(searchTerm)
+              );
+            }
+            
+            // Apply pagination
+            const startIndex = (page - 1) * pageSize;
+            const endIndex = startIndex + pageSize;
+            const paginatedUsers = filteredUsers.slice(startIndex, endIndex);
+            
+            return UserActions.loadUsersSuccess({
+              users: paginatedUsers,
+              total: filteredUsers.length,
+              page,
+              pageSize
+            });
+          }),
+          catchError(error => of(UserActions.loadUsersFailure({ error: error.message })))
+        );
+      })
     )
   );
 
@@ -38,12 +63,11 @@ export class UserEffects {
       switchMap(({ userId }) => {
         console.log('Loading user:', userId);
         
-        // Generate mock user
-        const mockUser = this.generateMockUser(userId);
-        
-        return of(UserActions.loadUserSuccess({ user: mockUser }));
-      }),
-      catchError(error => of(UserActions.loadUserFailure({ error: error.message })))
+        return this.http.get<User>(`${this.baseUrl}/users/get/${userId}`).pipe(
+          map((user) => UserActions.loadUserSuccess({ user })),
+          catchError(error => of(UserActions.loadUserFailure({ error: error.message })))
+        );
+      })
     )
   );
 
@@ -54,12 +78,11 @@ export class UserEffects {
       switchMap(({ user }) => {
         console.log('Creating user:', user);
         
-        // Generate mock created user
-        const mockCreatedUser = this.generateMockCreatedUser(user);
-        
-        return of(UserActions.createUserSuccess({ user: mockCreatedUser }));
-      }),
-      catchError(error => of(UserActions.createUserFailure({ error: error.message })))
+        return this.http.post<User>(`${this.baseUrl}/users/`, user).pipe(
+          map((createdUser) => UserActions.createUserSuccess({ user: createdUser })),
+          catchError(error => of(UserActions.createUserFailure({ error: error.message })))
+        );
+      })
     )
   );
 
@@ -70,12 +93,11 @@ export class UserEffects {
       switchMap(({ userId, updates }) => {
         console.log('Updating user:', { userId, updates });
         
-        // Generate mock updated user
-        const mockUpdatedUser = this.generateMockUpdatedUser(userId, updates);
-        
-        return of(UserActions.updateUserSuccess({ user: mockUpdatedUser }));
-      }),
-      catchError(error => of(UserActions.updateUserFailure({ error: error.message })))
+        return this.http.put<User>(`${this.baseUrl}/users/update/${userId}`, updates).pipe(
+          map((updatedUser) => UserActions.updateUserSuccess({ user: updatedUser })),
+          catchError(error => of(UserActions.updateUserFailure({ error: error.message })))
+        );
+      })
     )
   );
 
@@ -86,10 +108,11 @@ export class UserEffects {
       switchMap(({ userId }) => {
         console.log('Deleting user:', userId);
         
-        // Simulate successful deletion
-        return of(UserActions.deleteUserSuccess({ userId }));
-      }),
-      catchError(error => of(UserActions.deleteUserFailure({ error: error.message })))
+        return this.http.delete(`${this.baseUrl}/users/${userId}`).pipe(
+          map(() => UserActions.deleteUserSuccess({ userId })),
+          catchError(error => of(UserActions.deleteUserFailure({ error: error.message })))
+        );
+      })
     )
   );
 
@@ -100,44 +123,42 @@ export class UserEffects {
       switchMap(({ userId, enabled }) => {
         console.log('Toggling user status:', { userId, enabled });
         
-        // Generate mock updated user
-        const mockUpdatedUser = this.generateMockUpdatedUser(userId, { enabled });
-        
-        return of(UserActions.toggleUserStatusSuccess({ user: mockUpdatedUser }));
-      }),
-      catchError(error => of(UserActions.toggleUserStatusFailure({ error: error.message })))
+        return this.http.put<User>(`${this.baseUrl}/users/update/${userId}`, { enabled }).pipe(
+          map((updatedUser) => UserActions.toggleUserStatusSuccess({ user: updatedUser })),
+          catchError(error => of(UserActions.toggleUserStatusFailure({ error: error.message })))
+        );
+      })
     )
   );
 
-  // Load Collaborators Effect
+  // Load Collaborators Effect - TODO: Implement when backend endpoint is available
   loadCollaborators$ = createEffect(() =>
     this.actions$.pipe(
       ofType(UserActions.loadCollaborators),
       switchMap(({ projectId, filters }) => {
         console.log('Loading collaborators:', { projectId, filters });
         
-        // Generate mock collaborators
-        const mockCollaborators = this.generateMockCollaborators(projectId, filters);
+        // TODO: Replace with real API call when backend endpoint is available
+        // return this.http.get<Collaborator[]>(`${this.baseUrl}/projects/${projectId}/collaborators`).pipe(
+        //   map((collaborators) => UserActions.loadCollaboratorsSuccess({ collaborators })),
+        //   catchError(error => of(UserActions.loadCollaboratorsFailure({ error: error.message })))
+        // );
         
-        return of(UserActions.loadCollaboratorsSuccess({ collaborators: mockCollaborators }));
-      }),
-      catchError(error => of(UserActions.loadCollaboratorsFailure({ error: error.message })))
+        return of(UserActions.loadCollaboratorsFailure({ error: 'Collaborators API not implemented yet' }));
+      })
     )
   );
 
-  // Add Collaborator Effect
+  // Add Collaborator Effect - TODO: Implement when backend endpoint is available
   addCollaborator$ = createEffect(() =>
     this.actions$.pipe(
       ofType(UserActions.addCollaborator),
       switchMap(({ projectId, userId, role, permissions }) => {
         console.log('Adding collaborator:', { projectId, userId, role, permissions });
         
-        // Generate mock collaborator
-        const mockCollaborator = this.generateMockCollaborator(projectId, userId, role, permissions);
-        
-        return of(UserActions.addCollaboratorSuccess({ collaborator: mockCollaborator }));
-      }),
-      catchError(error => of(UserActions.addCollaboratorFailure({ error: error.message })))
+        // TODO: Replace with real API call when backend endpoint is available
+        return of(UserActions.addCollaboratorFailure({ error: 'Add collaborator API not implemented yet' }));
+      })
     )
   );
 
@@ -148,10 +169,8 @@ export class UserEffects {
       switchMap(({ collaboratorId, updates }) => {
         console.log('Updating collaborator:', { collaboratorId, updates });
         
-        // Generate mock updated collaborator
-        const mockUpdatedCollaborator = this.generateMockUpdatedCollaborator(collaboratorId, updates);
-        
-        return of(UserActions.updateCollaboratorSuccess({ collaborator: mockUpdatedCollaborator }));
+        // TODO: Replace with real API call when backend endpoint is available
+        return of(UserActions.updateCollaboratorFailure({ error: 'Update collaborator API not implemented yet' }));
       }),
       catchError(error => of(UserActions.updateCollaboratorFailure({ error: error.message })))
     )
@@ -178,10 +197,8 @@ export class UserEffects {
       switchMap(({ email, projectId, role, message }) => {
         console.log('Inviting user:', { email, projectId, role, message });
         
-        // Generate mock invitation
-        const mockInvitation = this.generateMockInvitation(email, projectId, role, message);
-        
-        return of(UserActions.inviteUserSuccess({ invitation: mockInvitation }));
+        // TODO: Replace with real API call when backend endpoint is available
+        return of(UserActions.inviteUserFailure({ error: 'Invite user API not implemented yet' }));
       }),
       catchError(error => of(UserActions.inviteUserFailure({ error: error.message })))
     )
@@ -194,10 +211,8 @@ export class UserEffects {
       switchMap(({ projectId }) => {
         console.log('Loading invitations:', projectId);
         
-        // Generate mock invitations
-        const mockInvitations = this.generateMockInvitations(projectId);
-        
-        return of(UserActions.loadInvitationsSuccess({ invitations: mockInvitations }));
+        // TODO: Replace with real API call when backend endpoint is available
+        return of(UserActions.loadInvitationsFailure({ error: 'Load invitations API not implemented yet' }));
       }),
       catchError(error => of(UserActions.loadInvitationsFailure({ error: error.message })))
     )
@@ -210,10 +225,8 @@ export class UserEffects {
       switchMap(({ token }) => {
         console.log('Accepting invitation:', token);
         
-        // Generate mock collaborator from invitation
-        const mockCollaborator = this.generateMockCollaboratorFromInvitation(token);
-        
-        return of(UserActions.acceptInvitationSuccess({ collaborator: mockCollaborator }));
+        // TODO: Replace with real API call when backend endpoint is available
+        return of(UserActions.acceptInvitationFailure({ error: 'Accept invitation API not implemented yet' }));
       }),
       catchError(error => of(UserActions.acceptInvitationFailure({ error: error.message })))
     )
@@ -254,10 +267,8 @@ export class UserEffects {
       switchMap(() => {
         console.log('Loading user stats');
         
-        // Generate mock user stats
-        const mockStats = this.generateMockUserStats();
-        
-        return of(UserActions.loadUserStatsSuccess({ stats: mockStats }));
+        // TODO: Replace with real API call when backend endpoint is available
+        return of(UserActions.loadUserStatsFailure({ error: 'User stats API not implemented yet' }));
       }),
       catchError(error => of(UserActions.loadUserStatsFailure({ error: error.message })))
     )
@@ -270,10 +281,8 @@ export class UserEffects {
       switchMap(({ userIds, updates }) => {
         console.log('Bulk updating users:', { userIds, updates });
         
-        // Generate mock bulk updated users
-        const mockUpdatedUsers = this.generateMockBulkUpdatedUsers(userIds, updates);
-        
-        return of(UserActions.bulkUpdateUsersSuccess({ users: mockUpdatedUsers }));
+        // TODO: Replace with real API call when backend endpoint is available
+        return of(UserActions.bulkUpdateUsersFailure({ error: 'Bulk update users API not implemented yet' }));
       }),
       catchError(error => of(UserActions.bulkUpdateUsersFailure({ error: error.message })))
     )
@@ -293,261 +302,5 @@ export class UserEffects {
     )
   );
 
-  constructor(
-    private actions$: Actions,
-    private store: Store<AppState>
-  ) {}
-
-  // Mock Data Generation Methods
-  private generateMockUsers(filters?: any, page: number = 1, pageSize: number = 20): { users: User[], total: number } {
-    const total = 85; // Mock total
-    const startIndex = (page - 1) * pageSize;
-    const endIndex = Math.min(startIndex + pageSize, total);
-    
-    const users: User[] = [];
-    const roles: Array<'ADMIN' | 'EXPERT' | 'AVANCE' | 'INTERMEDIAIRE' | 'DEBUTANT' | 'AMATEUR'> = 
-      ['ADMIN', 'EXPERT', 'AVANCE', 'INTERMEDIAIRE', 'DEBUTANT', 'AMATEUR'];
-    const expertises: Array<'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED' | 'EXPERT' | 'MASTER'> = 
-      ['BEGINNER', 'INTERMEDIATE', 'ADVANCED', 'EXPERT', 'MASTER'];
-    const institutions = ['IRD', 'CNRS', 'Université de Dakar', 'Université de Bamako', 'CIRAD'];
-    const specialites = ['Botanique', 'Écologie', 'Taxonomie', 'Conservation', 'Génétique'];
-    
-    for (let i = startIndex; i < endIndex; i++) {
-      const role = roles[Math.floor(Math.random() * roles.length)];
-      const expertise = expertises[Math.floor(Math.random() * expertises.length)];
-      const institution = institutions[Math.floor(Math.random() * institutions.length)];
-      const specialite = specialites[Math.floor(Math.random() * specialites.length)];
-      const enabled = Math.random() > 0.1; // 90% enabled
-      
-      users.push({
-        id: i + 1,
-        email: `user${i + 1}@example.com`,
-        nom: `User${i + 1}`,
-        prenom: `FirstName${i + 1}`,
-        role,
-        niveauExpertise: expertise,
-        enabled,
-        avatar: `assets/avatars/user_${i + 1}.jpg`,
-        bio: `Bio for user ${i + 1}`,
-        institution,
-        specialite,
-        dateInscription: new Date(Date.now() - Math.random() * 365 * 24 * 60 * 60 * 1000).toISOString(),
-        derniereConnexion: enabled ? new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000).toISOString() : undefined,
-        preferences: {
-          language: 'fr',
-          theme: Math.random() > 0.5 ? 'light' : 'dark',
-          notifications: true,
-          emailNotifications: true
-        },
-        statistiques: {
-          annotationsValidees: Math.floor(Math.random() * 100),
-          projetsCrees: Math.floor(Math.random() * 10),
-          contributions: Math.floor(Math.random() * 200),
-          score: Math.floor(Math.random() * 1000)
-        }
-      });
-    }
-    
-    return { users, total };
-  }
-
-  private generateMockUser(userId: number): User {
-    return {
-      id: userId,
-      email: `user${userId}@example.com`,
-      nom: `User${userId}`,
-      prenom: `FirstName${userId}`,
-      role: 'EXPERT',
-      niveauExpertise: 'ADVANCED',
-      enabled: true,
-      avatar: `assets/avatars/user_${userId}.jpg`,
-      bio: `Bio for user ${userId}`,
-      institution: 'IRD',
-      specialite: 'Botanique',
-      dateInscription: new Date().toISOString(),
-      derniereConnexion: new Date().toISOString(),
-      preferences: {
-        language: 'fr',
-        theme: 'light',
-        notifications: true,
-        emailNotifications: true
-      },
-      statistiques: {
-        annotationsValidees: 50,
-        projetsCrees: 5,
-        contributions: 100,
-        score: 750
-      }
-    };
-  }
-
-  private generateMockCreatedUser(user: any): User {
-    return {
-      ...user,
-      id: Date.now(),
-      dateInscription: new Date().toISOString(),
-      statistiques: {
-        annotationsValidees: 0,
-        projetsCrees: 0,
-        contributions: 0,
-        score: 0
-      }
-    };
-  }
-
-  private generateMockUpdatedUser(userId: number, updates: any): User {
-    const baseUser = this.generateMockUser(userId);
-    return {
-      ...baseUser,
-      ...updates
-    };
-  }
-
-  private generateMockCollaborators(projectId?: number, filters?: any): Collaborator[] {
-    const collaborators: Collaborator[] = [];
-    const roles: Array<'OWNER' | 'ADMIN' | 'CONTRIBUTOR' | 'VIEWER'> = 
-      ['OWNER', 'ADMIN', 'CONTRIBUTOR', 'VIEWER'];
-    const statuts: Array<'PENDING' | 'ACCEPTED' | 'REJECTED' | 'REVOKED'> = 
-      ['PENDING', 'ACCEPTED', 'REJECTED', 'REVOKED'];
-    
-    for (let i = 1; i <= 15; i++) {
-      const role = roles[Math.floor(Math.random() * roles.length)];
-      const statut = statuts[Math.floor(Math.random() * statuts.length)];
-      
-      collaborators.push({
-        id: i,
-        userId: i,
-        projectId: projectId || 1,
-        role,
-        permissions: {
-          canEdit: role === 'OWNER' || role === 'ADMIN',
-          canDelete: role === 'OWNER',
-          canInvite: role === 'OWNER' || role === 'ADMIN',
-          canManageModels: role === 'OWNER' || role === 'ADMIN',
-          canManageCollections: role === 'OWNER' || role === 'ADMIN',
-          canValidateAnnotations: role !== 'VIEWER'
-        },
-        dateInvitation: new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000).toISOString(),
-        dateAcceptation: statut === 'ACCEPTED' ? new Date().toISOString() : undefined,
-        statut,
-        invitePar: 1,
-        user: this.generateMockUser(i)
-      });
-    }
-    
-    return collaborators;
-  }
-
-  private generateMockCollaborator(projectId: number, userId: number, role: string, permissions?: any): Collaborator {
-    return {
-      id: Date.now(),
-      userId,
-      projectId,
-      role: role as any,
-      permissions: {
-        canEdit: role === 'OWNER' || role === 'ADMIN',
-        canDelete: role === 'OWNER',
-        canInvite: role === 'OWNER' || role === 'ADMIN',
-        canManageModels: role === 'OWNER' || role === 'ADMIN',
-        canManageCollections: role === 'OWNER' || role === 'ADMIN',
-        canValidateAnnotations: role !== 'VIEWER',
-        ...permissions
-      },
-      dateInvitation: new Date().toISOString(),
-      dateAcceptation: new Date().toISOString(),
-      statut: 'ACCEPTED',
-      invitePar: 1,
-      user: this.generateMockUser(userId)
-    };
-  }
-
-  private generateMockUpdatedCollaborator(collaboratorId: number, updates: any): Collaborator {
-    const baseCollaborator = this.generateMockCollaborator(1, 1, 'CONTRIBUTOR');
-    return {
-      ...baseCollaborator,
-      id: collaboratorId,
-      ...updates
-    };
-  }
-
-  private generateMockInvitation(email: string, projectId: number, role: string, message?: string): UserInvitation {
-    return {
-      id: Date.now(),
-      email,
-      projectId,
-      role: role as any,
-      message,
-      dateInvitation: new Date().toISOString(),
-      dateExpiration: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(), // 7 days
-      statut: 'PENDING',
-      invitePar: 1,
-      token: `token_${Date.now()}`
-    };
-  }
-
-  private generateMockInvitations(projectId?: number): UserInvitation[] {
-    const invitations: UserInvitation[] = [];
-    const roles: Array<'ADMIN' | 'CONTRIBUTOR' | 'VIEWER'> = ['ADMIN', 'CONTRIBUTOR', 'VIEWER'];
-    const statuts: Array<'PENDING' | 'ACCEPTED' | 'REJECTED' | 'EXPIRED'> = 
-      ['PENDING', 'ACCEPTED', 'REJECTED', 'EXPIRED'];
-    
-    for (let i = 1; i <= 8; i++) {
-      const role = roles[Math.floor(Math.random() * roles.length)];
-      const statut = statuts[Math.floor(Math.random() * statuts.length)];
-      
-      invitations.push({
-        id: i,
-        email: `invited${i}@example.com`,
-        projectId: projectId || 1,
-        role,
-        message: `Invitation message ${i}`,
-        dateInvitation: new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000).toISOString(),
-        dateExpiration: new Date(Date.now() + Math.random() * 7 * 24 * 60 * 60 * 1000).toISOString(),
-        statut,
-        invitePar: 1,
-        token: `token_${i}`
-      });
-    }
-    
-    return invitations;
-  }
-
-  private generateMockCollaboratorFromInvitation(token: string): Collaborator {
-    return this.generateMockCollaborator(1, parseInt(token), 'CONTRIBUTOR');
-  }
-
-  private generateMockUserStats(): UserStats {
-    return {
-      totalUsers: 85,
-      activeUsers: 76,
-      inactiveUsers: 9,
-      newUsersThisMonth: 12,
-      usersByRole: {
-        'ADMIN': 5,
-        'EXPERT': 15,
-        'AVANCE': 20,
-        'INTERMEDIAIRE': 25,
-        'DEBUTANT': 15,
-        'AMATEUR': 5
-      },
-      usersByExpertise: {
-        'BEGINNER': 10,
-        'INTERMEDIATE': 25,
-        'ADVANCED': 30,
-        'EXPERT': 15,
-        'MASTER': 5
-      },
-      topContributors: [
-        this.generateMockUser(1),
-        this.generateMockUser(2),
-        this.generateMockUser(3)
-      ],
-      averageScore: 450,
-      lastUpdated: new Date().toISOString()
-    };
-  }
-
-  private generateMockBulkUpdatedUsers(userIds: number[], updates: any): User[] {
-    return userIds.map(id => this.generateMockUpdatedUser(id, updates));
-  }
+  // Note: Mock data generation methods removed - using real API calls
 }

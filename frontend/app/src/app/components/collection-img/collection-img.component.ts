@@ -14,7 +14,9 @@ import { CollectionsActions, NavigationActions } from '../../store';
 import { 
   selectCollectionById,
   selectCollectionsLoading,
-  selectCollectionsError 
+  selectCollectionsError,
+  selectAllCollections,
+  selectAllSpecimens
 } from '../../store/collections/collections.selectors';
 import { 
   selectNavigationCollectionId,
@@ -125,78 +127,55 @@ export class CollectionImgComponent implements OnInit, OnDestroy {
   fetchProjectCollection(): void {
     console.log('Fetching project collection for formulaire context');
     
-    // Generate mock collection for demonstration
-    const mockCollection = this.generateMockCollection();
-    this.collectionId = mockCollection.id.toString();
-    this.loadSpecimens();
+    // Load real collections using NgRx action
+    this.store.dispatch(CollectionsActions.loadCollections());
     
-    console.log('Mock project collection loaded:', mockCollection);
-    
-    // TODO: Replace with proper NgRx action
-    // this.store.dispatch(CollectionsActions.loadProjectCollection());
+    // Subscribe to real collections data
+    this.store.select(selectAllCollections)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(collections => {
+        if (collections && collections.length > 0) {
+          // Use the first collection for now (in real app, would be based on project context)
+          const collection = collections[0];
+          this.collectionId = collection.id.toString();
+          this.loadSpecimens();
+          
+          console.log('Real project collection loaded:', collection);
+        } else {
+          console.log('No collections found');
+        }
+      });
   }
 
-  private generateMockCollection(): any {
-    return {
-      id: Date.now(),
-      nom: 'African Herbarium Collection',
-      description: 'A comprehensive collection of African plant specimens with detailed botanical information and high-quality images.',
-      dateCreation: '2023-01-15',
-      nombreSpecimens: 1250,
-      nombreImages: 2500,
-      statut: 'active',
-      projet: {
-        id: 1,
-        nom: 'PlantAI Research Project'
-      }
-    };
-  }
+  // Mock collection generation method removed - now using real API calls
 
   loadSpecimens(): void {
     if (this.collectionId) {
       console.log('Loading specimens for collection:', this.collectionId);
       
-      // Generate mock specimens for demonstration
-      const mockSpecimens = this.generateMockSpecimens();
-      this.collectionSpecimens = mockSpecimens;
-      this.specimensSubject.next(mockSpecimens);
-      this.sortPlantsByScientificName();
+      // Load real specimens using NgRx action
+      this.store.dispatch(CollectionsActions.loadSpecimensByCollection({ collectionId: parseInt(this.collectionId) }));
       
-      console.log('Mock specimens loaded:', mockSpecimens.length, 'items');
-      
-      // TODO: Replace with proper NgRx action
-      // this.store.dispatch(CollectionsActions.loadSpecimensByCollectionId({ collectionId: this.collectionId }));
+      // Subscribe to real specimens data
+      this.store.select(selectAllSpecimens)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe(specimens => {
+          if (specimens && specimens.length > 0) {
+            this.collectionSpecimens = specimens;
+            this.specimensSubject.next(specimens);
+            this.sortPlantsByScientificName();
+            
+            console.log('Real specimens loaded:', specimens.length, 'items');
+          } else {
+            console.log('No specimens found for collection:', this.collectionId);
+            this.collectionSpecimens = [];
+            this.specimensSubject.next([]);
+          }
+        });
     }
   }
 
-  private generateMockSpecimens(): any[] {
-    const specimens = [];
-    const families = ['Fabaceae', 'Poaceae', 'Asteraceae', 'Rubiaceae', 'Euphorbiaceae'];
-    const genres = ['Acacia', 'Panicum', 'Vernonia', 'Psychotria', 'Euphorbia'];
-    const species = ['senegalensis', 'maximum', 'amygdalina', 'capensis', 'hirta'];
-    
-    for (let i = 1; i <= 25; i++) {
-      const family = families[Math.floor(Math.random() * families.length)];
-      const genre = genres[Math.floor(Math.random() * genres.length)];
-      const specie = species[Math.floor(Math.random() * species.length)];
-      
-      specimens.push({
-        id: i,
-        nom: `${genre} ${specie}`,
-        nomScientifique: `${genre} ${specie}`,
-        famille: family,
-        genre: genre,
-        espece: specie,
-        pays: ['Senegal', 'Mali', 'Burkina Faso', 'Niger'][Math.floor(Math.random() * 4)],
-        imageUrl: `assets/uploads/specimen_${i}.jpg`,
-        dateCollecte: new Date(2023, Math.floor(Math.random() * 12), Math.floor(Math.random() * 28) + 1).toISOString(),
-        collecteur: ['Dr. Marie Dubois', 'Prof. Jean Martin', 'Dr. Sophie Laurent'][Math.floor(Math.random() * 3)],
-        statut: 'active'
-      });
-    }
-    
-    return specimens;
-  }
+  // Mock specimens generation method removed - now using real API calls
 
   sortPlantsByScientificName(): void {
     this.collectionSpecimens.sort((a, b) => a.nomScientifique.localeCompare(b.nomScientifique));

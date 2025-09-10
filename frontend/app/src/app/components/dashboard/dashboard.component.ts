@@ -15,6 +15,9 @@ import {
   selectProjectsError 
 } from '../../store/projects/projects.selectors';
 import { 
+  selectAllDatasets
+} from '../../store/collections/collections.selectors';
+import { 
   selectNavigationProjectId
 } from '../../store/navigation/navigation.selectors';
 
@@ -168,33 +171,36 @@ export class DashboardComponent implements OnInit, OnDestroy {
         if (project) {
           console.log('Project loaded via NgRx:', project);
           
-          // For now, using mock dataset data until we have proper dataset store
-          this.loadMockDatasets(project.id);
+          // Load real datasets using NgRx action
+          this.store.dispatch(CollectionsActions.loadDatasets({ projectId: project.id }));
           
-          // TODO: Replace with proper NgRx dataset loading
-          // this.store.dispatch(DatasetsActions.loadDatasetsByProject({ projectId: project.id }));
+          // Subscribe to real datasets data
+          this.store.select(selectAllDatasets)
+            .pipe(takeUntil(this.destroy$))
+            .subscribe(datasets => {
+              if (datasets && datasets.length > 0) {
+                this.datasets = datasets;
+                console.log('Real datasets loaded:', datasets.length);
+                
+                this.processStatistics().then(() => {
+                  this.collectLibelleClassData().then(() => {
+                    this.renderAllCharts();
+                  });
+                }).catch(error => {
+                  console.error('Error processing statistics:', error);
+                  Swal.fire('Error', 'Failed to process analytics data', 'error');
+                });
+              } else {
+                console.log('No datasets found for project:', project.id);
+                this.datasets = [];
+                this.renderAllCharts(); // Render empty charts
+              }
+            });
         }
       });
   }
 
-  private loadMockDatasets(projectId: number): void {
-    // Mock datasets for demonstration - would come from NgRx store in real implementation
-    this.datasets = [
-      { id: 1, nom: 'Dataset 1', description: 'Plant species dataset' },
-      { id: 2, nom: 'Dataset 2', description: 'Botanical classification dataset' }
-    ];
-    
-    console.log('Loading analytics for project:', projectId, 'with datasets:', this.datasets.length);
-    
-    this.processStatistics().then(() => {
-      this.collectLibelleClassData().then(() => {
-        this.renderAllCharts();
-      });
-    }).catch(error => {
-      console.error('Error processing statistics:', error);
-      Swal.fire('Error', 'Failed to process analytics data', 'error');
-    });
-  }
+  // Mock data generation method removed - now using real API calls
 
   async processStatistics() {
     const statistics = ['genre', 'famille', 'pays', 'ville', 'departement', 'epitheteSpecifique', 'lieu', 'nomScientifique', 'dateCreation'];

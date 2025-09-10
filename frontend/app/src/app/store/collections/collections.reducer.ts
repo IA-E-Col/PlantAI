@@ -231,6 +231,26 @@ export const collectionsReducer = createReducer(
     error,
   })),
 
+  // Dataset Creation Actions
+  on(CollectionsActions.createDataset, (state) => ({
+    ...state,
+    isLoading: true,
+    error: null,
+  })),
+
+  on(CollectionsActions.createDatasetSuccess, (state, { dataset }) => ({
+    ...state,
+    datasets: [...state.datasets, dataset],
+    isLoading: false,
+    error: null,
+  })),
+
+  on(CollectionsActions.createDatasetFailure, (state, { error }) => ({
+    ...state,
+    isLoading: false,
+    error,
+  })),
+
   // Filter reducers
   on(CollectionsActions.setFilters, (state, { filters }) => {
     const filteredSpecimens = state.specimens.filter(specimen => {

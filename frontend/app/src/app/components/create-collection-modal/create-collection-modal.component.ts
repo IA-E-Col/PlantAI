@@ -124,85 +124,56 @@ export class CreateCollectionModalComponent implements OnInit, OnDestroy {
   }
   
   private simulateDatasetCreationFlow(formData: any): void {
-    // Step 1: Simulate getting project collection
-    setTimeout(() => {
-      console.log('Step 1: Getting project collection...');
-      const mockCollection = this.generateMockCollection();
-      console.log('Collection received:', mockCollection);
-      
-      // Step 2: Simulate fetching specimens
-      setTimeout(() => {
-        console.log('Step 2: Fetching specimens from collection...');
-        const mockSpecimens = this.generateMockSpecimens();
-        console.log('Specimens received:', mockSpecimens.length, 'items');
-        
-        // Step 3: Simulate creating dataset
-        setTimeout(() => {
-          console.log('Step 3: Creating dataset...');
-          const mockDataset = this.generateMockDataset(formData);
-          console.log('Dataset created:', mockDataset);
-          
-          // Step 4: Simulate attaching specimens
-          setTimeout(() => {
-            console.log('Step 4: Attaching specimens to dataset...');
-            console.log('Specimens attached successfully:', mockSpecimens.length, 'items');
-            console.log('=== DATASET CREATION COMPLETE ===');
-            
-            Swal.fire({
-              title: 'Dataset Created!',
-              text: `Dataset "${formData.nom}" has been created successfully with ${mockSpecimens.length} specimens.`,
-              icon: 'success',
-              timer: 3000
-            }).then(() => {
-              this.router.navigate([`/admin/projects/${this.projectId}/datasets`]);
-            });
-            
-            // Reset form
-            this.collectionFormGroup.reset();
-            
-          }, 1000);
-        }, 1000);
-      }, 1000);
-    }, 1000);
-  }
-  
-  private generateMockCollection(): any {
-    return {
-      id: Date.now(),
-      nom: 'African Herbarium Collection',
-      description: 'A comprehensive collection of African plant specimens',
-      dateCreation: new Date().toISOString(),
-      statut: 'active'
-    };
-  }
-  
-  private generateMockSpecimens(): any[] {
-    const specimens = [];
-    for (let i = 1; i <= 150; i++) {
-      specimens.push({
-        id: i,
-        nom: `Specimen ${i}`,
-        famille: ['Fabaceae', 'Poaceae', 'Asteraceae', 'Rubiaceae'][Math.floor(Math.random() * 4)],
-        genre: ['Acacia', 'Panicum', 'Vernonia', 'Psychotria'][Math.floor(Math.random() * 4)],
-        espece: `species_${i}`,
-        pays: ['Senegal', 'Mali', 'Burkina Faso', 'Niger'][Math.floor(Math.random() * 4)],
-        imageUrl: `assets/uploads/specimen_${i}.jpg`
-      });
-    }
-    return specimens;
-  }
-  
-  private generateMockDataset(formData: any): any {
-    return {
-      id: Date.now(),
+    console.log('Creating dataset with real API:', formData);
+    
+    // Create dataset using real API
+    const datasetData = {
       nom: formData.nom,
       description: formData.description,
-      dateCreation: new Date().toISOString(),
-      specimenCount: 150,
-      statut: 'active',
-      projectId: this.projectId
+      dateCreation: Date.now(),
+      specimens: []
     };
+    
+    // Dispatch create dataset action
+    this.store.dispatch(CollectionsActions.createDataset({ 
+      projectId: parseInt(this.projectId), 
+      dataset: datasetData 
+    }));
+    
+    // Subscribe to dataset creation success
+    this.store.select(selectCollectionsLoading)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(isLoading => {
+        if (!isLoading) {
+          // Check if there's no error, which means success
+          this.store.select(selectCollectionsError)
+            .pipe(takeUntil(this.destroy$))
+            .subscribe(error => {
+              if (!error) {
+                Swal.fire({
+                  title: 'Dataset Created!',
+                  text: `Dataset "${formData.nom}" has been created successfully.`,
+                  icon: 'success',
+                  timer: 3000
+                }).then(() => {
+                  this.router.navigate([`/admin/projects/${this.projectId}/datasets`]);
+                });
+                
+                // Reset form
+                this.collectionFormGroup.reset();
+              } else {
+                Swal.fire({
+                  title: 'Error',
+                  text: `Failed to create dataset: ${error}`,
+                  icon: 'error'
+                });
+              }
+            });
+        }
+      });
   }
+  
+  // Mock data generation methods removed - now using real API calls
   
   // UI Helper methods
   isFieldInvalid(fieldName: string): boolean {

@@ -1,16 +1,19 @@
 import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
-import { map, catchError, switchMap } from 'rxjs/operators';
+import { map, catchError, switchMap, tap } from 'rxjs/operators';
 import { of } from 'rxjs';
+import { Router } from '@angular/router';
 import { ProjetService } from '../../services/projet.service';
 import * as ProjectsActions from './projects.actions';
+import * as AuthActions from '../auth/auth.actions';
 
 @Injectable()
 export class ProjectsEffects {
   
   constructor(
     private actions$: Actions,
-    private projetService: ProjetService
+    private projetService: ProjetService,
+    private router: Router
   ) {}
 
   loadProjects$ = createEffect(() =>
@@ -19,9 +22,19 @@ export class ProjectsEffects {
       switchMap(({ userId }) =>
         this.projetService.funcS_get_All().pipe(
           map((projects) => ProjectsActions.loadProjectsSuccess({ projects })),
-          catchError((error) => of(ProjectsActions.loadProjectsFailure({ 
-            error: error.message || 'Failed to load projects' 
-          })))
+          catchError((error) => {
+            let errorMessage = 'Failed to load projects';
+            
+            if (error.status === 404) {
+              errorMessage = 'User not found. Please log in again.';
+            } else if (error.status === 500) {
+              errorMessage = 'Server error. Please try again later.';
+            } else if (error.message) {
+              errorMessage = error.message;
+            }
+            
+            return of(ProjectsActions.loadProjectsFailure({ error: errorMessage }));
+          })
         )
       )
     )
@@ -81,5 +94,22 @@ export class ProjectsEffects {
         )
       )
     )
+  );
+
+  // Handle user not found by logging them out
+  handleUserNotFound$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(ProjectsActions.loadProjectsFailure),
+      tap(({ error }) => {
+        if (error.includes('User not found')) {
+          // Clear invalid session
+          localStorage.removeItem('token');
+          localStorage.removeItem('authUser');
+          // Redirect to login
+          this.router.navigate(['/login']);
+        }
+      })
+    ),
+    { dispatch: false }
   );
 }

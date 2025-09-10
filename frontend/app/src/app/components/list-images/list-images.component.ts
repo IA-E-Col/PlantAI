@@ -10,10 +10,13 @@ import { Observable, Subject, takeUntil, BehaviorSubject, combineLatest, map } f
 import { Store } from '@ngrx/store';
 
 import { AppState } from '../../store/app.state';
-import { NavigationActions } from '../../store';
+import { NavigationActions, CollectionsActions } from '../../store';
 import { 
   selectNavigationDatasetId
 } from '../../store/navigation/navigation.selectors';
+import { 
+  selectSpecimensByDataset
+} from '../../store/collections/collections.selectors';
 
 
 
@@ -121,29 +124,36 @@ export class ListImagesComponent implements OnInit, OnDestroy {
   }
 
   handleDataChange(): void {
-    console.log('Executing handleDataChange for dataset:', this.test);
+    console.log('Loading specimens from real API for dataset:', this.test);
 
-    // Generate mock specimen data based on dataset ID
-    if (Number(this.test) <= 0) {
-      console.log('Loading default specimens for ID <= 0');
-      this.plantes = this.generateMockSpecimensForDataset('default');
+    // Load real specimens using NgRx action
+    if (Number(this.test) > 0) {
+      this.store.dispatch(CollectionsActions.loadSpecimensByDataset({ datasetId: this.test }));
+      
+      // Subscribe to real specimens data
+      this.store.select(selectSpecimensByDataset(this.test))
+        .pipe(takeUntil(this.destroy$))
+        .subscribe(specimens => {
+          if (specimens && specimens.length > 0) {
+            this.plantes = specimens;
+            this.sortPlantsByScientificName();
+            this.Old_plantes = [...this.plantes]; // Create copy
+            this.extractDistinctValues();
+            
+            // Update reactive subjects
+            this.plantesSubject.next(this.plantes);
+            this.originalPlantesSubject.next(this.Old_plantes);
+            
+            console.log('Real specimens loaded:', this.plantes?.length || 0, 'items');
+          }
+        });
     } else {
-      console.log('Loading specimens for dataset:', this.test);
-      this.plantes = this.generateMockSpecimensForDataset(this.test);
+      console.log('Invalid dataset ID, loading empty specimens');
+      this.plantes = [];
+      this.Old_plantes = [];
+      this.plantesSubject.next([]);
+      this.originalPlantesSubject.next([]);
     }
-    
-    this.sortPlantsByScientificName();
-    this.Old_plantes = [...this.plantes]; // Create copy
-    this.extractDistinctValues();
-    
-    // Update reactive subjects
-    this.plantesSubject.next(this.plantes);
-    this.originalPlantesSubject.next(this.Old_plantes);
-    
-    console.log('Mock specimens loaded:', this.plantes?.length || 0, 'items');
-    
-    // TODO: Replace with proper NgRx specimens loading
-    // this.store.dispatch(SpecimensActions.loadSpecimensByDataset({ datasetId: this.test }));
   }
 
   private generateMockSpecimensForDataset(datasetId: string): any[] {

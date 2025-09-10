@@ -34,8 +34,8 @@ public class CollectionService  {
     }
 
     public DataSet addSpecimens(Long iDD, List<Specimen> iDS){
-        DataSet c = dr.findById(iDD).get();
-           c.setSpecimens(iDS);
+        DataSet c = dr.findById(iDD).orElseThrow(() -> new RuntimeException("Dataset not found with id: " + iDD));
+        c.setSpecimens(iDS);
         return dr.save(c);
     }
 
@@ -131,10 +131,17 @@ public class CollectionService  {
 
 
     public void deleteCollection(Long id) {
-        Collection c=cr.findById(id).get();
-        if(c!=null) {
-
+        Optional<Collection> collectionOpt = cr.findById(id);
+        if (collectionOpt.isPresent()) {
+            Collection c = collectionOpt.get();
+            System.out.println("Deleting collection: " + c.getNom() + " (ID: " + id + ")");
+            
+            // TODO: Add cascade delete for related projects and datasets
+            // For now, just delete the collection
             cr.deleteById(id);
+            System.out.println("Collection deleted successfully");
+        } else {
+            throw new RuntimeException("Collection not found with id: " + id);
         }
     }
 

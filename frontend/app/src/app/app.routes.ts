@@ -61,7 +61,6 @@ export const routes: Routes = [
       { path: 'projects', loadComponent: loadProjets },
       { path: 'profile', loadComponent: loadProfile },
       { path: 'validation-history', loadComponent: loadValidationHistory },
-      { path: '', loadComponent: loadProjets },
       { path: 'corpus', loadComponent: loadExplorer },
       { path: 'datasets', loadComponent: loadCollection },
       { path: 'models', loadComponent: loadModele },

@@ -132,3 +132,8 @@ export const selectSpecimenStats = createSelector(
     countryCount: new Set(specimens.map(s => s.pays).filter(Boolean)).size,
   })
 );
+
+export const selectSpecimensByDataset = (datasetId: string) => createSelector(
+  selectAllSpecimens,
+  (specimens) => specimens.filter(specimen => specimen.collection?.id === parseInt(datasetId))
+);

@@ -16,7 +16,9 @@ import { CollectionsActions, NavigationActions } from '../../store';
 import { 
   selectAllCollections,
   selectCollectionsLoading,
-  selectCollectionsError 
+  selectCollectionsError,
+  selectAllSpecimens,
+  selectSpecimensCount
 } from '../../store/collections/collections.selectors';
 import { 
   selectNavigationCollectionId
@@ -101,56 +103,42 @@ export class CollectionInfoComponent implements OnInit, OnDestroy {
   private loadCollection(collectionId: string): void {
     console.log('Loading collection:', collectionId);
     
-    // Generate mock collection data
-    const mockCollection = this.generateMockCollection(parseInt(collectionId));
-    this.collection = mockCollection;
+    // Load real collection data via NgRx
+    this.store.dispatch(CollectionsActions.loadCollections());
     
-    // Generate mock specimens data
-    const mockSpecimens = this.generateMockSpecimens(parseInt(collectionId));
-    this.NbSpecimens = mockSpecimens.length;
-    
-    console.log('Collection loaded:', mockCollection);
-    console.log('Specimens count:', this.NbSpecimens);
-    
-    // TODO: Replace with proper NgRx actions
-    // this.store.dispatch(CollectionsActions.loadCollection({ collectionId }));
-    // this.store.dispatch(CollectionsActions.loadSpecimensByCollection({ collectionId }));
-  }
-
-  private generateMockCollection(collectionId: number): any {
-    return {
-      id: collectionId,
-      nom: `Collection ${collectionId}`,
-      description: `Description for collection ${collectionId}`,
-      dateCreation: new Date().toISOString(),
-      statut: 'active',
-      nbrSpecimens: Math.floor(Math.random() * 1000) + 100,
-      nbrImages: Math.floor(Math.random() * 2000) + 200,
-      projectId: 1,
-      createdBy: 1
-    };
-  }
-
-  private generateMockSpecimens(collectionId: number): any[] {
-    const specimenCount = Math.floor(Math.random() * 1000) + 100;
-    const specimens: any[] = [];
-    
-    for (let i = 1; i <= specimenCount; i++) {
-      specimens.push({
-        id: i,
-        collectionId: collectionId,
-        nomScientifique: `Specimen ${i}`,
-        famille: `Family ${i}`,
-        genre: `Genus ${i}`,
-        espece: `Species ${i}`,
-        pays: `Country ${i}`,
-        dateCollecte: new Date().toISOString(),
-        imageUrl: `assets/specimens/specimen_${i}.jpg`
+    // Subscribe to collections to find the specific one
+    this.collections$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(collections => {
+        const foundCollection = collections.find(c => c.id === parseInt(collectionId));
+        if (foundCollection) {
+          this.collection = foundCollection;
+          console.log('Collection loaded via NgRx:', foundCollection);
+          console.log('Collection dateCreation:', foundCollection.dateCreation, 'Type:', typeof foundCollection.dateCreation);
+          
+          // Load specimens for this collection
+          this.store.dispatch(CollectionsActions.loadSpecimensByCollection({ collectionId: parseInt(collectionId) }));
+        }
       });
-    }
     
-    return specimens;
+    // Subscribe to specimens count - wait for loading to complete
+    this.store.select(selectCollectionsLoading)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(isLoading => {
+        if (!isLoading) {
+          // Only count specimens after loading is complete
+          this.store.select(selectSpecimensCount)
+            .pipe(takeUntil(this.destroy$))
+            .subscribe(count => {
+              // Since we're loading specimens for a specific collection,
+              // all specimens in the store should belong to this collection
+              this.NbSpecimens = count;
+              console.log('Specimens count for collection', collectionId, ':', this.NbSpecimens);
+            });
+        }
+      });
   }
+
 
   // UI Helper methods
   getCollectionStatus(): string {
@@ -167,9 +155,51 @@ export class CollectionInfoComponent implements OnInit, OnDestroy {
     }
   }
 
-  formatDate(dateString: string): string {
-    if (!dateString) return 'N/A';
-    return new Date(dateString).toLocaleDateString();
+  formatDate(dateString: string | number): string {
+    if (!dateString) return '00/00/0000';
+    
+    try {
+      let date: Date;
+      
+      if (typeof dateString === 'number') {
+        // Handle timestamp (milliseconds)
+        date = new Date(dateString);
+      } else if (typeof dateString === 'string') {
+        // Handle string dates
+        date = new Date(dateString);
+      } else {
+        return '00/00/0000';
+      }
+      
+      // Check if date is valid
+      if (isNaN(date.getTime())) {
+        console.warn('Invalid date received:', dateString);
+        return '00/00/0000';
+      }
+      
+      // Format as DD/MM/YYYY
+      return date.toLocaleDateString('en-GB', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+      });
+    } catch (error) {
+      console.error('Error formatting date:', dateString, error);
+      return '00/00/0000';
+    }
+  }
+
+  getCurrentUser(): string {
+    try {
+      const userString = localStorage.getItem('authUser');
+      if (userString) {
+        const user = JSON.parse(userString);
+        return user.nom || user.email || 'Unknown User';
+      }
+    } catch (error) {
+      console.error('Error parsing user data:', error);
+    }
+    return 'Unknown User';
   }
 
   onEditCollection(): void {

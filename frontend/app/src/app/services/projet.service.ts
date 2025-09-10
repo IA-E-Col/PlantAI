@@ -118,7 +118,9 @@ export class ProjetService {
     if (userString !== null) {
       const user = JSON.parse(userString);
       const userId = user.id;
-      return this.http.post<any>(`http://localhost:8080/api/projets/add/${userId}/${cID}`, p);
+      // Extract the actual collection ID from the object
+      const collectionId = cID?.id || cID;
+      return this.http.post<any>(`http://localhost:8080/api/projets/add/${userId}/${collectionId}`, p);
     }
     return throwError(() => new Error('User not authenticated'));
   }

@@ -87,6 +87,13 @@ export class DatasetInfComponent implements OnInit, OnDestroy {
       .subscribe(error => {
         if (error) {
           console.error('Failed to load dataset:', error);
+          // Handle 404 error specifically
+          if (error.includes('404') || error.includes('Not Found')) {
+            console.warn('Dataset not found. This collection may not have any datasets yet.');
+            this.DatasetNam = 'Dataset Not Found';
+            this.DatasetDescription = 'This collection does not have any datasets yet. Please create a dataset first.';
+            this.DatasetImages = 0;
+          }
         }
       });
     
@@ -100,35 +107,25 @@ export class DatasetInfComponent implements OnInit, OnDestroy {
 
   private loadDataset(): void {
     if (this.IdCollection) {
-      console.log('Loading dataset:', this.IdCollection);
+      console.log('Loading dataset from real API:', this.IdCollection);
       
-      // Generate mock dataset for demonstration
-      const mockDataset = this.generateMockDataset();
-      this.DatasetNam = mockDataset.name;
-      this.DatasetDescription = mockDataset.description;
-      this.DatasetImages = mockDataset.numberOfSpecimen;
+      // Load real dataset using NgRx action
+      this.store.dispatch(CollectionsActions.loadDataset({ datasetId: parseInt(this.IdCollection) }));
       
-      console.log('Mock dataset loaded:', mockDataset);
-      
-      // TODO: Replace with proper NgRx action
-      // this.store.dispatch(CollectionsActions.loadDatasetById({ datasetId: this.IdCollection }));
+      // Subscribe to real dataset data
+      this.dataset$
+        .pipe(takeUntil(this.destroy$))
+        .subscribe(dataset => {
+          if (dataset) {
+            this.DatasetNam = dataset.name;
+            this.DatasetDescription = dataset.description;
+            this.DatasetImages = dataset.numberOfSpecimen || dataset.specimenCount || 0;
+            
+            console.log('Real dataset loaded:', dataset);
+          }
+        });
     }
   }
 
-  private generateMockDataset(): any {
-    return {
-      id: this.IdCollection,
-      name: 'African Plant Dataset',
-      description: 'A comprehensive dataset containing African plant specimens with detailed botanical information and high-quality images for machine learning research.',
-      numberOfSpecimen: 1250,
-      numberOfImages: 2500,
-      dateCreation: '2023-01-15',
-      statut: 'active',
-      collection: {
-        id: 1,
-        nom: 'African Herbarium Collection'
-      }
-    };
-  }
 
 }

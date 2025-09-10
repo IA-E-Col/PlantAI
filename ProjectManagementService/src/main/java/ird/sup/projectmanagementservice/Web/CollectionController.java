@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@CrossOrigin(origins="*")
 @RequestMapping("/api/collections")
 public class CollectionController {
 
@@ -92,8 +91,13 @@ public class CollectionController {
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> deleteCollection(@PathVariable Long id) {
-        datasetService.deleteDataSet(id);
-        return ResponseEntity.ok().build();
+        try {
+            collectionService.deleteCollection(id);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            System.err.println("Error deleting collection: " + e.getMessage());
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @GetMapping("/{id}")

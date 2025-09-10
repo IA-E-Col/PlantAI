@@ -133,36 +133,13 @@ export class GererCollectionComponent implements OnInit, OnDestroy {
     if (this.collectionId) {
       console.log('Loading collection:', this.collectionId);
       
-      // Generate mock collection for demonstration
-      const mockCollection = this.generateMockCollection();
-      this.collection = mockCollection;
-      this.collectionFormGroup.patchValue({
-        nomCollection: mockCollection.nom,
-        description: mockCollection.description
-      });
+      // Load real collection data via NgRx
+      this.store.dispatch(CollectionsActions.loadCollections());
       
-      console.log('Mock collection loaded:', mockCollection);
-      
-      // TODO: Replace with proper NgRx action
-      // this.store.dispatch(CollectionsActions.loadCollectionById({ collectionId: this.collectionId }));
+      console.log('Collection loading initiated via NgRx');
     }
   }
 
-  private generateMockCollection(): any {
-    return {
-      id: this.collectionId,
-      nom: 'African Herbarium Collection',
-      description: 'A comprehensive collection of African plant specimens with detailed botanical information and high-quality images.',
-      dateCreation: '2023-01-15',
-      nombreSpecimens: 1250,
-      nombreImages: 2500,
-      statut: 'active',
-      projet: {
-        id: 1,
-        nom: 'PlantAI Research Project'
-      }
-    };
-  }
 
   afficherFormulaire(afficher: boolean): void {
     this.afficherLeFormulaire = afficher;
@@ -203,25 +180,46 @@ export class GererCollectionComponent implements OnInit, OnDestroy {
           }
         });
         
-        // Simulate modification process
-        setTimeout(() => {
-          Swal.fire({
-            title: 'Collection Modified!',
-            text: 'The collection has been successfully updated.',
-            icon: 'success',
-            timer: 2000
-          }).then(() => {
-            this.router.navigateByUrl(`/admin/corpus/${this.collectionId}/details`);
+        // Dispatch real update action with complete collection data
+        const updatedCollection = {
+          ...this.collection,
+          nom: collectionData.nomCollection,
+          description: collectionData.description
+        };
+        
+        this.store.dispatch(CollectionsActions.updateCollection({ 
+          collectionId: parseInt(this.collectionId), 
+          changes: updatedCollection
+        }));
+        
+        // Subscribe to update success/failure
+        this.store.select(selectCollectionsLoading)
+          .pipe(takeUntil(this.destroy$))
+          .subscribe(isLoading => {
+            if (!isLoading) {
+              // Check if there's an error
+              this.store.select(selectCollectionsError)
+                .pipe(takeUntil(this.destroy$))
+                .subscribe(error => {
+                  if (!error) {
+                    // Success - show success message
+                    Swal.fire({
+                      title: 'Collection Modified!',
+                      text: 'The collection has been successfully updated.',
+                      icon: 'success',
+                      timer: 2000
+                    }).then(() => {
+                      this.router.navigateByUrl(`/admin/corpus/${this.collectionId}/details`);
+                    });
+                    console.log('Collection modification completed successfully');
+                  } else {
+                    // Error - show error message
+                    Swal.fire('Error', `Failed to modify collection: ${error}`, 'error');
+                    console.error('Failed to modify collection:', error);
+                  }
+                });
+            }
           });
-          
-          console.log('Mock collection modification completed');
-          
-          // TODO: Replace with proper NgRx action
-          // this.store.dispatch(CollectionsActions.updateCollection({ 
-          //   collectionId: this.collectionId, 
-          //   updates: collectionData 
-          // }));
-        }, 2000);
       }
     });
   }

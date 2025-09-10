@@ -24,8 +24,8 @@ public class ProjetService  {
     @Autowired
     private ParticipationRepository prp;
     public Projet addProjet(Projet p , Long idUser , Long idCollection) {
-        User u=ur.findById(idUser).get();
-        Collection c=cs.findById(idCollection).get();
+        User u = ur.findById(idUser).orElseThrow(() -> new RuntimeException("User not found with id: " + idUser));
+        Collection c = cs.findById(idCollection).orElseThrow(() -> new RuntimeException("Collection not found with id: " + idCollection));
         p.setDateCreation(new Date());
         u.getProjetsCree().add(p);
         p.setCreateur(u);

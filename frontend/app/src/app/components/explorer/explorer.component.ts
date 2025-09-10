@@ -127,22 +127,28 @@ export class ExplorerComponent implements OnInit, OnDestroy {
       cancelButtonText: 'Cancel'
     }).then((result) => {
       if (result.isConfirmed) {
-        console.log('Deleting collection with NgRx:', id);
+        console.log('User confirmed deletion, calling backend API');
         
-        // Dispatch delete action through NgRx
+        // Dispatch NgRx action to delete from backend
         this.store.dispatch(CollectionsActions.deleteCollection({ collectionId: id }));
         
-        // Listen for successful deletion
-        this.error$
+        // Subscribe to delete success/failure
+        this.store.select(selectCollectionsLoading)
           .pipe(takeUntil(this.destroy$))
-          .subscribe(error => {
-            if (!error) {
-              // Success case - when no error and loading is false
-              this.isLoading$
+          .subscribe(isLoading => {
+            if (!isLoading) {
+              // Check if there's an error
+              this.store.select(selectCollectionsError)
                 .pipe(takeUntil(this.destroy$))
-                .subscribe(isLoading => {
-                  if (!isLoading) {
+                .subscribe(error => {
+                  if (!error) {
+                    // Success - show success message
                     Swal.fire('Success', 'Corpus deleted successfully', 'success');
+                    console.log('Corpus deleted successfully from backend');
+                  } else {
+                    // Error - show error message
+                    Swal.fire('Error', `Failed to delete corpus: ${error}`, 'error');
+                    console.error('Failed to delete corpus:', error);
                   }
                 });
             }

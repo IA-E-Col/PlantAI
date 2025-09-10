@@ -11,11 +11,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 @RestController
-@CrossOrigin(origins="*")
 @RequestMapping("/api/projets")
 public class ProjetController {
 
@@ -29,8 +29,16 @@ public class ProjetController {
     private DatasetService datasetService;
     @PostMapping("/add/{userId}/{colId}")
     public ResponseEntity<Projet> addProjet(@RequestBody Projet projet, @PathVariable Long userId,@PathVariable Long colId) {
-        Projet newProjet = projetService.addProjet(projet, userId,colId);
-        return ResponseEntity.ok(newProjet);
+        try {
+            Projet newProjet = projetService.addProjet(projet, userId,colId);
+            return ResponseEntity.ok(newProjet);
+        } catch (RuntimeException e) {
+            System.err.println("Error creating project: " + e.getMessage());
+            return ResponseEntity.badRequest().build();
+        } catch (Exception e) {
+            System.err.println("Unexpected error creating project: " + e.getMessage());
+            return ResponseEntity.internalServerError().build();
+        }
     }
 
     @PutMapping("/update/{id}") // discutr youssef
@@ -129,8 +137,14 @@ public class ProjetController {
     }
     @GetMapping("/list/PCR/{Id}")
     public ResponseEntity<List<Projet>> getProjetsIdUser(@PathVariable Long Id) {
-        List<Projet> projets = projetService.getProjetsIdCre(Id);
-        return ResponseEntity.ok(projets);
+        try {
+            List<Projet> projets = projetService.getProjetsIdCre(Id);
+            return ResponseEntity.ok(projets);
+        } catch (Exception e) {
+            System.err.println("Error getting projects for user " + Id + ": " + e.getMessage());
+            // Return empty list instead of error to prevent frontend crashes
+            return ResponseEntity.ok(new ArrayList<>());
+        }
     }
     // recuperer les projets "Collab" par ml'utilisateur
     @GetMapping("/list/PCO/{Id}")

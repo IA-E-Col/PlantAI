@@ -55,6 +55,16 @@ public class UserService {
     }
 
     /**
+     * Vérifie si un utilisateur existe par son ID.
+     *
+     * @param id l'identifiant de l'utilisateur.
+     * @return true si l'utilisateur existe, false sinon.
+     */
+    public boolean userExists(Long id) {
+        return userRepository.existsById(id);
+    }
+
+    /**
      * Recherche un utilisateur par son nom d'utilisateur.
      *
      * @param username le nom d'utilisateur à rechercher.

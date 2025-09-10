@@ -11,7 +11,8 @@ import { AppState } from '../../store/app.state';
 import { CollectionsActions, NavigationActions } from '../../store';
 import { 
   selectCollectionsLoading,
-  selectCollectionsError 
+  selectCollectionsError,
+  selectAllCollections
 } from '../../store/collections/collections.selectors';
 import { 
   selectNavigationProjectId
@@ -40,6 +41,7 @@ export class CreeCollectionComponent implements OnInit, OnDestroy {
   projectId$: Observable<string | null>;
   isLoading$: Observable<boolean>;
   error$: Observable<string | null>;
+  collectionsError$: Observable<string | null>;
   
   private destroy$ = new Subject<void>();
 
@@ -55,6 +57,7 @@ export class CreeCollectionComponent implements OnInit, OnDestroy {
     this.projectId$ = this.store.select(selectNavigationProjectId);
     this.isLoading$ = this.store.select(selectCollectionsLoading);
     this.error$ = this.store.select(selectCollectionsError);
+    this.collectionsError$ = this.store.select(selectCollectionsError);
     
     if (data) {
       this.is_active = data.is_active;
@@ -66,7 +69,7 @@ export class CreeCollectionComponent implements OnInit, OnDestroy {
     this.collectionFormGroup = this.fb.group({
       nomCollection: ['', Validators.required],
       collectionFile: ['', Validators.required],
-      description: ['', Validators.required, Validators.minLength(10)],
+      description: ['', [Validators.required, Validators.minLength(10)]],
     });
     
     // Subscribe to errors
@@ -103,7 +106,7 @@ export class CreeCollectionComponent implements OnInit, OnDestroy {
       file: this.file
     };
     
-    console.log('Creating collection:', collectionData);
+    console.log('Creating collection with real API:', collectionData);
     
     // Show loading
     Swal.fire({
@@ -115,48 +118,72 @@ export class CreeCollectionComponent implements OnInit, OnDestroy {
       }
     });
     
-    // Simulate collection creation and CSV import
-    setTimeout(() => {
-      const mockCollection = this.generateMockCollection(collectionData);
-      
-      Swal.fire({
-        title: 'Collection Created!',
-        text: `Collection "${collectionData.nom}" has been created successfully with ${mockCollection.specimenCount} specimens imported.`,
-        icon: 'success',
-        timer: 3000
-      }).then(() => {
-        this.dialogRef.close(mockCollection);
+    // Step 1: Create collection using real API
+    this.store.dispatch(CollectionsActions.addCollection({ 
+      collection: {
+        nom: collectionData.nom,
+        description: collectionData.description,
+        dateCreation: Date.now()
+      }
+    }));
+    
+    // Subscribe to collection creation success
+    this.store.select(selectCollectionsLoading)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(isLoading => {
+        if (!isLoading) {
+          // Check if there's no error, which means success
+          this.collectionsError$
+            .pipe(takeUntil(this.destroy$))
+            .subscribe((error: string | null) => {
+              if (!error) {
+                // Get the created collection ID from the store
+                this.store.select(selectAllCollections)
+                  .pipe(takeUntil(this.destroy$))
+                  .subscribe(collections => {
+                    const createdCollection = collections.find((c: any) => c.nom === collectionData.nom);
+                    if (createdCollection) {
+                      console.log('Collection created successfully:', createdCollection);
+                      
+                      // Step 2: Import CSV using real API
+                      this.store.dispatch(CollectionsActions.importCsv({ 
+                        collectionId: createdCollection.id,
+                        file: collectionData.file
+                      }));
+                      
+                      // Subscribe to CSV import success
+                      this.store.select(selectCollectionsLoading)
+                        .pipe(takeUntil(this.destroy$))
+                        .subscribe(csvLoading => {
+                          if (!csvLoading) {
+                            this.collectionsError$
+                              .pipe(takeUntil(this.destroy$))
+                              .subscribe((csvError: string | null) => {
+                                if (!csvError) {
+                                  Swal.fire({
+                                    title: 'Collection Created!',
+                                    text: `Collection "${collectionData.nom}" has been created successfully and CSV data imported.`,
+                                    icon: 'success',
+                                    timer: 3000
+                                  }).then(() => {
+                                    this.dialogRef.close(createdCollection);
+                                  });
+                                } else {
+                                  Swal.fire('Error', 'Collection created but CSV import failed: ' + csvError, 'error');
+                                }
+                              });
+                          }
+                        });
+                    }
+                  });
+              } else {
+                Swal.fire('Error', 'Failed to create collection: ' + error, 'error');
+              }
+            });
+        }
       });
-      
-      console.log('Mock collection creation completed:', mockCollection);
-      
-      // TODO: Replace with proper NgRx actions
-      // this.store.dispatch(CollectionsActions.createCollection({ 
-      //   collectionData: {
-      //     nom: collectionData.nom,
-      //     description: collectionData.description
-      //   }
-      // }));
-      // 
-      // this.store.dispatch(CollectionsActions.importCsv({ 
-      //   collectionId: mockCollection.id,
-      //   file: collectionData.file
-      // }));
-    }, 3000);
   }
 
-  private generateMockCollection(collectionData: any): any {
-    return {
-      id: Date.now(),
-      nom: collectionData.nom,
-      description: collectionData.description,
-      dateCreation: new Date().toISOString(),
-      specimenCount: Math.floor(Math.random() * 1000) + 100,
-      imageCount: Math.floor(Math.random() * 2000) + 200,
-      statut: 'active',
-      importStatus: 'completed'
-    };
-  }
 
   onFileSelect(event: Event): void {
     const input = event.target as HTMLInputElement;

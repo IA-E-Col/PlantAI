@@ -6,27 +6,27 @@
         
         <div class="info-row">
           <h5 class="card-title">Corpus Name:</h5>
-          <p class="text-muted">cell</p>
+          <p class="text-muted">{{ collection?.nom || 'N/A' }}</p>
         </div>
 
         <div class="info-row">
           <h5 class="card-title">Description:</h5>
-          <p class="text-muted">test</p>
+          <p class="text-muted">{{ collection?.description || 'N/A' }}</p>
         </div>
 
         <div class="info-row">
           <h5 class="card-title">Creation Date:</h5>
-          <p class="text-muted">01/02/2025</p>
+          <p class="text-muted">{{ formatDate(collection?.dateCreation) || '00/00/0000' }}</p>
         </div>
 
         <div class="info-row">
           <h5 class="card-title">Creator:</h5>
-          <p class="text-muted">Yasine QACAMI</p>
+          <p class="text-muted">{{ getCurrentUser() || 'N/A' }}</p>
         </div>
 
         <div class="info-row">
           <h5 class="card-title">N° of Images:</h5>
-          <p class="text-muted">1003 Images</p>
+          <p class="text-muted">{{ NbSpecimens }} Images</p>
         </div>
       </div>
 

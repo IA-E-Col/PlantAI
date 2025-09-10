@@ -46,14 +46,18 @@ export class CollectionsEffects {
   addCollection$ = createEffect(() =>
     this.actions$.pipe(
       ofType(CollectionsActions.addCollection),
-      switchMap(({ collection }) =>
-        this.http.post<any>(`${this.baseUrl}/collections`, collection).pipe(
+      switchMap(({ collection }) => {
+        const formData = new FormData();
+        formData.append('nom', collection.nom);
+        formData.append('Description', collection.description);
+        
+        return this.http.post<any>(`${this.baseUrl}/collections/addCollection`, formData).pipe(
           map((newCollection) => CollectionsActions.addCollectionSuccess({ collection: newCollection })),
           catchError((error) => of(CollectionsActions.addCollectionFailure({
             error: error.message || 'Failed to add collection'
           })))
-        )
-      )
+        );
+      })
     )
   );
 
@@ -61,10 +65,24 @@ export class CollectionsEffects {
     this.actions$.pipe(
       ofType(CollectionsActions.deleteCollection),
       switchMap(({ collectionId }) =>
-        this.http.delete(`${this.baseUrl}/collections/${collectionId}`).pipe(
+        this.http.delete(`${this.baseUrl}/collections/delete/${collectionId}`).pipe(
           map(() => CollectionsActions.deleteCollectionSuccess({ collectionId })),
           catchError((error) => of(CollectionsActions.deleteCollectionFailure({
             error: error.message || 'Failed to delete collection'
+          })))
+        )
+      )
+    )
+  );
+
+  updateCollection$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(CollectionsActions.updateCollection),
+      switchMap(({ collectionId, changes }) =>
+        this.http.put<any>(`${this.baseUrl}/collections/update`, changes).pipe(
+          map((updatedCollection) => CollectionsActions.updateCollectionSuccess({ collection: updatedCollection })),
+          catchError((error) => of(CollectionsActions.updateCollectionFailure({
+            error: error.message || 'Failed to update collection'
           })))
         )
       )
@@ -76,7 +94,7 @@ export class CollectionsEffects {
     this.actions$.pipe(
       ofType(CollectionsActions.loadSpecimensByCollection),
       switchMap(({ collectionId }) =>
-        this.http.get<any[]>(`${this.baseUrl}/specimen/collection/${collectionId}`).pipe(
+        this.http.get<any[]>(`${this.baseUrl}/collections/${collectionId}/Specimens`).pipe(
           map((specimens) => CollectionsActions.loadSpecimensByCollectionSuccess({ specimens })),
           catchError((error) => of(CollectionsActions.loadSpecimensByCollectionFailure({
             error: error.message || 'Failed to load specimens'
@@ -90,7 +108,7 @@ export class CollectionsEffects {
     this.actions$.pipe(
       ofType(CollectionsActions.loadSpecimensByDataset),
       switchMap(({ datasetId }) =>
-        this.http.get<any[]>(`${this.baseUrl}/Dataset/${datasetId}/specimen`).pipe(
+        this.http.get<any[]>(`${this.baseUrl}/collections/Dataset/${datasetId}/specimen`).pipe(
           map((specimens) => CollectionsActions.loadSpecimensByDatasetSuccess({ specimens })),
           catchError((error) => of(CollectionsActions.loadSpecimensByDatasetFailure({
             error: error.message || 'Failed to load dataset specimens'
@@ -118,8 +136,8 @@ export class CollectionsEffects {
   loadDatasets$ = createEffect(() =>
     this.actions$.pipe(
       ofType(CollectionsActions.loadDatasets),
-      switchMap(() =>
-        this.http.get<any[]>(`${this.baseUrl}/datasets`).pipe(
+      switchMap(({ projectId }) =>
+        this.http.get<any[]>(`${this.baseUrl}/projets/${projectId}/Datasets`).pipe(
           map((datasets) => CollectionsActions.loadDatasetsSuccess({ datasets })),
           catchError((error) => of(CollectionsActions.loadDatasetsFailure({
             error: error.message || 'Failed to load datasets'
@@ -133,11 +151,19 @@ export class CollectionsEffects {
     this.actions$.pipe(
       ofType(CollectionsActions.loadDataset),
       switchMap(({ datasetId }) =>
-        this.http.get<any>(`${this.baseUrl}/dataset/${datasetId}`).pipe(
+        this.http.get<any>(`${this.baseUrl}/collections/dataset/${datasetId}`).pipe(
           map((dataset) => CollectionsActions.loadDatasetSuccess({ dataset })),
-          catchError((error) => of(CollectionsActions.loadDatasetFailure({
-            error: error.message || 'Failed to load dataset'
-          })))
+          catchError((error) => {
+            let errorMessage = 'Failed to load dataset';
+            if (error.status === 404) {
+              errorMessage = `Dataset with ID ${datasetId} not found. This collection may not have any datasets yet.`;
+            } else if (error.status === 500) {
+              errorMessage = 'Server error while loading dataset';
+            } else if (error.message) {
+              errorMessage = error.message;
+            }
+            return of(CollectionsActions.loadDatasetFailure({ error: errorMessage }));
+          })
         )
       )
     )
@@ -147,11 +173,72 @@ export class CollectionsEffects {
     this.actions$.pipe(
       ofType(CollectionsActions.addSpecimensToDataset),
       switchMap(({ datasetId, specimens }) =>
-        this.http.post<any>(`${this.baseUrl}/dataset/${datasetId}/specimens`, { specimens }).pipe(
+        this.http.post<any>(`${this.baseUrl}/collections/addSpecimensToDataset/${datasetId}`, specimens).pipe(
           map(() => CollectionsActions.addSpecimensToDatasetSuccess({ datasetId, specimens })),
           catchError((error) => of(CollectionsActions.addSpecimensToDatasetFailure({
             error: error.message || 'Failed to add specimens to dataset'
           })))
+        )
+      )
+    )
+  );
+
+  // CSV Import Effects
+  importCsv$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(CollectionsActions.importCsv),
+      switchMap(({ collectionId, file }) => {
+        const formData = new FormData();
+        formData.append('file', file);
+        
+        return this.http.post<number>(`${this.baseUrl}/import/import-csv/${collectionId}`, formData).pipe(
+          map((specimenCount) => CollectionsActions.importCsvSuccess({ collectionId, specimenCount })),
+          catchError((error) => of(CollectionsActions.importCsvFailure({
+            error: error.message || 'Failed to import CSV'
+          })))
+        );
+      })
+    )
+  );
+
+  // Annotation Import Effects
+  importAnnotations$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(CollectionsActions.importAnnotations),
+      switchMap(({ file, format, datasetId }) => {
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('format', format);
+        formData.append('datasetId', datasetId.toString());
+        
+        return this.http.post<any[]>(`${this.baseUrl}/import/import-annotations`, formData).pipe(
+          map((annotations) => CollectionsActions.importAnnotationsSuccess({ annotations })),
+          catchError((error) => of(CollectionsActions.importAnnotationsFailure({
+            error: error.message || 'Failed to import annotations'
+          })))
+        );
+      })
+    )
+  );
+
+  // Dataset Creation Effects
+  createDataset$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(CollectionsActions.createDataset),
+      switchMap(({ projectId, dataset }) =>
+        this.http.post<any>(`${this.baseUrl}/collections/addDataset/${projectId}`, dataset).pipe(
+          map((createdDataset) => CollectionsActions.createDatasetSuccess({ dataset: createdDataset })),
+          catchError((error) => {
+            let errorMessage = 'Failed to create dataset';
+            if (error.status === 404) {
+              errorMessage = `Project with ID ${projectId} not found`;
+            } else if (error.status === 500) {
+              errorMessage = 'Server error while creating dataset';
+            } else if (error.message) {
+              errorMessage = error.message;
+            }
+            return of(CollectionsActions.createDatasetFailure({ error: errorMessage }));
+          })
         )
       )
     )
