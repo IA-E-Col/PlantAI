@@ -21,7 +21,7 @@ import java.util.List;
 public class Specimen {
 
     @Id  @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long Id;
+    Long id;
     String baseDEnregistrement;
     String codeInstitution;
     String collectionCode;

@@ -17,6 +17,10 @@ public class Collection {
     String nom;
     String description;
     Date dateCreation;
+    
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "creator_id")
+    private User creator;
     @OneToMany(fetch=FetchType.LAZY,mappedBy = "collection",cascade = CascadeType.ALL)
     @JsonIgnore
     private List<Specimen> specimens = new ArrayList<>();

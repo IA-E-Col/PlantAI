@@ -6,6 +6,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -23,10 +24,21 @@ public class CollectionService  {
     private SpecimenRepository ps;
     @Autowired
     private DataSetRepository dr;
+    @Autowired
+    private UserRepository userRepository;
 
-    public Collection addCollection(Collection c ) {
+    public Collection addCollection(Collection c, Principal principal) {
         c.setDateCreation(new Date());
-        return  cr.save(c);
+        
+        // Set the creator if principal is provided
+        if (principal != null) {
+            Optional<User> userOptional = userRepository.findByEmail(principal.getName());
+            if (userOptional.isPresent()) {
+                c.setCreator(userOptional.get());
+            }
+        }
+        
+        return cr.save(c);
     }
 
     public Collection updateCollection(Collection c) {

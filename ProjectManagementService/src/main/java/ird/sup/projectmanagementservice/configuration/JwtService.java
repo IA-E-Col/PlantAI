@@ -79,12 +79,15 @@ public class JwtService {
     }
 
     private Claims extractAllClaims(String token) {
-        return Jwts
-                .parser()
-                .setSigningKey(getSignInKey())
-                .parseClaimsJws(token)
-                .getBody();
-
+        try {
+            return Jwts
+                    .parser()
+                    .setSigningKey(getSignInKey())
+                    .parseClaimsJws(token)
+                    .getBody();
+        } catch (Exception e) {
+            throw new RuntimeException("Invalid JWT token: " + e.getMessage());
+        }
     }
 
     private Key getSignInKey() {

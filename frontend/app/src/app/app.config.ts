@@ -23,6 +23,7 @@ import { UserEffects } from './store/users/users.effects';
 import { ErrorEffects } from './store/error/error.effects';
 import { AppInitializer } from './store/app.initializer';
 import { ErrorInterceptor } from './interceptors/error.interceptor';
+import { AuthInterceptor } from './interceptors/auth.interceptor';
 export class AppModule { }
 
 export const appConfig: ApplicationConfig = {
@@ -49,6 +50,12 @@ export const appConfig: ApplicationConfig = {
           useClass: ErrorInterceptor,
           multi: true
         },
+        // Temporarily disabled until backend compilation issues are resolved
+        // {
+        //   provide: HTTP_INTERCEPTORS,
+        //   useClass: AuthInterceptor,
+        //   multi: true
+        // },
     importProvidersFrom(
       BrowserModule,
       HttpClientModule,

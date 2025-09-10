@@ -56,7 +56,13 @@ final String jwt;
             return;
         }
         jwt = authHeader.substring(7);
-        userEmail = jwtService.extractUsername(jwt);
+        try {
+            userEmail = jwtService.extractUsername(jwt);
+        } catch (Exception e) {
+            // Invalid JWT token - just continue without authentication
+            filterChain.doFilter(request, response);
+            return;
+        }
         //si user not connecté
         if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             //get userDetails from DB

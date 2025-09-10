@@ -189,17 +189,19 @@ export class CollectionInfoComponent implements OnInit, OnDestroy {
     }
   }
 
-  getCurrentUser(): string {
-    try {
-      const userString = localStorage.getItem('authUser');
-      if (userString) {
-        const user = JSON.parse(userString);
-        return user.nom || user.email || 'Unknown User';
+  getCreatorName(): string {
+    if (this.collection?.creator) {
+      // Use the actual creator from the collection data
+      const creator = this.collection.creator;
+      if (creator.nom && creator.prenom) {
+        return `${creator.prenom} ${creator.nom}`;
+      } else if (creator.nom) {
+        return creator.nom;
+      } else if (creator.email) {
+        return creator.email;
       }
-    } catch (error) {
-      console.error('Error parsing user data:', error);
     }
-    return 'Unknown User';
+    return 'Unknown Creator';
   }
 
   onEditCollection(): void {

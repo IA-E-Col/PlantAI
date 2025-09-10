@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
 
@@ -41,7 +42,8 @@ public class CollectionController {
     @PostMapping("/addCollection")
     public ResponseEntity<Collection> addCollection(
             @RequestPart("nom") String nom,
-            @RequestPart("Description") String description
+            @RequestPart("Description") String description,
+            Principal principal
             ) {
 
         Collection iDC = new Collection();
@@ -53,7 +55,7 @@ public class CollectionController {
 
         System.out.println(iDC.getNom());
         if (iDC != null) {
-            Collection newCollection = collectionService.addCollection(iDC);
+            Collection newCollection = collectionService.addCollection(iDC, principal);
             return ResponseEntity.ok(newCollection);
         }
         return ResponseEntity.notFound().build();

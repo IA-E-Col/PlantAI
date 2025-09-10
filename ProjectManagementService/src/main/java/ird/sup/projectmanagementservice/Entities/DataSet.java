@@ -7,6 +7,8 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.AccessLevel;
+import lombok.experimental.FieldDefaults;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +18,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class DataSet {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,7 +32,7 @@ public class DataSet {
     Projet projet ;
     @OneToMany(fetch=FetchType.LAZY,cascade = CascadeType.ALL)
     @JsonIgnore
-    private List<Filtre> Filtres;
+    private List<Filtre> filtres;
     @ManyToMany
     @JsonIgnore
     @JoinTable(

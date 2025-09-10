@@ -10,6 +10,8 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.AccessLevel;
+import lombok.experimental.FieldDefaults;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +20,7 @@ import java.util.List;
 @NoArgsConstructor
 @Data
 @Entity
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class Modele {
     @Id  @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -28,7 +31,7 @@ public class Modele {
 
     @OneToMany(fetch=FetchType.LAZY,cascade = CascadeType.ALL)
     @JsonIgnore
-    private List<DataSet> Datasets=new ArrayList<>();
+    private List<DataSet> datasets=new ArrayList<>();
     @ManyToOne(cascade = CascadeType.ALL)
     @JsonIgnore
     private AnnotationModele annotation;

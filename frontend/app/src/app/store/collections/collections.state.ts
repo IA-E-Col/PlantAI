@@ -3,6 +3,12 @@ export interface Collection {
   nom: string;
   description: string;
   dateCreation: number;
+  creator?: {
+    id: number;
+    nom: string;
+    prenom: string;
+    email: string;
+  };
   specimens?: Specimen[];
 }
 
