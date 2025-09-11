@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -125,13 +126,19 @@ public class CollectionController {
     @GetMapping("/{id}/Datasets")
     public ResponseEntity<List<DataSet>> findDatasetByCollections(@PathVariable Long id) {
         Collection collection = collectionService.findCollectionbyId(id);
-        if (collection.getDatasets() != null) {
-            return ResponseEntity.ok(collection.getDatasets());
+        if (collection != null && collection.getProjets() != null) {
+            List<DataSet> allDatasets = new ArrayList<>();
+            for (Projet projet : collection.getProjets()) {
+                if (projet.getDatasets() != null) {
+                    allDatasets.addAll(projet.getDatasets());
+                }
+            }
+            return ResponseEntity.ok(allDatasets);
         } else {
             return ResponseEntity.notFound().build();
         }
     }
-    @GetMapping("/{id}/Specimens")
+    @GetMapping("/{id}/specimen")
     public ResponseEntity<List<Specimen>> findSpecienByCollections(@PathVariable Long id) {
         Collection collection = collectionService.findCollectionbyId(id);
         if (collection.getSpecimens() != null) {
@@ -148,6 +155,58 @@ public class CollectionController {
             return ResponseEntity.ok(dataSetOpt.get().getSpecimens());
         } else {
             return ResponseEntity.notFound().build();
+        }
+    }
+
+    @PutMapping("/updateDataset/{id}")
+    public ResponseEntity<DataSet> updateDataset(@PathVariable Long id, @RequestBody DataSet dataset) {
+        try {
+            System.out.println("=== UPDATING DATASET ===");
+            System.out.println("Dataset ID: " + id);
+            System.out.println("Dataset name: " + dataset.getName());
+            System.out.println("Dataset description: " + dataset.getDescription());
+            
+            Optional<DataSet> existingDatasetOpt = datasetService.getDataSetById(id);
+            if (!existingDatasetOpt.isPresent()) {
+                System.err.println("Dataset not found with ID: " + id);
+                return ResponseEntity.notFound().build();
+            }
+            
+            DataSet existingDataset = existingDatasetOpt.get();
+            existingDataset.setName(dataset.getName());
+            existingDataset.setDescription(dataset.getDescription());
+            
+            DataSet updatedDataset = datasetService.saveDataSet(existingDataset);
+            System.out.println("Dataset updated successfully: " + updatedDataset.getId());
+            
+            return ResponseEntity.ok(updatedDataset);
+        } catch (Exception e) {
+            System.err.println("Error updating dataset: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    @DeleteMapping("/deleteDataset/{id}")
+    public ResponseEntity<Void> deleteDataset(@PathVariable Long id) {
+        try {
+            System.out.println("=== DELETING DATASET ===");
+            System.out.println("Dataset ID: " + id);
+            
+            Optional<DataSet> datasetOpt = datasetService.getDataSetById(id);
+            if (!datasetOpt.isPresent()) {
+                System.err.println("Dataset not found with ID: " + id);
+                return ResponseEntity.notFound().build();
+            }
+            
+            datasetService.deleteDataSet(id);
+            System.out.println("Dataset deleted successfully: " + id);
+            
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            System.err.println("Error deleting dataset: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().build();
         }
     }
 

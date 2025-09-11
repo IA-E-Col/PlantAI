@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import ird.sup.projectmanagementservice.Entities.AnnotationH.Annotation;
 import ird.sup.projectmanagementservice.Entities.Commentaire;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -12,6 +13,7 @@ import java.util.List;
 @Entity
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 @DiscriminatorValue("modele")
 public class AnnotationModele extends Annotation {
     @OneToMany(fetch= FetchType.EAGER, mappedBy="annotationModele", cascade = CascadeType.ALL)

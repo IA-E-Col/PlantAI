@@ -94,7 +94,7 @@ export class CollectionsEffects {
     this.actions$.pipe(
       ofType(CollectionsActions.loadSpecimensByCollection),
       switchMap(({ collectionId }) =>
-        this.http.get<any[]>(`${this.baseUrl}/collections/${collectionId}/Specimens`).pipe(
+        this.http.get<any[]>(`${this.baseUrl}/collections/${collectionId}/specimen`).pipe(
           map((specimens) => CollectionsActions.loadSpecimensByCollectionSuccess({ specimens })),
           catchError((error) => of(CollectionsActions.loadSpecimensByCollectionFailure({
             error: error.message || 'Failed to load specimens'
@@ -172,9 +172,9 @@ export class CollectionsEffects {
   addSpecimensToDataset$ = createEffect(() =>
     this.actions$.pipe(
       ofType(CollectionsActions.addSpecimensToDataset),
-      switchMap(({ datasetId, specimens }) =>
-        this.http.post<any>(`${this.baseUrl}/collections/addSpecimensToDataset/${datasetId}`, specimens).pipe(
-          map(() => CollectionsActions.addSpecimensToDatasetSuccess({ datasetId, specimens })),
+      switchMap(({ datasetId, specimenIds }) =>
+        this.http.post<any>(`${this.baseUrl}/collections/addSpecimensToDataset/${datasetId}`, specimenIds).pipe(
+          map((dataset) => CollectionsActions.addSpecimensToDatasetSuccess({ dataset })),
           catchError((error) => of(CollectionsActions.addSpecimensToDatasetFailure({
             error: error.message || 'Failed to add specimens to dataset'
           })))
@@ -238,6 +238,52 @@ export class CollectionsEffects {
               errorMessage = error.message;
             }
             return of(CollectionsActions.createDatasetFailure({ error: errorMessage }));
+          })
+        )
+      )
+    )
+  );
+
+  // Dataset Update Effects
+  updateDataset$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(CollectionsActions.updateDataset),
+      switchMap(({ datasetId, changes }) =>
+        this.http.put<any>(`${this.baseUrl}/collections/updateDataset/${datasetId}`, changes).pipe(
+          map((updatedDataset) => CollectionsActions.updateDatasetSuccess({ dataset: updatedDataset })),
+          catchError((error) => {
+            let errorMessage = 'Failed to update dataset';
+            if (error.status === 404) {
+              errorMessage = `Dataset with ID ${datasetId} not found`;
+            } else if (error.status === 500) {
+              errorMessage = 'Server error while updating dataset';
+            } else if (error.message) {
+              errorMessage = error.message;
+            }
+            return of(CollectionsActions.updateDatasetFailure({ error: errorMessage }));
+          })
+        )
+      )
+    )
+  );
+
+  // Dataset Delete Effects
+  deleteDataset$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(CollectionsActions.deleteDataset),
+      switchMap(({ datasetId }) =>
+        this.http.delete<any>(`${this.baseUrl}/collections/deleteDataset/${datasetId}`).pipe(
+          map(() => CollectionsActions.deleteDatasetSuccess({ datasetId })),
+          catchError((error) => {
+            let errorMessage = 'Failed to delete dataset';
+            if (error.status === 404) {
+              errorMessage = `Dataset with ID ${datasetId} not found`;
+            } else if (error.status === 500) {
+              errorMessage = 'Server error while deleting dataset';
+            } else if (error.message) {
+              errorMessage = error.message;
+            }
+            return of(CollectionsActions.deleteDatasetFailure({ error: errorMessage }));
           })
         )
       )

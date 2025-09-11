@@ -11,6 +11,8 @@ import lombok.experimental.FieldDefaults;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
+import java.util.HashSet;
 
 @Data
 @NoArgsConstructor
@@ -54,19 +56,23 @@ public class Projet {
     }
     
     public int getNumberOfSpecimen(){
-        int n = 0;
         try {
             if (this.datasets != null) {
+                // Count unique specimens across all datasets to avoid double-counting
+                Set<Long> uniqueSpecimenIds = new HashSet<>();
                 for(DataSet d : this.datasets){
                     if (d.getSpecimens() != null) {
-                        n += d.getSpecimens().size();
+                        for(Specimen s : d.getSpecimens()) {
+                            uniqueSpecimenIds.add(s.getId());
+                        }
                     }
                 }
+                return uniqueSpecimenIds.size();
             }
         } catch (Exception e) {
             return 0;
         }
-        return n;
+        return 0;
     }
 
 }

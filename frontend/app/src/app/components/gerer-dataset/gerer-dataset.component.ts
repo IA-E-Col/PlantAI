@@ -17,7 +17,8 @@ import { CollectionsActions, NavigationActions } from '../../store';
 import { 
   selectAllCollections,
   selectCollectionsLoading,
-  selectCollectionsError 
+  selectCollectionsError,
+  selectDatasetById
 } from '../../store/collections/collections.selectors';
 import { 
   selectNavigationDatasetId
@@ -114,33 +115,27 @@ export class GererDatasetComponent implements OnInit, OnDestroy {
   private loadDataset(datasetId: string): void {
     console.log('Loading dataset:', datasetId);
     
-    // Generate mock dataset data
-    const mockDataset = this.generateMockDataset(parseInt(datasetId));
-    this.currentDataset = mockDataset;
+    // Load real dataset using NgRx action
+    this.store.dispatch(CollectionsActions.loadDataset({ datasetId: parseInt(datasetId) }));
     
-    // Populate form with dataset data
-    this.datasetFormGroup.patchValue({
-      nomDataset: mockDataset.name,
-      description: mockDataset.description
-    });
-    
-    console.log('Dataset loaded:', mockDataset);
-    
-    // TODO: Replace with proper NgRx action
-    // this.store.dispatch(CollectionsActions.loadDataset({ datasetId }));
+    // Subscribe to dataset data
+    this.store.select(selectDatasetById(parseInt(datasetId)))
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(dataset => {
+        if (dataset) {
+          this.currentDataset = dataset;
+          
+          // Populate form with dataset data
+          this.datasetFormGroup.patchValue({
+            nomDataset: dataset.name,
+            description: dataset.description
+          });
+          
+          console.log('Real dataset loaded:', dataset);
+        }
+      });
   }
 
-  private generateMockDataset(datasetId: number): any {
-    return {
-      id: datasetId,
-      name: `Dataset ${datasetId}`,
-      description: `Description for dataset ${datasetId}`,
-      dateCreation: new Date().toISOString(),
-      statut: 'active',
-      nbrSpecimens: Math.floor(Math.random() * 1000) + 100,
-      nbrImages: Math.floor(Math.random() * 2000) + 200
-    };
-  }
 
   afficherFormulaire(afficher: boolean): void {
     this.afficherLeFormulaire = afficher;
@@ -159,23 +154,37 @@ export class GererDatasetComponent implements OnInit, OnDestroy {
         cancelButtonText: 'Cancel'
       }).then((result) => {
         if (result.isConfirmed) {
-          const updatedDataset = {
-            ...this.currentDataset,
-            ...this.datasetFormGroup.value,
-            dateModification: new Date().toISOString()
+          const changes = {
+            name: this.datasetFormGroup.value.nomDataset,
+            description: this.datasetFormGroup.value.description
           };
           
-          console.log('Updating dataset:', updatedDataset);
+          console.log('Updating dataset:', changes);
           
-          // Dispatch update action
-          this.store.dispatch(CollectionsActions.updateCollection({ 
-            collectionId: this.currentDataset.id, 
-            changes: this.datasetFormGroup.value 
+          // Dispatch proper dataset update action
+          this.store.dispatch(CollectionsActions.updateDataset({ 
+            datasetId: this.currentDataset.id, 
+            changes: changes
           }));
           
-          Swal.fire('Success', 'Dataset modified successfully', 'success').then(() => {
-            this.router.navigateByUrl(`/admin/corpus/${this.IdDataset}`);
-          });
+          // Subscribe to update success/failure
+          this.store.select(selectCollectionsLoading)
+            .pipe(takeUntil(this.destroy$))
+            .subscribe(isLoading => {
+              if (!isLoading) {
+                this.store.select(selectCollectionsError)
+                  .pipe(takeUntil(this.destroy$))
+                  .subscribe(error => {
+                    if (!error) {
+                      Swal.fire('Success', 'Dataset modified successfully', 'success').then(() => {
+                        this.router.navigateByUrl(`/admin/datasets/${this.IdDataset}`);
+                      });
+                    } else {
+                      Swal.fire('Error', `Failed to update dataset: ${error}`, 'error');
+                    }
+                  });
+              }
+            });
         }
       });
     } else {
@@ -203,7 +212,7 @@ export class GererDatasetComponent implements OnInit, OnDestroy {
   }
 
   onCancel(): void {
-    this.router.navigateByUrl(`/admin/corpus/${this.IdDataset}`);
+    this.router.navigateByUrl(`/admin/datasets/${this.IdDataset}`);
   }
 
   onDeleteDataset(): void {
@@ -220,12 +229,27 @@ export class GererDatasetComponent implements OnInit, OnDestroy {
       if (result.isConfirmed) {
         console.log('Deleting dataset:', this.IdDataset);
         
-        // TODO: Implement delete functionality with NgRx
-        // this.store.dispatch(CollectionsActions.deleteCollection({ collectionId: this.IdDataset }));
+        // Dispatch proper dataset delete action
+        this.store.dispatch(CollectionsActions.deleteDataset({ datasetId: parseInt(this.IdDataset) }));
         
-        Swal.fire('Success', 'Dataset deleted successfully', 'success').then(() => {
-          this.router.navigate(['/admin/corpus']);
-        });
+        // Subscribe to delete success/failure
+        this.store.select(selectCollectionsLoading)
+          .pipe(takeUntil(this.destroy$))
+          .subscribe(isLoading => {
+            if (!isLoading) {
+              this.store.select(selectCollectionsError)
+                .pipe(takeUntil(this.destroy$))
+                .subscribe(error => {
+                  if (!error) {
+                    Swal.fire('Success', 'Dataset deleted successfully', 'success').then(() => {
+                      this.router.navigate(['/admin/datasets']);
+                    });
+                  } else {
+                    Swal.fire('Error', `Failed to delete dataset: ${error}`, 'error');
+                  }
+                });
+            }
+          });
       }
     });
   }

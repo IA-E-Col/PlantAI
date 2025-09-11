@@ -1,0 +1,203 @@
+/* Specimen Selection Component Styles */
+
+.specimen-card {
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+  position: relative;
+}
+
+.specimen-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-color: #86A786;
+}
+
+.specimen-card.selected {
+  border-color: #86A786;
+  background-color: #f8f9fa;
+  box-shadow: 0 4px 12px rgba(134, 167, 134, 0.2);
+}
+
+.specimen-checkbox {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  z-index: 10;
+}
+
+.specimen-image-container {
+  height: 200px;
+  overflow: hidden;
+  position: relative;
+}
+
+.specimen-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.specimen-card:hover .specimen-image {
+  transform: scale(1.05);
+}
+
+.specimen-details {
+  font-size: 0.9rem;
+}
+
+.detail-item {
+  margin-bottom: 0.25rem;
+  color: #6c757d;
+}
+
+.detail-item strong {
+  color: #495057;
+}
+
+.border-bottom-green {
+  border-bottom: 3px solid #86A786;
+  display: inline-block;
+}
+
+/* Selection Controls */
+.btn-outline-primary {
+  border-color: #86A786;
+  color: #86A786;
+}
+
+.btn-outline-primary:hover {
+  background-color: #86A786;
+  border-color: #86A786;
+  color: white;
+}
+
+.btn-outline-secondary {
+  border-color: #6c757d;
+  color: #6c757d;
+}
+
+.btn-outline-secondary:hover {
+  background-color: #6c757d;
+  border-color: #6c757d;
+  color: white;
+}
+
+/* Success Button */
+.btn-success {
+  background-color: #86A786;
+  border-color: #86A786;
+}
+
+.btn-success:hover {
+  background-color: #6d8a6d;
+  border-color: #6d8a6d;
+}
+
+/* Badge */
+.badge.bg-primary {
+  background-color: #86A786 !important;
+}
+
+/* Pagination */
+.custom-pagination {
+  --bs-pagination-color: #86A786;
+  --bs-pagination-hover-color: #6d8a6d;
+  --bs-pagination-focus-color: #6d8a6d;
+  --bs-pagination-active-bg: #86A786;
+  --bs-pagination-active-border-color: #86A786;
+}
+
+/* Card Hover Effects */
+.card {
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Search Input */
+.input-group-text {
+  background-color: #f8f9fa;
+  border-color: #dee2e6;
+}
+
+.form-control:focus {
+  border-color: #86A786;
+  box-shadow: 0 0 0 0.2rem rgba(134, 167, 134, 0.25);
+}
+
+/* Loading States */
+.loading-spinner {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 3px solid #f3f3f3;
+  border-top: 3px solid #86A786;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .specimen-image-container {
+    height: 150px;
+  }
+  
+  .specimen-details {
+    font-size: 0.8rem;
+  }
+  
+  .btn-lg {
+    font-size: 1rem;
+    padding: 0.5rem 1rem;
+  }
+}
+
+/* Selection Animation */
+.specimen-card.selected {
+  animation: selectPulse 0.5s ease-in-out;
+}
+
+@keyframes selectPulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.02); }
+  100% { transform: scale(1); }
+}
+
+/* Empty State */
+.display-1 {
+  font-size: 4rem;
+  color: #dee2e6;
+}
+
+/* Custom Scrollbar */
+.specimen-list-container {
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+.specimen-list-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.specimen-list-container::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.specimen-list-container::-webkit-scrollbar-thumb {
+  background: #86A786;
+  border-radius: 4px;
+}
+
+.specimen-list-container::-webkit-scrollbar-thumb:hover {
+  background: #6d8a6d;
+}

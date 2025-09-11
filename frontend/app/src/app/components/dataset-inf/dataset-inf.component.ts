@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Observable, Subject, takeUntil, switchMap } from 'rxjs';
 import { Store } from '@ngrx/store';
 import { CommonModule, AsyncPipe } from '@angular/common';
@@ -41,6 +41,7 @@ export class DatasetInfComponent implements OnInit, OnDestroy {
 
   constructor(
     private route: ActivatedRoute,
+    private router: Router,
     private store: Store<AppState>
   ) {
     // Initialize NgRx observables
@@ -127,5 +128,26 @@ export class DatasetInfComponent implements OnInit, OnDestroy {
     }
   }
 
+  navigateToAddSpecimens(): void {
+    this.route.parent?.params
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(params => {
+        const datasetId = params['id'];
+        if (datasetId) {
+          this.router.navigate([`/admin/datasets/${datasetId}/add-specimens`]);
+        }
+      });
+  }
+
+  navigateToImages(): void {
+    this.route.parent?.params
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(params => {
+        const datasetId = params['id'];
+        if (datasetId) {
+          this.router.navigate([`/admin/datasets/${datasetId}/images`]);
+        }
+      });
+  }
 
 }

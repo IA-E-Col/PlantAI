@@ -50,6 +50,13 @@ export const selectSpecimensByGenus = (genre: string) => createSelector(
   (specimens) => specimens.filter(specimen => specimen.genre === genre)
 );
 
+export const selectSpecimensByCollection = (collectionId: number) => createSelector(
+  selectAllSpecimens,
+  (specimens) => {
+    return specimens;
+  }
+);
+
 // Dataset Selectors
 export const selectAllDatasets = createSelector(
   selectCollectionsState,
@@ -135,5 +142,7 @@ export const selectSpecimenStats = createSelector(
 
 export const selectSpecimensByDataset = (datasetId: string) => createSelector(
   selectAllSpecimens,
-  (specimens) => specimens.filter(specimen => specimen.collection?.id === parseInt(datasetId))
+  (specimens) => {
+    return specimens;
+  }
 );

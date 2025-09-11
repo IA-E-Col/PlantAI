@@ -10,11 +10,16 @@ import { AppState } from '../../store/app.state';
 import { CollectionsActions, NavigationActions } from '../../store';
 import { 
   selectCollectionsLoading,
-  selectCollectionsError 
+  selectCollectionsError,
+  selectAllDatasets,
+  selectSpecimensByCollection
 } from '../../store/collections/collections.selectors';
 import { 
   selectNavigationProjectId
 } from '../../store/navigation/navigation.selectors';
+import { 
+  selectProjectById
+} from '../../store/projects/projects.selectors';
 
 @Component({
   selector: 'app-create-collection-modal',
@@ -128,10 +133,9 @@ export class CreateCollectionModalComponent implements OnInit, OnDestroy {
     
     // Create dataset using real API
     const datasetData = {
-      nom: formData.nom,
+      name: formData.nom, // Map 'nom' to 'name' to match backend entity
       description: formData.description,
-      dateCreation: Date.now(),
-      specimens: []
+      specimens: [] // Remove dateCreation as it's not in the DataSet entity
     };
     
     // Dispatch create dataset action
@@ -150,9 +154,10 @@ export class CreateCollectionModalComponent implements OnInit, OnDestroy {
             .pipe(takeUntil(this.destroy$))
             .subscribe(error => {
               if (!error) {
+                // Dataset created successfully
                 Swal.fire({
                   title: 'Dataset Created!',
-                  text: `Dataset "${formData.nom}" has been created successfully.`,
+                  text: `Dataset "${formData.nom}" has been created successfully. You can now add specimens to it.`,
                   icon: 'success',
                   timer: 3000
                 }).then(() => {
@@ -172,6 +177,7 @@ export class CreateCollectionModalComponent implements OnInit, OnDestroy {
         }
       });
   }
+
   
   // Mock data generation methods removed - now using real API calls
   

@@ -178,8 +178,10 @@ export class CollectionImgComponent implements OnInit, OnDestroy {
   // Mock specimens generation method removed - now using real API calls
 
   sortPlantsByScientificName(): void {
-    this.collectionSpecimens.sort((a, b) => a.nomScientifique.localeCompare(b.nomScientifique));
-    this.specimensSubject.next([...this.collectionSpecimens]);
+    // Create a new sorted array instead of mutating the read-only NgRx array
+    const sortedSpecimens = [...this.collectionSpecimens].sort((a, b) => a.nomScientifique.localeCompare(b.nomScientifique));
+    this.collectionSpecimens = sortedSpecimens;
+    this.specimensSubject.next(sortedSpecimens);
   }
 
   navigateToImageInf(plante: any): void {

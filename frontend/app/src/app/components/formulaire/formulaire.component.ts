@@ -181,7 +181,7 @@ export class FormulaireComponent implements OnInit, OnDestroy {
   private loadFilterData(): void {
     console.log('Loading filter data');
     
-    // Generate mock filter values
+    // Generate mock filter values (restore original working approach)
     const mockFilterValues = this.generateMockFilterValues();
     this.filterValues = mockFilterValues;
     this.filterValuesSubject.next(mockFilterValues);
@@ -195,6 +195,128 @@ export class FormulaireComponent implements OnInit, OnDestroy {
     
     // TODO: Replace with proper NgRx action
     // this.store.dispatch(CollectionsActions.loadFilterFields());
+  }
+
+  private loadRealFilterValues(): void {
+    console.log('Loading real filter values from specimen data');
+    
+    // Get the current project ID from NgRx store
+    this.projectId$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(projectId => {
+        if (projectId) {
+          console.log('Loading real specimens for filter options, project ID:', projectId);
+          
+          // Load real specimens from the project's corpus to extract filter options
+          this.loadSpecimensForFilterOptions(Number(projectId));
+        } else {
+          console.log('No project ID available, using mock filter values');
+          // Fallback to mock values if no project is selected
+          const mockFilterValues = this.generateMockFilterValues();
+          this.filterValues = mockFilterValues;
+          this.filterValuesSubject.next(mockFilterValues);
+          this.populateFilterOptions();
+          this.populateSuggestions();
+        }
+      });
+  }
+
+  private loadSpecimensForFilterOptions(projectId: number): void {
+    // Make a direct API call to get the project data
+    fetch(`http://localhost:8080/api/projets/${projectId}`)
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`Project with ID ${projectId} not found (${response.status})`);
+        }
+        return response.json();
+      })
+      .then(project => {
+        if (project && project.collection && project.collection.id) {
+          const collectionId = project.collection.id;
+          console.log('Loading specimens from collection ID for filter options:', collectionId);
+          
+          // Load specimens from the collection
+          return fetch(`http://localhost:8080/api/collections/${collectionId}/specimen`);
+        } else {
+          throw new Error('Project or collection not found');
+        }
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`Failed to load specimens (${response.status})`);
+        }
+        return response.json();
+      })
+      .then(specimens => {
+        console.log('Real specimens loaded for filter options:', specimens.length);
+        
+        // Extract unique values from real specimen data
+        const realFilterValues = this.extractFilterValuesFromSpecimens(specimens);
+        this.filterValues = realFilterValues;
+        this.filterValuesSubject.next(realFilterValues);
+        
+        // Populate options
+        this.populateFilterOptions();
+        this.populateSuggestions();
+        
+        console.log('Real filter values extracted:', realFilterValues);
+      })
+      .catch(error => {
+        console.error('Error loading specimens for filter options:', error);
+        // Fallback to mock values on error
+        const mockFilterValues = this.generateMockFilterValues();
+        this.filterValues = mockFilterValues;
+        this.filterValuesSubject.next(mockFilterValues);
+        this.populateFilterOptions();
+        this.populateSuggestions();
+      });
+  }
+
+  private extractFilterValuesFromSpecimens(specimens: any[]): string[][] {
+    const uniqueValues: { [key: string]: Set<string> } = {
+      countries: new Set(),
+      recordedBy: new Set(),
+      locations: new Set(),
+      cities: new Set(),
+      departments: new Set(),
+      scientificNames: new Set(),
+      families: new Set(),
+      specificEpithets: new Set(),
+      genera: new Set(),
+      scientificNameAuthors: new Set()
+    };
+
+    specimens.forEach(specimen => {
+      if (specimen.pays) uniqueValues['countries'].add(specimen.pays);
+      if (specimen.enregistrePar) uniqueValues['recordedBy'].add(specimen.enregistrePar);
+      if (specimen.lieu) uniqueValues['locations'].add(specimen.lieu);
+      if (specimen.ville) uniqueValues['cities'].add(specimen.ville);
+      if (specimen.departement) uniqueValues['departments'].add(specimen.departement);
+      if (specimen.nomScientifique) uniqueValues['scientificNames'].add(specimen.nomScientifique);
+      if (specimen.famille) uniqueValues['families'].add(specimen.famille);
+      if (specimen.epitheteSpecifique) uniqueValues['specificEpithets'].add(specimen.epitheteSpecifique);
+      if (specimen.genre) uniqueValues['genera'].add(specimen.genre);
+      if (specimen.nomScientifiqueAuteur) uniqueValues['scientificNameAuthors'].add(specimen.nomScientifiqueAuteur);
+    });
+
+    return [
+      Array.from(uniqueValues['countries']).sort(),
+      [], // Empty for index 1
+      Array.from(uniqueValues['recordedBy']).sort(),
+      Array.from(uniqueValues['locations']).sort(),
+      Array.from(uniqueValues['cities']).sort(),
+      Array.from(uniqueValues['departments']).sort(),
+      Array.from(uniqueValues['scientificNames']).sort(),
+      Array.from(uniqueValues['families']).sort(),
+      Array.from(uniqueValues['specificEpithets']).sort(),
+      Array.from(uniqueValues['genera']).sort(),
+      [], // Empty for index 10
+      [], // Empty for index 11
+      [], // Empty for index 12
+      [], // Empty for index 13
+      [], // Empty for index 14
+      Array.from(uniqueValues['scientificNameAuthors']).sort()
+    ];
   }
 
   private loadModelsForAnnotations(): void {
@@ -213,25 +335,25 @@ export class FormulaireComponent implements OnInit, OnDestroy {
 
   private generateMockFilterValues(): string[][] {
     return [
-      // Country options (index 0)
-      ['Senegal', 'Mali', 'Burkina Faso', 'Niger', 'Guinea', 'Ivory Coast'],
-      // Recorded by options (index 2)
-      ['Dr. Marie Dubois', 'Prof. Jean Martin', 'Dr. Sophie Laurent', 'Dr. Ahmed Diallo'],
+      // Country options (index 0) - Updated with real data
+      ['France', 'Afrique australe', 'Senegal', 'Mali', 'Burkina Faso', 'Niger', 'Guinea', 'Ivory Coast'],
+      // Recorded by options (index 2) - Updated with real data
+      ['Wilms, F.', 'Dr. Marie Dubois', 'Prof. Jean Martin', 'Dr. Sophie Laurent', 'Dr. Ahmed Diallo'],
       // Location options (index 3)
       ['Dakar', 'Bamako', 'Ouagadougou', 'Niamey', 'Conakry', 'Abidjan'],
       // City options (index 4)
       ['Dakar', 'Bamako', 'Ouagadougou', 'Niamey', 'Conakry', 'Abidjan'],
       // Department options (index 5)
       ['Botany', 'Ecology', 'Taxonomy', 'Conservation'],
-      // Scientific name options (index 6)
-      ['Acacia senegalensis', 'Panicum maximum', 'Vernonia amygdalina', 'Psychotria capensis'],
-      // Family options (index 7)
-      ['Fabaceae', 'Poaceae', 'Asteraceae', 'Rubiaceae', 'Euphorbiaceae'],
-      // Specific epithet options (index 8)
-      ['senegalensis', 'maximum', 'amygdalina', 'capensis', 'hirta'],
-      // Genus options (index 9)
-      ['Acacia', 'Panicum', 'Vernonia', 'Psychotria', 'Euphorbia'],
-      // Scientific name author options (index 15)
+      // Scientific name options (index 6) - Updated with real data
+      ['Senecio pubigerus L.', 'Acacia senegalensis', 'Panicum maximum', 'Vernonia amygdalina', 'Psychotria capensis'],
+      // Family options (index 7) - Updated with real data
+      ['Apiaceae', 'Asteraceae', 'Caryophyllaceae', 'Fabaceae', 'Poaceae', 'Rubiaceae', 'Euphorbiaceae'],
+      // Specific epithet options (index 8) - Updated with real data
+      ['pubigerus', 'senegalensis', 'maximum', 'amygdalina', 'capensis', 'hirta'],
+      // Genus options (index 9) - Updated with real data
+      ['Eryngium', 'Senecio', 'Silene', 'Astragalus', 'Ononis', 'Acacia', 'Panicum', 'Vernonia', 'Psychotria', 'Euphorbia'],
+      // Scientific name author options (index 15) - Updated with real data
       ['L.', 'Willd.', 'Schumach.', 'Thonn.', 'Benth.']
     ];
   }
@@ -344,6 +466,7 @@ export class FormulaireComponent implements OnInit, OnDestroy {
   }
 
   handleSubmit(form: HTMLFormElement): void {
+    console.log('=== FORM SUBMISSION STARTED ===');
     console.log('Handling form submission');
     this.isLoading = true;
     
@@ -359,6 +482,7 @@ export class FormulaireComponent implements OnInit, OnDestroy {
     const allTags: { [key: string]: string[] } = {};
     const fieldContainers = form.querySelectorAll('.field-container');
 
+    console.log('Extracting tags from form...');
     fieldContainers.forEach(container => {
       const label = container.querySelector('label')?.innerText || '';
       const tagContainer = container.querySelector('.tag-container') as HTMLElement;
@@ -366,23 +490,32 @@ export class FormulaireComponent implements OnInit, OnDestroy {
       if (tagContainer) {
         const tags = this.getUniqueTags(tagContainer);
         allTags[label] = tags;
+        console.log(`Field "${label}":`, tags);
       } else {
         console.warn(`No tag container found for ${label}`);
       }
     });
+    
+    console.log('All extracted tags:', allTags);
 
-    // Prepare filter options
+    // Prepare filter options - match the array structure from generateMockFilterValues
     const selectedOptions = [
-      allTags['Country'] || [],
-      allTags['Genus'] || [],
-      allTags['Collected By'] || [],
-      allTags['Family'] || [],
-      allTags['Specific Epithet'] || [],
-      allTags['Scientific Name'] || [],
-      allTags['Scientific Name Author'] || [],
-      allTags['City'] || [],
-      allTags['Department'] || [],
-      allTags['Location'] || []
+      allTags['Country'] || [],                    // index 0
+      [],                                          // index 1 (empty)
+      allTags['Collected By'] || [],              // index 2
+      allTags['Location'] || [],                  // index 3
+      allTags['City'] || [],                      // index 4
+      allTags['Department'] || [],                // index 5
+      allTags['Scientific Name'] || [],           // index 6
+      allTags['Family'] || [],                    // index 7
+      allTags['Specific Epithet'] || [],          // index 8
+      allTags['Genus'] || [],                     // index 9
+      [],                                          // index 10 (empty)
+      [],                                          // index 11 (empty)
+      [],                                          // index 12 (empty)
+      [],                                          // index 13 (empty)
+      [],                                          // index 14 (empty)
+      allTags['Scientific Name Author'] || []     // index 15
     ];
     
     this.Filtres.test = selectedOptions;
@@ -395,31 +528,122 @@ export class FormulaireComponent implements OnInit, OnDestroy {
   private filterSpecimens(): void {
     console.log('Filtering specimens with filters:', this.Filtres);
     
-    // Generate mock filtered specimens
-    const mockSpecimens = this.generateMockFilteredSpecimens();
-    this.specimensSubject.next(mockSpecimens);
-    
-    // Simulate loading delay
-    setTimeout(() => {
-      this.isLoading = false;
-      
-      // Navigate to images form
-      const timestamp = new Date().getTime();
-      console.log("Navigation timestamp:", timestamp);
-      
-      this.router.navigate(['/admin/formulaire/images-form/17'], { 
-        queryParams: { timestamp },
-        state: { specimens: mockSpecimens, filters: this.Filtres }
+    // Get the current project ID from NgRx store
+    this.projectId$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(projectId => {
+        if (projectId) {
+          console.log('Loading real specimens for project ID:', projectId);
+          
+          // Load real specimens from the project's corpus
+          this.loadRealSpecimensAndFilter(Number(projectId));
+        } else {
+          console.error('No project ID available for filtering');
+          Swal.fire('Error', 'No project selected. Please select a project first.', 'error');
+        }
       });
-      
-      console.log('Specimens filtered successfully:', mockSpecimens.length, 'items');
-      
-      // TODO: Replace with proper NgRx action
-      // this.store.dispatch(CollectionsActions.filterSpecimens({ 
-      //   filters: this.Filtres, 
-      //   projectId: this.projectId 
-      // }));
-    }, 1000);
+  }
+
+  private loadRealSpecimensAndFilter(projectId: number): void {
+    // Make a direct API call to get the project data
+    fetch(`http://localhost:8080/api/projets/${projectId}`)
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`Project with ID ${projectId} not found (${response.status})`);
+        }
+        return response.json();
+      })
+      .then(project => {
+        if (project && project.collection && project.collection.id) {
+          const collectionId = project.collection.id;
+          console.log('Loading specimens from collection ID:', collectionId);
+          
+          // Load specimens from the collection
+          return fetch(`http://localhost:8080/api/collections/${collectionId}/specimen`);
+        } else {
+          throw new Error('Project or collection not found');
+        }
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`Failed to load specimens (${response.status})`);
+        }
+        return response.json();
+      })
+      .then(specimens => {
+        console.log('Real specimens loaded:', specimens.length);
+        
+        // Apply filters to real specimens
+        const filteredSpecimens = this.applyFiltersToSpecimens(specimens);
+        console.log('Specimens after filtering:', filteredSpecimens.length);
+        
+        // Navigate to images form with filtered specimens
+        const timestamp = new Date().getTime();
+        this.router.navigate([`/admin/formulaire/images-form/${projectId}`], { 
+          queryParams: { timestamp },
+          state: { specimens: filteredSpecimens, filters: this.Filtres }
+        });
+        
+        console.log('Specimens filtered successfully:', filteredSpecimens.length, 'items');
+      })
+      .catch(error => {
+        console.error('Error loading specimens:', error);
+        Swal.fire('Error', `Failed to load specimens: ${error.message}`, 'error');
+      });
+  }
+
+  private applyFiltersToSpecimens(specimens: any[]): any[] {
+    let filteredSpecimens = [...specimens];
+    
+    // Apply family filter
+    if (this.Filtres.test[7] && this.Filtres.test[7].length > 0) {
+      const families = this.Filtres.test[7];
+      filteredSpecimens = filteredSpecimens.filter(specimen => 
+        families.some(family => specimen.famille && specimen.famille.toLowerCase().includes(family.toLowerCase()))
+      );
+    }
+    
+    // Apply genus filter
+    if (this.Filtres.test[9] && this.Filtres.test[9].length > 0) {
+      const genera = this.Filtres.test[9];
+      filteredSpecimens = filteredSpecimens.filter(specimen => 
+        genera.some(genus => specimen.genre && specimen.genre.toLowerCase().includes(genus.toLowerCase()))
+      );
+    }
+    
+    // Apply country filter
+    if (this.Filtres.test[0] && this.Filtres.test[0].length > 0) {
+      const countries = this.Filtres.test[0];
+      filteredSpecimens = filteredSpecimens.filter(specimen => 
+        countries.some(country => specimen.pays && specimen.pays.toLowerCase().includes(country.toLowerCase()))
+      );
+    }
+    
+    // Apply scientific name filter
+    if (this.Filtres.test[6] && this.Filtres.test[6].length > 0) {
+      const scientificNames = this.Filtres.test[6];
+      filteredSpecimens = filteredSpecimens.filter(specimen => 
+        scientificNames.some(name => specimen.nomScientifique && specimen.nomScientifique.toLowerCase().includes(name.toLowerCase()))
+      );
+    }
+    
+    // Apply location filter
+    if (this.Filtres.test[3] && this.Filtres.test[3].length > 0) {
+      const locations = this.Filtres.test[3];
+      filteredSpecimens = filteredSpecimens.filter(specimen => 
+        locations.some(location => specimen.lieu && specimen.lieu.toLowerCase().includes(location.toLowerCase()))
+      );
+    }
+    
+    // Apply city filter
+    if (this.Filtres.test[4] && this.Filtres.test[4].length > 0) {
+      const cities = this.Filtres.test[4];
+      filteredSpecimens = filteredSpecimens.filter(specimen => 
+        cities.some(city => specimen.ville && specimen.ville.toLowerCase().includes(city.toLowerCase()))
+      );
+    }
+    
+    return filteredSpecimens;
   }
 
   private generateMockFilteredSpecimens(): any[] {

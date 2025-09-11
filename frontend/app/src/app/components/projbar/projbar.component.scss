@@ -156,14 +156,14 @@ ul{
           &:nth-child(#{$j}):hover {
             ~ li:last-child:before {
               @include gooeyEffect($j);
-              top: (100% / $i) * ($j - 1);
+              top: calc(100% / #{$i} * #{$j - 1});
               animation: gooeyEffect-#{$j} $timing 1;
             }
           }
         }        
         &:last-child:hover:before {
           @include gooeyEffect($i);
-          top: (100% / $i) * ($i - 1);
+          top: calc(100% / #{$i} * #{$i - 1});
           animation: gooeyEffect-#{$i} $timing 1;
         }        
       }

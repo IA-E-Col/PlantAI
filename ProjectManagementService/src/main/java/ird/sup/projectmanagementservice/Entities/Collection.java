@@ -27,7 +27,4 @@ public class Collection {
     @OneToMany(fetch=FetchType.LAZY,mappedBy = "collection",cascade = CascadeType.ALL)
     @JsonIgnore
     private List<Projet> projets = new ArrayList<>();
-    @OneToMany(fetch=FetchType.LAZY,cascade = CascadeType.ALL)
-    @JsonIgnore
-    private List<DataSet> datasets = new ArrayList<>();
 }

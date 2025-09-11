@@ -251,7 +251,7 @@ export class ProjetService {
     return this.http.get<any>(`http://localhost:8080/api/projets/${id}/Datasets`);
   }
   func_get_SpecimenByCollection(id: any) :Observable<any>{
-    return this.http.get<any>(`http://localhost:8080/api/collections/${id}/Specimens`);
+    return this.http.get<any>(`http://localhost:8080/api/collections/${id}/specimen`);
   }
   func_get_SpecimenByDataset(id: any) :Observable<any>{
     return this.http.get<any>(`http://localhost:8080/api/collections/Dataset/${id}/specimen`);

@@ -106,6 +106,8 @@ export class DatasetPredictionComponent implements OnInit, OnDestroy {
   onSubmit(): void {
     const formValue = this.filterForm.value;
     console.log('Filter form submitted:', formValue);
+    console.log('Original specimens count:', this.Old_Specimens.length);
+    console.log('Original specimens:', this.Old_Specimens);
 
     // Process form values
     const annotationModel = formValue.annotationModel;
@@ -116,23 +118,39 @@ export class DatasetPredictionComponent implements OnInit, OnDestroy {
     const genre = formValue.genre;
 
     let filteredSpecimens = [...this.Old_Specimens];
+    console.log('Starting with specimens:', filteredSpecimens.length);
 
     // Apply family filter
     if (family) {
       console.log(`Filtering by family: ${family}`);
-      filteredSpecimens = filteredSpecimens.filter((specimen: { famille: any; }) => specimen.famille === family);
+      const beforeCount = filteredSpecimens.length;
+      filteredSpecimens = filteredSpecimens.filter((specimen: any) => {
+        console.log(`Specimen ${specimen.id} family: ${specimen.famille}, matches: ${specimen.famille === family}`);
+        return specimen.famille === family;
+      });
+      console.log(`Family filter: ${beforeCount} -> ${filteredSpecimens.length} specimens`);
     }
     
     // Apply genre filter
     if (genre) {
       console.log(`Filtering by genre: ${genre}`);
-      filteredSpecimens = filteredSpecimens.filter((specimen: { genre: any; }) => specimen.genre === genre);
+      const beforeCount = filteredSpecimens.length;
+      filteredSpecimens = filteredSpecimens.filter((specimen: any) => {
+        console.log(`Specimen ${specimen.id} genre: ${specimen.genre}, matches: ${specimen.genre === genre}`);
+        return specimen.genre === genre;
+      });
+      console.log(`Genre filter: ${beforeCount} -> ${filteredSpecimens.length} specimens`);
     }
     
     // Apply validation filter
     if (validation) {
       console.log(`Filtering by validation: ${validation}`);
-      filteredSpecimens = filteredSpecimens.filter((specimen: { validation: any; }) => specimen.validation === validation);
+      const beforeCount = filteredSpecimens.length;
+      filteredSpecimens = filteredSpecimens.filter((specimen: any) => {
+        console.log(`Specimen ${specimen.id} validation: ${specimen.validation}, matches: ${specimen.validation === validation}`);
+        return specimen.validation === validation;
+      });
+      console.log(`Validation filter: ${beforeCount} -> ${filteredSpecimens.length} specimens`);
     }
     
     // Apply accuracy range filter
@@ -140,17 +158,35 @@ export class DatasetPredictionComponent implements OnInit, OnDestroy {
       const min = minAccuracy ? parseFloat(minAccuracy) : 0;
       const max = maxAccuracy ? parseFloat(maxAccuracy) : 1;
       console.log(`Filtering by accuracy range: ${min} - ${max}`);
-      filteredSpecimens = filteredSpecimens.filter((specimen: { accuracy: any; }) => {
+      const beforeCount = filteredSpecimens.length;
+      filteredSpecimens = filteredSpecimens.filter((specimen: any) => {
         const accuracy = parseFloat(specimen.accuracy);
-        return accuracy >= min && accuracy <= max;
+        const matches = accuracy >= min && accuracy <= max;
+        console.log(`Specimen ${specimen.id} accuracy: ${specimen.accuracy}, matches: ${matches}`);
+        return matches;
       });
+      console.log(`Accuracy filter: ${beforeCount} -> ${filteredSpecimens.length} specimens`);
     }
 
-    console.log('Filtered specimens:', filteredSpecimens.length, 'items');
+    console.log('Final filtered specimens:', filteredSpecimens.length, 'items');
+    console.log('Filtered specimens:', filteredSpecimens);
 
     // Update the reactive state with the filtered specimens
     this.Specimens = filteredSpecimens;
     this.filteredSpecimensSubject.next(filteredSpecimens);
+  }
+
+  clearFilters(): void {
+    console.log('Clearing all filters');
+    
+    // Reset form
+    this.filterForm.reset();
+    
+    // Reset specimens to original list
+    this.Specimens = [...this.Old_Specimens];
+    this.filteredSpecimensSubject.next(this.Specimens);
+    
+    console.log('Filters cleared, showing all specimens:', this.Specimens.length);
   }
 
   ngOnInit(): void {
@@ -257,7 +293,11 @@ export class DatasetPredictionComponent implements OnInit, OnDestroy {
     this.familyOptions = [];
     this.genreOptions = [];
 
+    console.log('Extracting filter options from specimens:', this.Specimens);
+
     this.Specimens.forEach((specimen: { famille: string; genre: string; }) => {
+      console.log('Processing specimen:', specimen);
+      
       if (specimen.famille && !this.familyOptions.includes(specimen.famille)) {
         this.familyOptions.push(specimen.famille);
       }
@@ -266,8 +306,8 @@ export class DatasetPredictionComponent implements OnInit, OnDestroy {
       }
     });
 
-    console.log('Family options:', this.familyOptions);
-    console.log('Genre options:', this.genreOptions);
+    console.log('Family options extracted:', this.familyOptions);
+    console.log('Genre options extracted:', this.genreOptions);
   }
 
 

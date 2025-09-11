@@ -9,13 +9,19 @@ import { Observable, Subject, takeUntil, switchMap } from 'rxjs';
 import { Store } from '@ngrx/store';
 
 import { AppState } from '../../store/app.state';
-import { ProjectsActions, NavigationActions } from '../../store';
+import { ProjectsActions, NavigationActions, CollectionsActions } from '../../store';
 import { 
   selectProjectById
 } from '../../store/projects/projects.selectors';
 import { 
   selectNavigationProjectId
 } from '../../store/navigation/navigation.selectors';
+import { 
+  selectAllSpecimens,
+  selectSpecimensByCollection,
+  selectCollectionsLoading,
+  selectCollectionsError
+} from '../../store/collections/collections.selectors';
 
 
 
@@ -43,6 +49,9 @@ export class ImagesFormComponent implements OnInit, OnDestroy {
   // NgRx Observables
   project$: Observable<any>;
   projectId$: Observable<string | null>;
+  specimens$: Observable<any[]>;
+  isLoading$: Observable<boolean>;
+  error$: Observable<string | null>;
   
   // Component data
   plantes: any;
@@ -94,6 +103,9 @@ export class ImagesFormComponent implements OnInit, OnDestroy {
   ) {
     // Initialize NgRx observables
     this.projectId$ = this.store.select(selectNavigationProjectId);
+    this.specimens$ = this.store.select(selectAllSpecimens);
+    this.isLoading$ = this.store.select(selectCollectionsLoading);
+    this.error$ = this.store.select(selectCollectionsError);
     this.project$ = this.route.parent?.params.pipe(
       switchMap(params => {
         const projectId = params['id'];
@@ -141,63 +153,99 @@ export class ImagesFormComponent implements OnInit, OnDestroy {
   }
 
   handleDataChange(): void {
-    console.log('Executing handleDataChange for test ID:', this.test);
+    console.log('Executing handleDataChange for project ID:', this.test);
     
-    // Generate mock specimen data based on test ID
-    if (this.test === '17') {
-      console.log('Loading specimens for special ID 17');
-      this.plantes = this.generateMockSpecimens('special');
+    // Check if filtered specimens were passed from the parent component
+    const navigation = this.router.getCurrentNavigation();
+    if (navigation && navigation.extras && navigation.extras.state && navigation.extras.state['specimens']) {
+      console.log('Using filtered specimens from parent component:', navigation.extras.state['specimens'].length);
+      this.plantes = navigation.extras.state['specimens'];
       this.nb_img = this.plantes.length;
-    } else {
-      console.log('Loading default specimens for ID:', this.test);
-      this.plantes = this.generateMockSpecimens('default');
-      this.nb_img = this.plantes.length;
+      // Sort specimens by scientific name if method exists
+      if (this.plantes && this.plantes.length > 0) {
+        this.plantes.sort((a: any, b: any) => {
+          const nameA = a.nomScientifique || '';
+          const nameB = b.nomScientifique || '';
+          return nameA.localeCompare(nameB);
+        });
+      }
+      return;
     }
     
-    console.log('Mock specimens loaded:', this.plantes?.length || 0, 'items');
-    
-    // TODO: Replace with proper NgRx specimens loading
-    // this.store.dispatch(SpecimensActions.loadSpecimensByDataset({ datasetId: this.test }));
+    // Load real specimens from the project's corpus (collection)
+    if (this.test && Number(this.test) > 0) {
+      console.log('Loading specimens from project corpus for project ID:', this.test);
+      
+      // Try to get the project from the store first
+      this.project$
+        .pipe(takeUntil(this.destroy$))
+        .subscribe(project => {
+          if (project && project.collection && project.collection.id) {
+            const collectionId = project.collection.id;
+            console.log('Loading specimens from collection ID:', collectionId);
+            this.loadSpecimensForCollection(collectionId);
+          } else {
+            console.log('Project not found in store for project ID:', this.test, 'project:', project);
+            // If project not found in store, try to load it directly
+            this.loadProjectAndSpecimens(Number(this.test));
+          }
+        });
+    } else {
+      console.log('Invalid project ID:', this.test);
+      this.plantes = [];
+      this.nb_img = 0;
+    }
   }
 
-  private generateMockSpecimens(type: 'special' | 'default'): any[] {
-    const baseSpecimens = [
-      {
-        id: 1,
-        catalogueCode: 'SPEC001',
-        nomScientifique: 'Rosa gallica L.',
-        genre: 'Rosa',
-        famille: 'Rosaceae',
-        image: { image_url: 'assets/uploads/rose1.jpg' },
-        dateCreation: '2023-01-15'
-      },
-      {
-        id: 2,
-        catalogueCode: 'SPEC002',
-        nomScientifique: 'Quercus robur L.',
-        genre: 'Quercus',
-        famille: 'Fagaceae',
-        image: { image_url: 'assets/uploads/oak1.jpg' },
-        dateCreation: '2023-01-20'
-      },
-      {
-        id: 3,
-        catalogueCode: 'SPEC003',
-        nomScientifique: 'Pinus sylvestris L.',
-        genre: 'Pinus',
-        famille: 'Pinaceae',
-        image: { image_url: 'assets/uploads/pine1.jpg' },
-        dateCreation: '2023-01-25'
-      }
-    ];
-    
-    if (type === 'special') {
-      // Add more specimens for special case
-      return [...baseSpecimens, ...baseSpecimens.map(s => ({ ...s, id: s.id + 10, catalogueCode: s.catalogueCode + '_SP' }))];
-    }
-    
-    return baseSpecimens;
+  private loadProjectAndSpecimens(projectId: number): void {
+    // Make a direct API call to get the project data
+    fetch(`http://localhost:8080/api/projets/${projectId}`)
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`Project with ID ${projectId} not found (${response.status})`);
+        }
+        return response.json();
+      })
+      .then(project => {
+        if (project && project.collection && project.collection.id) {
+          const collectionId = project.collection.id;
+          console.log('Project loaded via direct API call, collection ID:', collectionId);
+          this.loadSpecimensForCollection(collectionId);
+        } else {
+          console.log('Project or collection not found for project ID:', projectId);
+          this.plantes = [];
+          this.nb_img = 0;
+        }
+      })
+      .catch(error => {
+        console.error('Error loading project:', error);
+        console.log('Available projects: 1, 2, 3, 28, 29. Please use an existing project ID.');
+        this.plantes = [];
+        this.nb_img = 0;
+      });
   }
+
+  private loadSpecimensForCollection(collectionId: number): void {
+    // Load specimens from the project's corpus
+    this.store.dispatch(CollectionsActions.loadSpecimensByCollection({ collectionId }));
+    
+    // Subscribe to specimens data for this specific collection only
+    this.store.select(selectSpecimensByCollection(collectionId))
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(specimens => {
+        if (specimens && specimens.length > 0) {
+          this.plantes = specimens;
+          this.nb_img = specimens.length;
+          console.log('Real specimens loaded from corpus:', specimens.length, 'items for collection ID:', collectionId);
+        } else {
+          console.log('No specimens found in corpus for collection ID:', collectionId);
+          this.plantes = [];
+          this.nb_img = 0;
+        }
+      });
+  }
+
+  // Mock data generation method removed - now using real API calls
 
 
   navigateToImageInf(plante: any) {

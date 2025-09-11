@@ -18,6 +18,7 @@ import java.util.List;
 @DiscriminatorColumn(name = "type_media", discriminatorType = DiscriminatorType.STRING)
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 public class Media {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long Id;

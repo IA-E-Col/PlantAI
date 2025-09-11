@@ -144,6 +144,25 @@ export const collectionsReducer = createReducer(
     error,
   })),
 
+  on(CollectionsActions.addSpecimensToDataset, (state) => ({
+    ...state,
+    isLoading: true,
+    error: null,
+  })),
+
+  on(CollectionsActions.addSpecimensToDatasetSuccess, (state, { dataset }) => ({
+    ...state,
+    datasets: state.datasets.map(d => d.id === dataset.id ? dataset : d),
+    isLoading: false,
+    error: null,
+  })),
+
+  on(CollectionsActions.addSpecimensToDatasetFailure, (state, { error }) => ({
+    ...state,
+    isLoading: false,
+    error,
+  })),
+
   on(CollectionsActions.loadFilteredSpecimens, (state) => ({
     ...state,
     isLoading: true,
@@ -208,28 +227,6 @@ export const collectionsReducer = createReducer(
     error,
   })),
 
-  on(CollectionsActions.addSpecimensToDataset, (state) => ({
-    ...state,
-    isLoading: true,
-    error: null,
-  })),
-
-  on(CollectionsActions.addSpecimensToDatasetSuccess, (state, { datasetId, specimens }) => ({
-    ...state,
-    datasets: state.datasets.map(dataset =>
-      dataset.id === datasetId
-        ? { ...dataset, specimens: [...dataset.specimens, ...specimens] }
-        : dataset
-    ),
-    isLoading: false,
-    error: null,
-  })),
-
-  on(CollectionsActions.addSpecimensToDatasetFailure, (state, { error }) => ({
-    ...state,
-    isLoading: false,
-    error,
-  })),
 
   // Dataset Creation Actions
   on(CollectionsActions.createDataset, (state) => ({
@@ -246,6 +243,48 @@ export const collectionsReducer = createReducer(
   })),
 
   on(CollectionsActions.createDatasetFailure, (state, { error }) => ({
+    ...state,
+    isLoading: false,
+    error,
+  })),
+
+  // Dataset Update Actions
+  on(CollectionsActions.updateDataset, (state) => ({
+    ...state,
+    isLoading: true,
+    error: null,
+  })),
+
+  on(CollectionsActions.updateDatasetSuccess, (state, { dataset }) => ({
+    ...state,
+    datasets: state.datasets.map(d => d.id === dataset.id ? dataset : d),
+    currentDataset: state.currentDataset?.id === dataset.id ? dataset : state.currentDataset,
+    isLoading: false,
+    error: null,
+  })),
+
+  on(CollectionsActions.updateDatasetFailure, (state, { error }) => ({
+    ...state,
+    isLoading: false,
+    error,
+  })),
+
+  // Dataset Delete Actions
+  on(CollectionsActions.deleteDataset, (state) => ({
+    ...state,
+    isLoading: true,
+    error: null,
+  })),
+
+  on(CollectionsActions.deleteDatasetSuccess, (state, { datasetId }) => ({
+    ...state,
+    datasets: state.datasets.filter(d => d.id !== datasetId),
+    currentDataset: state.currentDataset?.id === datasetId ? null : state.currentDataset,
+    isLoading: false,
+    error: null,
+  })),
+
+  on(CollectionsActions.deleteDatasetFailure, (state, { error }) => ({
     ...state,
     isLoading: false,
     error,

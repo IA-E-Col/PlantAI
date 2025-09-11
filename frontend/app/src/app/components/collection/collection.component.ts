@@ -16,7 +16,8 @@ import { CollectionsActions, ProjectsActions, NavigationActions } from '../../st
 import { 
   selectAllCollections,
   selectCollectionsLoading,
-  selectCollectionsError 
+  selectCollectionsError,
+  selectAllDatasets
 } from '../../store/collections/collections.selectors';
 import { 
   selectAllProjects,
@@ -294,32 +295,32 @@ export class CollectionComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe(params => {
         this.projectId = params['id'];
-        console.log('Loading collections for project:', this.projectId);
+        console.log('Loading datasets for project:', this.projectId);
         
         if (this.projectId) {
           this.store.dispatch(NavigationActions.setCurrentProjectId({ projectId: this.projectId }));
           
-          // Load real collections using NgRx action
-          this.store.dispatch(CollectionsActions.loadCollections());
+          // Load real datasets using NgRx action (not collections!)
+          this.store.dispatch(CollectionsActions.loadDatasets({ projectId: parseInt(this.projectId) }));
           
-          // Subscribe to real collections data
-          this.store.select(selectAllCollections)
+          // Subscribe to real datasets data
+          this.store.select(selectAllDatasets)
             .pipe(takeUntil(this.destroy$))
-            .subscribe(collections => {
-              if (collections && collections.length > 0) {
-                this.collections = collections;
-                this.collectionsSubject.next(collections);
+            .subscribe(datasets => {
+              if (datasets && datasets.length > 0) {
+                this.collections = datasets; // Store datasets in collections variable for template compatibility
+                this.collectionsSubject.next(datasets);
                 
                 // Calculate statistics from real data
-                this.calculateProjectStats(collections[0]); // Use first collection for stats
+                this.calculateProjectStatsFromDatasets(datasets);
                 
-                console.log('Real project collections loaded:', {
+                console.log('Real project datasets loaded:', {
                   projectId: this.projectId,
-                  collections: collections.length,
+                  datasets: datasets.length,
                   stats: { nbr_c: this.nbr_c, nbr_s: this.nbr_s }
                 });
               } else {
-                console.log('No collections found for project:', this.projectId);
+                console.log('No datasets found for project:', this.projectId);
                 this.collections = [];
                 this.collectionsSubject.next([]);
               }
@@ -402,25 +403,34 @@ export class CollectionComponent implements OnInit, OnDestroy {
     this.formatted_nbr_c = this.formatNumber(this.nbr_c);
   }
 
+  private calculateProjectStatsFromDatasets(datasets: any[]): void {
+    this.nbr_c = datasets.length; // Number of datasets
+    this.nbr_s = datasets.reduce((total, dataset) => {
+      return total + (dataset.numberOfSpecimen || dataset.specimenCount || 0);
+    }, 0); // Total specimens across all datasets
+    this.formatted_nbr_s = this.formatNumber(this.nbr_s);
+    this.formatted_nbr_c = this.formatNumber(this.nbr_c);
+  }
+
   func_inf_C(c: any): void {
-    console.log('Deleting collection:', c.id);
+    console.log('Deleting dataset:', c.id);
     
     // Show confirmation dialog
     Swal.fire({
       title: 'Are you sure?',
-      text: 'You are about to delete this collection. This action cannot be undone.',
+      text: 'You are about to delete this dataset. This action cannot be undone.',
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#86A786',
       cancelButtonColor: '#d33',
-      confirmButtonText: 'Yes, delete collection',
+      confirmButtonText: 'Yes, delete dataset',
       cancelButtonText: 'Cancel'
     }).then((result) => {
       if (result.isConfirmed) {
         console.log('User confirmed deletion, calling backend API');
         
         // Dispatch NgRx action to delete from backend
-        this.store.dispatch(CollectionsActions.deleteCollection({ collectionId: c.id }));
+        this.store.dispatch(CollectionsActions.deleteDataset({ datasetId: c.id }));
         
         // Subscribe to delete success/failure
         this.store.select(selectCollectionsLoading)
@@ -433,22 +443,22 @@ export class CollectionComponent implements OnInit, OnDestroy {
                 .subscribe(error => {
                   if (!error) {
                     // Success - remove from local state
-                    this.collections = this.collections.filter((collection: any) => collection.id !== c.id);
+                    this.collections = this.collections.filter((dataset: any) => dataset.id !== c.id);
                     this.collectionsSubject.next([...this.collections]);
                     
                     // Recalculate statistics
                     if (this.inProject) {
-                      this.calculateProjectStats(this.collections[0] || { numberOfSpecimen: 0 });
+                      this.calculateProjectStatsFromDatasets(this.collections);
                     } else {
                       this.calculateGlobalStats();
                     }
                     
-                    Swal.fire('Success', 'Collection deleted successfully', 'success');
-                    console.log('Collection deleted successfully from backend');
+                    Swal.fire('Success', 'Dataset deleted successfully', 'success');
+                    console.log('Dataset deleted successfully from backend');
                   } else {
                     // Error - show error message
-                    Swal.fire('Error', `Failed to delete collection: ${error}`, 'error');
-                    console.error('Failed to delete collection:', error);
+                    Swal.fire('Error', `Failed to delete dataset: ${error}`, 'error');
+                    console.error('Failed to delete dataset:', error);
                   }
                 });
             }

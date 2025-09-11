@@ -57,11 +57,16 @@ export interface Media {
 
 export interface Dataset {
   id: number;
-  nom: string;
+  name: string; // Matches backend DataSet entity
   description: string;
-  dateCreation: number;
   specimens: Specimen[];
-  projet?: any;
+  projet?: {
+    id: number;
+    nomProjet: string;
+    description: string;
+    dateCreation: string;
+  };
+  numberOfSpecimen?: number; // For display purposes
 }
 
 export interface CollectionsState {

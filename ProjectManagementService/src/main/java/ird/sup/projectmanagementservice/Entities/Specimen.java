@@ -7,17 +7,16 @@ import ird.sup.projectmanagementservice.Entities.MediaH.Image;
 import ird.sup.projectmanagementservice.Entities.MediaH.Media;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.FieldDefaults;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Getter
-@Setter
-@ToString
-@EqualsAndHashCode
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class Specimen {
 
     @Id  @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -54,7 +53,7 @@ public class Specimen {
     private List<DataSet> datasets = new ArrayList<>();
 
     public Image getImage(){
-        for (Media media : this.getMedias()) {
+        for (Media media : this.medias) {
             if (media.getClass() == Image.class) {
                 return ((Image) media);
             }
@@ -63,7 +62,7 @@ public class Specimen {
     }
 
     public List<AnnClassification> getAnnotations(){
-        for (Media media : this.getMedias()) {
+        for (Media media : this.medias) {
             if (media.getClass() == Image.class) {
                 return media.getAnnotationSpecimens();
             }

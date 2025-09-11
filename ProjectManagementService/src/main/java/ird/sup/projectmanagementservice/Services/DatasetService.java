@@ -27,6 +27,10 @@ public class DatasetService {
         return dataSetRepository.save(dataSet);
     }
 
+    public DataSet saveDataSet(DataSet dataSet) {
+        return dataSetRepository.save(dataSet);
+    }
+
     public Optional<DataSet> updateDataSet(Long id, DataSet dataSetDetails) {
         return dataSetRepository.findById(id).map(dataSet -> {
             dataSet.setName(dataSetDetails.getName());

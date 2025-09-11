@@ -115,20 +115,36 @@ public class CollectionService  {
                 d.setSpecimens(new ArrayList<>());
             }
             
+            // Clear existing specimens first to avoid duplicates
+            d.getSpecimens().clear();
+            
             for(Long specimenId: specimens){
                 Specimen s = ps.findById(specimenId).orElse(null);
                 if (s != null) {
+                    // Initialize datasets list if null
                     if (s.getDatasets() == null) {
                         s.setDatasets(new ArrayList<>());
                     }
-                    s.getDatasets().add(d);
-                    d.getSpecimens().add(s);
-                    System.out.println("Added specimen ID: " + specimenId);
+                    
+                    // Check if specimen is already associated with this dataset
+                    boolean alreadyAssociated = s.getDatasets().stream()
+                        .anyMatch(dataset -> dataset.getId().equals(IDdataset));
+                    
+                    if (!alreadyAssociated) {
+                        // Add dataset to specimen's datasets list
+                        s.getDatasets().add(d);
+                        // Add specimen to dataset's specimens list
+                        d.getSpecimens().add(s);
+                        System.out.println("Added specimen ID: " + specimenId);
+                    } else {
+                        System.out.println("Specimen ID: " + specimenId + " already associated with dataset");
+                    }
                 } else {
                     System.err.println("Specimen not found with ID: " + specimenId);
                 }
             }
             
+            // Save the dataset (this will cascade to specimens due to the relationship)
             DataSet savedDataset = dr.save(d);
             System.out.println("Dataset specimens count after: " + savedDataset.getSpecimens().size());
             System.out.println("=== SPECIMENS ADDED SUCCESSFULLY ===");

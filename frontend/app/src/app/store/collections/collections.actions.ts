@@ -109,6 +109,21 @@ export const loadSpecimensByDatasetFailure = createAction(
   props<{ error: string }>()
 );
 
+export const addSpecimensToDataset = createAction(
+  '[Collections] Add Specimens To Dataset',
+  props<{ datasetId: number; specimenIds: number[] }>()
+);
+
+export const addSpecimensToDatasetSuccess = createAction(
+  '[Collections] Add Specimens To Dataset Success',
+  props<{ dataset: any }>()
+);
+
+export const addSpecimensToDatasetFailure = createAction(
+  '[Collections] Add Specimens To Dataset Failure',
+  props<{ error: string }>()
+);
+
 export const loadFilteredSpecimens = createAction(
   '[Collections] Load Filtered Specimens',
   props<{ filters: any; projectId: number }>()
@@ -160,20 +175,6 @@ export const loadDatasetFailure = createAction(
   props<{ error: string }>()
 );
 
-export const addSpecimensToDataset = createAction(
-  '[Collections] Add Specimens To Dataset',
-  props<{ datasetId: number; specimens: Specimen[] }>()
-);
-
-export const addSpecimensToDatasetSuccess = createAction(
-  '[Collections] Add Specimens To Dataset Success',
-  props<{ datasetId: number; specimens: Specimen[] }>()
-);
-
-export const addSpecimensToDatasetFailure = createAction(
-  '[Collections] Add Specimens To Dataset Failure',
-  props<{ error: string }>()
-);
 
 // Dataset Creation Actions
 export const createDataset = createAction(
@@ -188,6 +189,38 @@ export const createDatasetSuccess = createAction(
 
 export const createDatasetFailure = createAction(
   '[Collections] Create Dataset Failure',
+  props<{ error: string }>()
+);
+
+// Dataset Update Actions
+export const updateDataset = createAction(
+  '[Collections] Update Dataset',
+  props<{ datasetId: number; changes: Partial<Dataset> }>()
+);
+
+export const updateDatasetSuccess = createAction(
+  '[Collections] Update Dataset Success',
+  props<{ dataset: Dataset }>()
+);
+
+export const updateDatasetFailure = createAction(
+  '[Collections] Update Dataset Failure',
+  props<{ error: string }>()
+);
+
+// Dataset Delete Actions
+export const deleteDataset = createAction(
+  '[Collections] Delete Dataset',
+  props<{ datasetId: number }>()
+);
+
+export const deleteDatasetSuccess = createAction(
+  '[Collections] Delete Dataset Success',
+  props<{ datasetId: number }>()
+);
+
+export const deleteDatasetFailure = createAction(
+  '[Collections] Delete Dataset Failure',
   props<{ error: string }>()
 );
 

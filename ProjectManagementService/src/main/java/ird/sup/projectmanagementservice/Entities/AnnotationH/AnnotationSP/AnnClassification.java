@@ -15,7 +15,6 @@ import java.util.Collection;
 import java.util.List;
 
 @Entity
-@AllArgsConstructor
 @NoArgsConstructor
 @DiscriminatorValue("classi")
 @Data
@@ -28,6 +27,7 @@ public class AnnClassification extends AnnotationSpecimen {
     private Modele modelInference;
 
     public AnnClassification(String libelle, float valeurPrecision, String valeurPredite, Media media, Modele modelInference, DataSet dataset) {
+        super(); // Call parent constructor
         this.libelle = libelle;
         this.valeurPredite = valeurPredite;
         this.valeurPrecision = valeurPrecision;

@@ -44,6 +44,7 @@ const loadDatasetPrediction = () => import('./components/dataset-prediction/data
 const loadAnnotationValidation = () => import('./components/annotation-validation/annotation-validation.component').then(m => m.AnnotationValidationComponent);
 const loadScores = () => import('./components/scores/scores.component').then(m => m.ScoresComponent);
 const loadExportannotation = () => import('./components/exportannotation/exportannotation.component').then(m => m.ExportannotationComponent);
+const loadSpecimenSelection = () => import('./components/specimen-selection/specimen-selection.component').then(m => m.SpecimenSelectionComponent);
 
 export const routes: Routes = [
   { path: 'signup', component: SignUpComponent },
@@ -133,6 +134,7 @@ export const routes: Routes = [
           { path: 'details', loadComponent: loadDatasetInf },
           { path: 'models', loadComponent: loadDatasetModel },
           { path: 'edit', loadComponent: loadGererDataset },
+          { path: 'add-specimens', loadComponent: loadSpecimenSelection },
           { path: 'validation_history', loadComponent: loadValidationHistory },
           { path: 'images/:catalogueCode', loadComponent: loadImageInf },
           { path: 'import_export_annotation', loadComponent: loadExportannotation },

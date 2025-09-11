@@ -59,19 +59,18 @@
           </div>
         </div>
 
-        <!-- Family Filter 
+        <!-- Family Filter -->
         <div class="field-container">
           <label>Family</label>
           <div class="tag-container" id="family-container">
             <select formControlName="family" class="input-field">
-              <option value="">All Familys</option>
+              <option value="">All Families</option>
               <option *ngFor="let family of familyOptions" [value]="family">{{family}}</option>
             </select>
           </div>
         </div>
-        -->
 
-        <!-- Genre Filter
+        <!-- Genre Filter -->
         <div class="field-container">
           <label>Genre</label>
           <div class="tag-container" id="genre-container">
@@ -81,9 +80,11 @@
             </select>
           </div>
         </div>
-         -->
 
-        <button type="submit">Submit</button>
+        <div class="d-flex gap-2">
+          <button type="submit" class="btn btn-primary">Apply Filters</button>
+          <button type="button" class="btn btn-secondary" (click)="clearFilters()">Clear Filters</button>
+        </div>
       </form>
     </div>
   </div>
