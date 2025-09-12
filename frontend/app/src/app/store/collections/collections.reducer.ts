@@ -217,6 +217,10 @@ export const collectionsReducer = createReducer(
   on(CollectionsActions.loadDatasetSuccess, (state, { dataset }) => ({
     ...state,
     currentDataset: dataset,
+    // Add dataset to datasets array if not already present
+    datasets: state.datasets.find(d => d.id === dataset.id) 
+      ? state.datasets 
+      : [...state.datasets, dataset],
     isLoading: false,
     error: null,
   })),

@@ -15,7 +15,9 @@ import {
   selectNavigationDatasetId
 } from '../../store/navigation/navigation.selectors';
 import { 
-  selectSpecimensByDataset
+  selectSpecimensByDataset,
+  selectAllSpecimens,
+  selectCurrentDataset
 } from '../../store/collections/collections.selectors';
 
 
@@ -124,27 +126,47 @@ export class ListImagesComponent implements OnInit, OnDestroy {
   }
 
   handleDataChange(): void {
-    console.log('Loading specimens from real API for dataset:', this.test);
+    console.log('Loading specimens from project corpus for dataset:', this.test);
 
-    // Load real specimens using NgRx action
+    // Load specimens from the project's corpus (not from the dataset itself)
     if (Number(this.test) > 0) {
-      this.store.dispatch(CollectionsActions.loadSpecimensByDataset({ datasetId: this.test }));
+      // First, get the dataset to find its project
+      this.store.dispatch(CollectionsActions.loadDataset({ datasetId: Number(this.test) }));
       
-      // Subscribe to real specimens data
-      this.store.select(selectSpecimensByDataset(this.test))
+      // Subscribe to dataset data to get the project
+      this.store.select(selectCurrentDataset)
         .pipe(takeUntil(this.destroy$))
-        .subscribe(specimens => {
-          if (specimens && specimens.length > 0) {
-            this.plantes = specimens;
-            this.sortPlantsByScientificName();
-            this.Old_plantes = [...this.plantes]; // Create copy
-            this.extractDistinctValues();
+        .subscribe(dataset => {
+          if (dataset && dataset.projet && (dataset.projet as any).collection) {
+            const collectionId = (dataset.projet as any).collection.id;
+            console.log('Loading specimens from project corpus (collection ID):', collectionId);
             
-            // Update reactive subjects
-            this.plantesSubject.next(this.plantes);
-            this.originalPlantesSubject.next(this.Old_plantes);
+            // Load specimens from the project's corpus
+            this.store.dispatch(CollectionsActions.loadSpecimensByCollection({ collectionId }));
             
-            console.log('Real specimens loaded:', this.plantes?.length || 0, 'items');
+            // Subscribe to specimens from the corpus
+            this.store.select(selectAllSpecimens)
+              .pipe(takeUntil(this.destroy$))
+              .subscribe(specimens => {
+                if (specimens && specimens.length > 0) {
+                  this.plantes = specimens;
+                  this.sortPlantsByScientificName();
+                  this.Old_plantes = [...this.plantes]; // Create copy
+                  this.extractDistinctValues();
+                  
+                  // Update reactive subjects
+                  this.plantesSubject.next(this.plantes);
+                  this.originalPlantesSubject.next(this.Old_plantes);
+                  
+                  console.log('Real specimens loaded from project corpus:', this.plantes?.length || 0, 'items');
+                }
+              });
+          } else {
+            console.log('Dataset or project not found for dataset ID:', this.test);
+            this.plantes = [];
+            this.Old_plantes = [];
+            this.plantesSubject.next([]);
+            this.originalPlantesSubject.next([]);
           }
         });
     } else {

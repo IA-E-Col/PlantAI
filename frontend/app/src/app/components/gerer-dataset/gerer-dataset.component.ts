@@ -18,7 +18,8 @@ import {
   selectAllCollections,
   selectCollectionsLoading,
   selectCollectionsError,
-  selectDatasetById
+  selectDatasetById,
+  selectCurrentDataset
 } from '../../store/collections/collections.selectors';
 import { 
   selectNavigationDatasetId
@@ -107,8 +108,8 @@ export class GererDatasetComponent implements OnInit, OnDestroy {
 
   private initializeForm(): void {
     this.datasetFormGroup = this.fb.group({
-      nomDataset: this.fb.control(this.DatasetNam || '', [Validators.required]),
-      description: this.fb.control(this.DatasetDescription || '', [Validators.required, Validators.minLength(3)]),
+      nomDataset: this.fb.control('', [Validators.required]),
+      description: this.fb.control('', [Validators.required, Validators.minLength(3)]),
     });
   }
 
@@ -118,12 +119,17 @@ export class GererDatasetComponent implements OnInit, OnDestroy {
     // Load real dataset using NgRx action
     this.store.dispatch(CollectionsActions.loadDataset({ datasetId: parseInt(datasetId) }));
     
-    // Subscribe to dataset data
-    this.store.select(selectDatasetById(parseInt(datasetId)))
+    // Subscribe to current dataset data (more reliable than selectDatasetById)
+    this.store.select(selectCurrentDataset)
       .pipe(takeUntil(this.destroy$))
       .subscribe(dataset => {
         if (dataset) {
           this.currentDataset = dataset;
+          
+          console.log('Dataset loaded, patching form with:', {
+            nomDataset: dataset.name,
+            description: dataset.description
+          });
           
           // Populate form with dataset data
           this.datasetFormGroup.patchValue({
@@ -131,7 +137,18 @@ export class GererDatasetComponent implements OnInit, OnDestroy {
             description: dataset.description
           });
           
+          // Mark form as touched to trigger validation
+          this.datasetFormGroup.markAllAsTouched();
+          
+          console.log('Form after patch:', {
+            valid: this.datasetFormGroup.valid,
+            value: this.datasetFormGroup.value,
+            errors: this.datasetFormGroup.errors
+          });
+          
           console.log('Real dataset loaded:', dataset);
+        } else {
+          console.log('No current dataset found');
         }
       });
   }
@@ -142,6 +159,17 @@ export class GererDatasetComponent implements OnInit, OnDestroy {
   }
 
   modifier_prt(): void {
+    console.log('Form valid:', this.datasetFormGroup.valid);
+    console.log('Form value:', this.datasetFormGroup.value);
+    console.log('Form errors:', this.datasetFormGroup.errors);
+    console.log('Current dataset:', this.currentDataset);
+    
+    // Check individual field validity
+    const nomDatasetField = this.datasetFormGroup.get('nomDataset');
+    const descriptionField = this.datasetFormGroup.get('description');
+    console.log('nomDataset valid:', nomDatasetField?.valid, 'errors:', nomDatasetField?.errors);
+    console.log('description valid:', descriptionField?.valid, 'errors:', descriptionField?.errors);
+    
     if (this.datasetFormGroup.valid && this.currentDataset) {
       Swal.fire({
         title: 'Are you sure?',
@@ -188,6 +216,7 @@ export class GererDatasetComponent implements OnInit, OnDestroy {
         }
       });
     } else {
+      console.log('Form validation failed or no current dataset');
       Swal.fire('Error', 'Please fill in all required fields', 'error');
     }
   }

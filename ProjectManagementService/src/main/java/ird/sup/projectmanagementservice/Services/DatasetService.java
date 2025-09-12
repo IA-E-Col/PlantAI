@@ -37,6 +37,8 @@ public class DatasetService {
             dataSet.setDescription(dataSetDetails.getDescription());
             dataSet.setFiltres(dataSetDetails.getFiltres());
             dataSet.setSpecimens(dataSetDetails.getSpecimens());
+            // Date creation is immutable - never change it after creation
+            // dataSet.setDateCreation() is intentionally omitted to preserve original creation date
             return dataSetRepository.save(dataSet);
         });
     }

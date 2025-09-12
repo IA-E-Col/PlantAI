@@ -181,17 +181,13 @@ export class FormulaireComponent implements OnInit, OnDestroy {
   private loadFilterData(): void {
     console.log('Loading filter data');
     
-    // Generate mock filter values (restore original working approach)
-    const mockFilterValues = this.generateMockFilterValues();
-    this.filterValues = mockFilterValues;
-    this.filterValuesSubject.next(mockFilterValues);
+    // Load real filter values from specimen data instead of mock data
+    this.loadRealFilterValues();
     
-    // Populate options
-    this.populateFilterOptions();
-    this.populateSuggestions();
+    // Setup event listeners
     this.setupEventListeners();
     
-    console.log('Filter data loaded:', mockFilterValues);
+    console.log('Filter data loading initiated - will load real specimens');
     
     // TODO: Replace with proper NgRx action
     // this.store.dispatch(CollectionsActions.loadFilterFields());

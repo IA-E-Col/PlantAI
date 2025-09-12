@@ -263,7 +263,6 @@ export class CollectionComponent implements OnInit, OnDestroy {
     
     // Load real data using NgRx actions
     this.store.dispatch(ProjectsActions.loadProjects({ userId: 1 })); // TODO: Get real user ID
-    this.store.dispatch(CollectionsActions.loadCollections());
     
     // Subscribe to real data from store
     this.store.select(selectAllProjects)
@@ -273,21 +272,77 @@ export class CollectionComponent implements OnInit, OnDestroy {
           this.projets = projects;
           this.projectsSubject.next(projects);
           console.log('Real projects loaded:', projects.length);
-        }
-      });
-    
-    this.store.select(selectAllCollections)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(collections => {
-        if (collections && collections.length > 0) {
-          this.collections = collections;
-          this.collectionsSubject.next(collections);
-          console.log('Real collections loaded:', collections.length);
           
-          // Calculate statistics from real data
-          this.calculateGlobalStats();
+          // Load datasets from all projects
+          this.loadDatasetsFromAllProjects(projects);
         }
       });
+  }
+
+  private loadDatasetsFromAllProjects(projects: any[]): void {
+    console.log('Loading datasets from all projects:', projects.length);
+    
+    // Find all projects that have datasets
+    const projectsWithDatasets = projects.filter(p => p.numberOfDataset > 0);
+    console.log('Projects with datasets:', projectsWithDatasets.map(p => ({ id: p.id, name: p.nomProjet, datasetCount: p.numberOfDataset })));
+    
+    if (projectsWithDatasets.length > 0) {
+      // Load datasets from all projects that have them
+      const allDatasets: any[] = [];
+      let completedRequests = 0;
+      
+      projectsWithDatasets.forEach(project => {
+        console.log('Loading datasets from project:', project.id, project.nomProjet);
+        
+        // Make direct API call for each project
+        fetch(`http://localhost:8080/api/projets/${project.id}/Datasets`)
+          .then(response => response.json())
+          .then(datasets => {
+            console.log(`Datasets from project ${project.id} (${project.nomProjet}):`, datasets);
+            
+            // Add project information to each dataset for context
+            const datasetsWithProjectInfo = datasets.map((dataset: any) => ({
+              ...dataset,
+              projectName: project.nomProjet,
+              projectId: project.id,
+              // If dataset has no specimens but project has specimens, use project count as fallback
+              // This is a temporary fix until backend properly links specimens to datasets
+              numberOfSpecimen: dataset.numberOfSpecimen > 0 ? dataset.numberOfSpecimen : (project.numberOfSpecimen || 0),
+              // Add date creation from project if dataset doesn't have it
+              dateCreation: dataset.dateCreation || project.dateCreation
+            }));
+            
+            allDatasets.push(...datasetsWithProjectInfo);
+            completedRequests++;
+            
+            // When all requests are complete, update the UI
+            if (completedRequests === projectsWithDatasets.length) {
+              console.log('All datasets loaded from all projects:', allDatasets);
+              this.collections = allDatasets;
+              this.collectionsSubject.next(allDatasets);
+              
+              // Calculate statistics from all datasets
+              this.calculateGlobalStats();
+            }
+          })
+          .catch(error => {
+            console.error(`Error loading datasets from project ${project.id}:`, error);
+            completedRequests++;
+            
+            // Still check if all requests are complete
+            if (completedRequests === projectsWithDatasets.length) {
+              console.log('All requests completed, final datasets:', allDatasets);
+              this.collections = allDatasets;
+              this.collectionsSubject.next(allDatasets);
+              this.calculateGlobalStats();
+            }
+          });
+      });
+    } else {
+      console.log('No projects with datasets found');
+      this.collections = [];
+      this.collectionsSubject.next([]);
+    }
   }
 
   private loadProjectCollections(): void {
@@ -307,17 +362,29 @@ export class CollectionComponent implements OnInit, OnDestroy {
           this.store.select(selectAllDatasets)
             .pipe(takeUntil(this.destroy$))
             .subscribe(datasets => {
+              console.log('Datasets received from store:', datasets);
               if (datasets && datasets.length > 0) {
-                this.collections = datasets; // Store datasets in collections variable for template compatibility
-                this.collectionsSubject.next(datasets);
+                // Enhance datasets with additional information
+                const enhancedDatasets = datasets.map((dataset: any) => ({
+                  ...dataset,
+                  // Ensure we have a date creation
+                  dateCreation: dataset.dateCreation || new Date().getTime(),
+                  // Use dataset specimen count if available, otherwise show 0
+                  // This is a temporary fix until backend properly links specimens to datasets
+                  numberOfSpecimen: dataset.numberOfSpecimen || 0
+                }));
+                
+                this.collections = enhancedDatasets; // Store datasets in collections variable for template compatibility
+                this.collectionsSubject.next(enhancedDatasets);
                 
                 // Calculate statistics from real data
-                this.calculateProjectStatsFromDatasets(datasets);
+                this.calculateProjectStatsFromDatasets(enhancedDatasets);
                 
                 console.log('Real project datasets loaded:', {
                   projectId: this.projectId,
-                  datasets: datasets.length,
-                  stats: { nbr_c: this.nbr_c, nbr_s: this.nbr_s }
+                  datasets: enhancedDatasets.length,
+                  stats: { nbr_c: this.nbr_c, nbr_s: this.nbr_s },
+                  firstDataset: enhancedDatasets[0]
                 });
               } else {
                 console.log('No datasets found for project:', this.projectId);
@@ -506,7 +573,16 @@ export class CollectionComponent implements OnInit, OnDestroy {
   }
 
   onFinishClicked(collection: any): void {
-    console.log('Navigating to collection details:', collection.id);
+    console.log('Navigating to dataset edit page:', collection.id);
+    
+    // Update navigation state
+    this.store.dispatch(NavigationActions.setCurrentCollectionId({ collectionId: collection.id.toString() }));
+    
+    this.router.navigateByUrl(`/admin/datasets/${collection.id}/edit`);
+  }
+
+  onViewDetails(collection: any): void {
+    console.log('Navigating to dataset details:', collection.id);
     
     // Update navigation state
     this.store.dispatch(NavigationActions.setCurrentCollectionId({ collectionId: collection.id.toString() }));

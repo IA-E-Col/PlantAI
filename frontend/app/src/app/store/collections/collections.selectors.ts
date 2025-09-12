@@ -116,17 +116,17 @@ export const selectCollectionWithSpecimens = (collectionId: number) => createSel
 
 export const selectUniqueSpecimenFamilies = createSelector(
   selectAllSpecimens,
-  (specimens) => [...new Set(specimens.map(s => s.famille).filter(Boolean))].sort()
+  (specimens) => Array.from(new Set(specimens.map(s => s.famille).filter(Boolean))).sort()
 );
 
 export const selectUniqueSpecimenGenera = createSelector(
   selectAllSpecimens,
-  (specimens) => [...new Set(specimens.map(s => s.genre).filter(Boolean))].sort()
+  (specimens) => Array.from(new Set(specimens.map(s => s.genre).filter(Boolean))).sort()
 );
 
 export const selectUniqueSpecimenCountries = createSelector(
   selectAllSpecimens,
-  (specimens) => [...new Set(specimens.map(s => s.pays).filter(Boolean))].sort()
+  (specimens) => Array.from(new Set(specimens.map(s => s.pays).filter(Boolean))).sort()
 );
 
 export const selectSpecimenStats = createSelector(

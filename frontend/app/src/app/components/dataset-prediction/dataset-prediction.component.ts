@@ -17,7 +17,9 @@ import {
   selectDatasetById,
   selectCollectionsLoading,
   selectCollectionsError,
-  selectSpecimensByDataset
+  selectSpecimensByDataset,
+  selectAllSpecimens,
+  selectCurrentDataset
 } from '../../store/collections/collections.selectors';
 import { 
   selectNavigationDatasetId,
@@ -252,36 +254,42 @@ export class DatasetPredictionComponent implements OnInit, OnDestroy {
       this.store.dispatch(CollectionsActions.loadDataset({ datasetId: parseInt(this.IdDataset) }));
       
       // Subscribe to real dataset data
-      this.store.select(selectDatasetById(parseInt(this.IdDataset)))
+      this.store.select(selectCurrentDataset)
         .pipe(takeUntil(this.destroy$))
         .subscribe(dataset => {
           if (dataset) {
             this.Dataset = dataset;
-            this.Specimens = dataset.specimens || [];
-            this.Old_Specimens = [...this.Specimens];
-            this.filteredSpecimensSubject.next(this.Specimens);
             
-            this.isCalculated = true;
-            this.extractFilterOptions();
+            // Load specimens from the project's corpus (not from the dataset itself)
+            if (dataset.projet && (dataset.projet as any).collection) {
+              const collectionId = (dataset.projet as any).collection.id;
+              console.log('Loading specimens from project corpus for prediction (collection ID):', collectionId);
+              
+              // Load specimens from the project's corpus
+              this.store.dispatch(CollectionsActions.loadSpecimensByCollection({ collectionId }));
+              
+              // Subscribe to specimens from the corpus
+              this.store.select(selectAllSpecimens)
+                .pipe(takeUntil(this.destroy$))
+                .subscribe(specimens => {
+                  if (specimens && specimens.length > 0) {
+                    this.Specimens = specimens;
+                    this.Old_Specimens = [...this.Specimens];
+                    this.filteredSpecimensSubject.next(this.Specimens);
+                    this.isCalculated = true;
+                    this.extractFilterOptions();
+                    
+                    console.log('Real specimens loaded from project corpus for prediction:', specimens.length);
+                  }
+                });
+            } else {
+              console.log('Dataset project or collection not found for prediction');
+              this.Specimens = [];
+              this.Old_Specimens = [];
+              this.filteredSpecimensSubject.next([]);
+            }
             
             console.log('Real dataset loaded for prediction:', dataset);
-          }
-        });
-      
-      // Also load specimens by dataset
-      this.store.dispatch(CollectionsActions.loadSpecimensByDataset({ datasetId: this.IdDataset }));
-      
-      // Subscribe to specimens data
-      this.store.select(selectSpecimensByDataset(this.IdDataset))
-        .pipe(takeUntil(this.destroy$))
-        .subscribe(specimens => {
-          if (specimens && specimens.length > 0) {
-            this.Specimens = specimens;
-            this.Old_Specimens = [...this.Specimens];
-            this.filteredSpecimensSubject.next(this.Specimens);
-            this.extractFilterOptions();
-            
-            console.log('Real specimens loaded for prediction:', specimens.length);
           }
         });
     }

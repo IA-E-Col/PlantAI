@@ -72,11 +72,18 @@ public class CollectionService  {
                 DS.setSpecimens(new ArrayList<>());
             }
             
+            // Set creation date if not already set
+            if (DS.getDateCreation() == null) {
+                DS.setDateCreation(System.currentTimeMillis());
+                System.out.println("Set dataset creation date: " + DS.getDateCreation());
+            }
+            
             p.getDatasets().add(DS);
             DS.setProjet(p);
             
             DataSet savedDataset = dr.save(DS);
             System.out.println("Dataset saved with ID: " + savedDataset.getId());
+            System.out.println("Dataset creation date: " + savedDataset.getDateCreation());
             System.out.println("Project datasets count after: " + p.getDatasets().size());
             
             // Save the project to persist the relationship

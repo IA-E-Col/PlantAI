@@ -7,7 +7,7 @@
         <div class="Content">
             <div class="Title">Datasets</div>
             <div class="Underline"></div>
-            <div class="Subtitle">Number of available Datasets</div>
+            <div class="Subtitle">Number of processed datasets</div>
         </div>
     </div>
   </div>
@@ -27,7 +27,7 @@
         <div class="Content">
             <div class="Title">Specimens</div>
             <div class="Underline"></div>
-            <div class="Subtitle">Number of specimens by Datasets</div>
+            <div class="Subtitle">Total specimens in all datasets</div>
         </div>
     </div>
   </div>
@@ -96,6 +96,8 @@
       <div class="add">
         <div>
           <span class="font-bold fs-4 me-2">List of Datasets</span>
+          <small class="text-muted ms-2" *ngIf="!inProject">(From all projects)</small>
+          <small class="text-muted ms-2" *ngIf="inProject">(From this project)</small>
         </div>
         <div class="text-center mb-4 p-4" id="mb-5" *ngIf="inProject">
           <button (click)="func_ajout_col()" class="btn btn-green btn-lg ps-3 pe-3 pt-1 pb-1">
@@ -110,8 +112,7 @@
         <div class="form-outline mt-3">
           <input type="search" [(ngModel)]="searchtext" id="form1" class="form-control input__field" placeholder=" "
             aria-label="search" style="margin-bottom: 0px !important;">
-          <label for="form1" class="input__label" [class.clicked]="searchtext"><i class="bi bi-search"></i> Search by
-            name</label>
+          <label for="form1" class="input__label" [class.clicked]="searchtext"><i class="bi bi-search"></i> Search by dataset name</label>
         </div>
       </div>
 
@@ -134,8 +135,11 @@
       <table class="dataset-table">
         <thead>
           <tr>
-            <th (click)="sortBy('name')">Name</th>
+            <th (click)="sortBy('name')">Dataset Name</th>
             <th>Description</th>
+            <th *ngIf="!inProject">Source Project</th>
+            <th>Specimens</th>
+            <th (click)="sortBy('dateCreation')">Created</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -143,11 +147,23 @@
           <tr *ngFor="let c of collections | filterByName: searchtext: 'name' | paginate: { itemsPerPage: 9, currentPage: p }">
             <td>{{ c.name }}</td>
             <td [title]="c.description">{{ c.description.length > 148 ? (c.description | slice:0:148) + '...' : c.description }}</td>
+            <td *ngIf="!inProject">
+              <span class="badge bg-secondary">{{ c.projectName || 'Unknown Project' }}</span>
+            </td>
             <td>
-              <button class="btn btn-green me-2" (click)="onFinishClicked(c)">
+              <span class="badge bg-info">{{ c.numberOfSpecimen || 0 }}</span>
+            </td>
+            <td>
+              <small class="text-muted">{{ c.dateCreation ? formatDate(c.dateCreation) : 'Unknown' }}</small>
+            </td>
+            <td>
+              <button class="btn btn-green me-2" (click)="onViewDetails(c)" title="View Dataset Details">
+                <fa-icon [icon]="faCircleInfo"></fa-icon>
+              </button>
+              <button class="btn btn-green me-2" (click)="onFinishClicked(c)" title="Edit Dataset">
                 <fa-icon [icon]="faEdit"></fa-icon>
               </button>
-              <button class="btn btn-green" (click)="func_inf_C(c)">
+              <button class="btn btn-green" (click)="func_inf_C(c)" title="Delete Dataset">
                 <fa-icon [icon]="faTrash"></fa-icon>
               </button>
             </td>

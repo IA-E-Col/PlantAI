@@ -127,22 +127,37 @@ export class CollectionImgComponent implements OnInit, OnDestroy {
   fetchProjectCollection(): void {
     console.log('Fetching project collection for formulaire context');
     
-    // Load real collections using NgRx action
-    this.store.dispatch(CollectionsActions.loadCollections());
-    
-    // Subscribe to real collections data
-    this.store.select(selectAllCollections)
+    // Get the current project ID from navigation store
+    this.store.select(selectNavigationProjectId)
       .pipe(takeUntil(this.destroy$))
-      .subscribe(collections => {
-        if (collections && collections.length > 0) {
-          // Use the first collection for now (in real app, would be based on project context)
-          const collection = collections[0];
-          this.collectionId = collection.id.toString();
-          this.loadSpecimens();
+      .subscribe(projectId => {
+        if (projectId) {
+          console.log('Loading project collection for project ID:', projectId);
           
-          console.log('Real project collection loaded:', collection);
+          // Load the project to get its collection
+          fetch(`http://localhost:8080/api/projets/${projectId}`)
+            .then(response => {
+              if (!response.ok) {
+                throw new Error(`Project with ID ${projectId} not found (${response.status})`);
+              }
+              return response.json();
+            })
+            .then(project => {
+              if (project && project.collection && project.collection.id) {
+                this.collectionId = project.collection.id.toString();
+                console.log('Using project collection ID:', this.collectionId);
+                this.loadSpecimens();
+                
+                console.log('Real project collection loaded:', project.collection);
+              } else {
+                console.log('Project or collection not found for project ID:', projectId);
+              }
+            })
+            .catch(error => {
+              console.error('Error loading project collection:', error);
+            });
         } else {
-          console.log('No collections found');
+          console.log('No project ID available in navigation store');
         }
       });
   }
