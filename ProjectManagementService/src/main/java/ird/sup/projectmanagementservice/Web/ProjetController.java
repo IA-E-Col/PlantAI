@@ -117,6 +117,9 @@ public class ProjetController {
     public ResponseEntity<Projet> findProjetById(@PathVariable Long id) {
         Projet projet = projetService.findProjetbyId(id);
         if (projet != null) {
+            // Set the dataset count without loading datasets
+            int datasetCount = projet.getDatasets().size();
+            projet.setDatasetsCount(datasetCount);
             return ResponseEntity.ok(projet);
         } else {
             return ResponseEntity.notFound().build();

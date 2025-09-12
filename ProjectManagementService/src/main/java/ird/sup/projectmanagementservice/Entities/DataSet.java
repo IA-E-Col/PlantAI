@@ -42,8 +42,17 @@ public class DataSet {
             inverseJoinColumns = @JoinColumn(name = "specimen_id"))
     private List<Specimen> specimens=new ArrayList<>();
 
+    // Transient field for JSON serialization
+    @Transient
+    private int numberOfSpecimen;
+
     public int getNumberOfSpecimen(){
-        return specimens.size();
+        return numberOfSpecimen;
+    }
+
+    // Setter for JSON serialization
+    public void setNumberOfSpecimen(int numberOfSpecimen) {
+        this.numberOfSpecimen = numberOfSpecimen;
     }
 
 }

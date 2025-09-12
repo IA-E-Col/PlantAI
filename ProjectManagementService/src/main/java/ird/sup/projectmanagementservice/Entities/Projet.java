@@ -41,6 +41,10 @@ public class Projet {
     @JsonIgnore
     private List<DataSet> datasets = new ArrayList<>();
 
+    // Transient field for JSON serialization
+    @Transient
+    private int datasetsCount;
+
     @ManyToOne
     private Collection collection;
 
@@ -53,6 +57,14 @@ public class Projet {
         } catch (Exception e) {
             return 0;
         }
+    }
+
+    public int getDatasetsCount(){
+        return datasetsCount;
+    }
+
+    public void setDatasetsCount(int datasetsCount) {
+        this.datasetsCount = datasetsCount;
     }
     
     public int getNumberOfSpecimen(){

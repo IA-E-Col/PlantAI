@@ -23,6 +23,11 @@ public class DatasetService {
         return dataSetRepository.findById(id);
     }
 
+    public int getSpecimenCount(Long datasetId) {
+        // Use a custom query to get just the count without loading specimens
+        return dataSetRepository.countSpecimensByDatasetId(datasetId);
+    }
+
     public DataSet createDataSet(DataSet dataSet) {
         return dataSetRepository.save(dataSet);
     }

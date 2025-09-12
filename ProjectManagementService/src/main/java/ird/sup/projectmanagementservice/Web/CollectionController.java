@@ -117,7 +117,11 @@ public class CollectionController {
     public ResponseEntity<DataSet> findDatasetById(@PathVariable Long id) {
         Optional<DataSet> datasetOpt = datasetService.getDataSetById(id);
         if (datasetOpt.isPresent()) {
-            return ResponseEntity.ok(datasetOpt.get());
+            DataSet dataset = datasetOpt.get();
+            // Set the specimen count without loading specimens
+            int specimenCount = datasetService.getSpecimenCount(id);
+            dataset.setNumberOfSpecimen(specimenCount);
+            return ResponseEntity.ok(dataset);
         } else {
             return ResponseEntity.notFound().build();
         }
