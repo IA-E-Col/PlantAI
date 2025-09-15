@@ -60,7 +60,7 @@ public class ModelService {
         Modele newModel = new Modele();
         newModel.setName(model.getName());
         newModel.setDescription(model.getDescription());
-        newModel.setUrlModele(model.getUrlModele());
+        newModel.setUrlBase(model.getUrlBase());
         newModel.setCategorie(model.getCategorie());
        // AnnotationModele annotationModele = new AnnotationModele();
        //  annotationModele.setLibelle(model.getUrlModele());
@@ -78,7 +78,7 @@ public class ModelService {
         if (existingModel != null) {
             existingModel.setName(updatedModel.getName());
             existingModel.setDescription(updatedModel.getDescription());
-            existingModel.setUrlModele(updatedModel.getUrlModele());
+            existingModel.setUrlBase(updatedModel.getUrlBase());
             return modelRepository.save(existingModel);
         } else
             return null;
@@ -185,12 +185,12 @@ public class ModelService {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
             //String requestBody = "{\"image_path\":\"" + specimen.getImage().getImage_url() + "\"}";
-            String requestBody = "{\"image_path\":\"" + specimen.getImage().getImage_url() + "\", \"urlmodel\":\"" + modeleOptional.get().getUrlModele() + "\"}";
+            String requestBody = "{\"image_path\":\"" + specimen.getImage().getImage_url() + "\", \"urlmodel\":\"" + modeleOptional.get().getUrlBase() + "\"}";
             System.out.println(requestBody);
             HttpEntity<String> request = new HttpEntity<>(requestBody, headers);
             classificationResponse response = restTemplate.postForObject(url, request, classificationResponse.class);
             AnnClassification u = new AnnClassification();
-            u.setLibelle(modeleOptional.get().getUrlModele());
+            u.setLibelle(modeleOptional.get().getUrlBase());
             if (datasetOptional.isPresent())
                 u.setDataset(datasetOptional.get());
             u.setType("");
@@ -220,7 +220,7 @@ public class ModelService {
         Modele model = this.modelRepository.findById(idModel).get();
 
          AnnotationModele annotationModele = new AnnotationModele();
-         annotationModele.setLibelle(model.getUrlModele());
+         annotationModele.setLibelle(model.getUrlBase());
          for (String Id : classes) {
              System.out.println(Id.getClass());
              System.out.println(Long.valueOf(Id));

@@ -9,9 +9,8 @@ import lombok.NoArgsConstructor;
 @DiscriminatorValue("pcd")
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
 public class PCD extends Media {
-String fileName;
-String pcdNumber;
-String path;
+    // Note: fileName, pcdNumber, and path are now inherited from Media
+    // as file_name, pcd_number, and path respectively
+    // Additional PCD-specific fields can be added here if needed
 }

@@ -22,7 +22,17 @@ import java.util.List;
 public class Media {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long Id;
-    String CodeMedia;
+    
+    // ERD fields
+    String Description;       // Description
+    String code_media;        // was CodeMedia
+    String rdf_path;          // RDF path
+    String resolution;        // Resolution
+    String taille;            // Size
+    String file_name;         // File name
+    String path;              // Path
+    String pcd_number;        // PCD number
+    String contenu;           // Content
     
     @OneToMany(mappedBy = "media", fetch=FetchType.LAZY,cascade = CascadeType.ALL)
     @JsonIgnore

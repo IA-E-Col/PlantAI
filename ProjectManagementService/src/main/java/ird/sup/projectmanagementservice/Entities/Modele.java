@@ -26,7 +26,13 @@ public class Modele {
     private Long id;
     private String name;
     private String description;
-    private String urlModele;
+    
+    // ERD fields
+    private String UrlBase;        // was urlModele
+    private String UrlDescription;
+    private String UrlExemple;
+    private String inputData;
+    
     private String categorie;
 
     @OneToMany(fetch=FetchType.LAZY,cascade = CascadeType.ALL)

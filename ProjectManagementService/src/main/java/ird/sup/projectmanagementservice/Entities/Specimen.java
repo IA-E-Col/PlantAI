@@ -40,6 +40,13 @@ public class Specimen {
     Float latitude;
     Float longitude;
     String codePays;
+    
+    // ERD fields
+    String nom_commun;        // Common name
+    String Habitat;           // Habitat information
+    String Phenologie;        // Phenology information
+    String Distribution;      // Distribution information
+    Float Notes;              // Notes (as float per ERD)
 
     @OneToMany(fetch=FetchType.LAZY,mappedBy = "specimen",cascade = CascadeType.ALL)
     @JsonIgnore

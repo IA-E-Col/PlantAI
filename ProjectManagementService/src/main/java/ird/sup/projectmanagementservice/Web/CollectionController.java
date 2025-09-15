@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -44,19 +45,31 @@ public class CollectionController {
     public ResponseEntity<Collection> addCollection(
             @RequestPart("nom") String nom,
             @RequestPart("Description") String description,
-            Principal principal
+            Principal principal,
+            HttpServletRequest request
             ) {
+
+        System.out.println("=== COLLECTION CREATION ===");
+        System.out.println("Collection name: " + nom);
+        System.out.println("Collection description: " + description);
+        System.out.println("Principal: " + (principal != null ? principal.getName() : "NULL"));
+        System.out.println("Authorization header: " + request.getHeader("Authorization"));
+        System.out.println("All headers:");
+        request.getHeaderNames().asIterator().forEachRemaining(headerName -> 
+            System.out.println("  " + headerName + ": " + request.getHeader(headerName))
+        );
 
         Collection iDC = new Collection();
         iDC.setNom(nom);
         iDC.setDescription(description);
 
-
         // Vous pouvez également traiter le fichier collectionFile ici si nécessaire
 
-        System.out.println(iDC.getNom());
+        System.out.println("Collection object created: " + iDC.getNom());
         if (iDC != null) {
             Collection newCollection = collectionService.addCollection(iDC, principal);
+            System.out.println("Collection created with ID: " + newCollection.getId());
+            System.out.println("Collection creator: " + (newCollection.getCreator() != null ? newCollection.getCreator().getNom() : "NULL"));
             return ResponseEntity.ok(newCollection);
         }
         return ResponseEntity.notFound().build();

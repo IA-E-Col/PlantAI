@@ -78,7 +78,7 @@ public class CsvService {
 
                 Image image = new Image();
 
-                image.setCodeMedia(record[columnIndexMap.get("occurrenceID")]);
+                image.setCode_media(record[columnIndexMap.get("occurrenceID")]);
                 image.setImage_url(record[columnIndexMap.get("associatedMedia")]);
                 image.setRdf_path(record[columnIndexMap.get("RDF_path")]);
                 image.setImage_path(record[columnIndexMap.get("IMAGE_path")]);

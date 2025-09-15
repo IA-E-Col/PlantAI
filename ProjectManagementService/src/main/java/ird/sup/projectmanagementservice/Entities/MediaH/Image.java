@@ -14,7 +14,6 @@ import lombok.NoArgsConstructor;
 public class Image extends Media {
     String image_url;
     String image_path;
-    String rdf_path;
-    float resolution ;
-    float taille; //en MB
+    // Note: resolution and taille are now inherited from Media as String
+    // Additional Image-specific fields can be added here if needed
 }

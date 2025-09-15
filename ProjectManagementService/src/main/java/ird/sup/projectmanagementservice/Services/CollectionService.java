@@ -32,12 +32,27 @@ public class CollectionService  {
         
         // Set the creator if principal is provided
         if (principal != null) {
+            System.out.println("Principal name: " + principal.getName());
             Optional<User> userOptional = userRepository.findByEmail(principal.getName());
             if (userOptional.isPresent()) {
-                c.setCreator(userOptional.get());
+                User creator = userOptional.get();
+                c.setCreator(creator);
+                System.out.println("Creator set: " + creator.getNom() + " " + creator.getPrenom());
+            } else {
+                System.out.println("User not found for email: " + principal.getName());
             }
+        } else {
+            System.out.println("Principal is null - no creator will be set");
         }
         
+        return cr.save(c);
+    }
+
+    // Overloaded method for backward compatibility
+    public Collection addCollection(Collection c) {
+        System.out.println("addCollection called without Principal - setting creator to null");
+        c.setDateCreation(new Date());
+        // Creator will be null - this is for backward compatibility
         return cr.save(c);
     }
 

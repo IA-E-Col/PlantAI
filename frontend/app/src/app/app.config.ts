@@ -50,12 +50,11 @@ export const appConfig: ApplicationConfig = {
           useClass: ErrorInterceptor,
           multi: true
         },
-        // Temporarily disabled until backend compilation issues are resolved
-        // {
-        //   provide: HTTP_INTERCEPTORS,
-        //   useClass: AuthInterceptor,
-        //   multi: true
-        // },
+        {
+          provide: HTTP_INTERCEPTORS,
+          useClass: AuthInterceptor,
+          multi: true
+        },
     importProvidersFrom(
       BrowserModule,
       HttpClientModule,
