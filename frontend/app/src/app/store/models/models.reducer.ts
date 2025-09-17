@@ -153,6 +153,59 @@ export const modelsReducer = createReducer(
     error: null
   })),
 
+  // All Classes Management
+  on(ModelsActions.loadAllClasses, (state) => ({
+    ...state,
+    isLoading: true,
+    error: null
+  })),
+
+  on(ModelsActions.loadAllClassesSuccess, (state, { classes }) => ({
+    ...state,
+    classes,
+    isLoading: false,
+    error: null
+  })),
+
+  on(ModelsActions.loadAllClassesFailure, (state, { error }) => ({
+    ...state,
+    isLoading: false,
+    error
+  })),
+
+  on(ModelsActions.createClassSuccess, (state, { class: newClass }) => ({
+    ...state,
+    classes: [...state.classes, newClass],
+    isLoading: false,
+    error: null
+  })),
+
+  on(ModelsActions.createClassFailure, (state, { error }) => ({
+    ...state,
+    isLoading: false,
+    error
+  })),
+
+  on(ModelsActions.deleteClass, (state) => ({
+    ...state,
+    isLoading: true,
+    error: null
+  })),
+
+  on(ModelsActions.deleteClassSuccess, (state, { classId }) => ({
+    ...state,
+    classes: state.classes.filter(c => c.id !== classId),
+    currentClass: state.currentClass?.id === classId ? null : state.currentClass,
+    isLoading: false,
+    error: null
+  })),
+
+  on(ModelsActions.deleteClassFailure, (state, { error }) => ({
+    ...state,
+    isLoading: false,
+    error
+  })),
+
   // Training
   on(ModelsActions.startTraining, (state) => ({
     ...state,

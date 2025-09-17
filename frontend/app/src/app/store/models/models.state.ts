@@ -23,7 +23,8 @@ export interface Model {
 
 export interface ModelClass {
   id: number;
-  nom: string;
+  identifier: number;
+  name: string;
   description?: string;
   couleur?: string;
   ordre?: number;

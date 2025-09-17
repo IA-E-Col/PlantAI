@@ -2,6 +2,7 @@ package ird.sup.projectmanagementservice.Services;
 
 import ird.sup.projectmanagementservice.DAO.*;
 import ird.sup.projectmanagementservice.DTO.Evaluation;
+import ird.sup.projectmanagementservice.DTO.ClasseAnnotationDTO;
 import ird.sup.projectmanagementservice.Entities.*;
 import ird.sup.projectmanagementservice.Entities.AnnotationH.AnnotationMDL.AnnotationModele;
 import ird.sup.projectmanagementservice.Entities.AnnotationH.AnnotationMDL.ClasseAnnotation;
@@ -94,6 +95,19 @@ public class AnnotationModeleService {
         return classeAnnotationRepository.save(classeAnnotation);
     }
 
+    public boolean deleteClasse(Long id) {
+        try {
+            if (classeAnnotationRepository.existsById(id)) {
+                classeAnnotationRepository.deleteById(id);
+                return true;
+            }
+            return false;
+        } catch (Exception e) {
+            System.err.println("Error deleting class with id " + id + ": " + e.getMessage());
+            return false;
+        }
+    }
+
     public AnnotationModele updateModel( AnnotationModele updatedModel) {
 
         if (updatedModel != null) {
@@ -104,8 +118,27 @@ public class AnnotationModeleService {
 
     }
 
-    public List<ClasseAnnotation> getAllClasses() {
-        return classeAnnotationRepository.findAll();
+    public List<ClasseAnnotationDTO> getAllClasses() {
+        try {
+            List<ClasseAnnotation> classes = classeAnnotationRepository.findAll();
+            System.out.println("Found " + classes.size() + " classes");
+            
+            // Convert to DTOs to avoid serialization issues
+            List<ClasseAnnotationDTO> classDTOs = new ArrayList<>();
+            for (ClasseAnnotation classe : classes) {
+                ClasseAnnotationDTO dto = new ClasseAnnotationDTO();
+                dto.setId(classe.getId());
+                dto.setIdentifier(classe.getIdentifier());
+                dto.setName(classe.getName());
+                classDTOs.add(dto);
+            }
+            
+            return classDTOs;
+        } catch (Exception e) {
+            System.err.println("Error getting all classes: " + e.getMessage());
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
     }
 
 

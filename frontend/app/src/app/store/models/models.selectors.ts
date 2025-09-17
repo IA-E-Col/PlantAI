@@ -36,6 +36,22 @@ export const selectCurrentClass = createSelector(
   (state) => state.currentClass
 );
 
+// All Classes Selectors
+export const selectAllClasses = createSelector(
+  selectModelsState,
+  (state) => state.classes
+);
+
+export const selectClassesLoading = createSelector(
+  selectModelsState,
+  (state) => state.isLoading
+);
+
+export const selectClassesError = createSelector(
+  selectModelsState,
+  (state) => state.error
+);
+
 export const selectClassesByModel = (modelId: number) => createSelector(
   selectModelsState,
   (state) => state.classes.filter(c => c.annotations?.some(a => a.id === modelId))

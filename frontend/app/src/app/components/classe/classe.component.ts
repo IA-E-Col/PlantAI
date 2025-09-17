@@ -16,6 +16,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { Store } from '@ngrx/store';
 import { AppState } from '../../store/app.state';
 import { NavigationActions, CollectionsActions, ModelsActions } from '../../store';
+import { selectAllClasses, selectClassesLoading, selectClassesError } from '../../store/models/models.selectors';
 import { SharedDataService } from '../../services/shared-data.service';
 
 @Component({
@@ -67,14 +68,10 @@ export class ClasseComponent implements OnInit, OnDestroy {
   collectionsLoading$: Observable<boolean>;
   collectionsError$: Observable<string | null>;
   
-  // Mock data for classes (will be enhanced later)
-  Classes: Array<{ name: string, identifier: string }> = [
-    { name: 'Leaf Shape', identifier: 'leaf_shape' },
-    { name: 'Flower Color', identifier: 'flower_color' },
-    { name: 'Plant Height', identifier: 'plant_height' },
-    { name: 'Bark Texture', identifier: 'bark_texture' },
-    { name: 'Root Type', identifier: 'root_type' }
-  ];
+  // NgRx Observables for classes
+  classes$: Observable<any[]>;
+  classesLoading$: Observable<boolean>;
+  classesError$: Observable<string | null>;
   
   // Mock users data
   users: any[] = [
@@ -96,16 +93,24 @@ export class ClasseComponent implements OnInit, OnDestroy {
     this.models$ = this.sharedDataService.getModels();
     this.modelsLoading$ = this.sharedDataService.getModelsLoading();
     this.modelsError$ = this.sharedDataService.getModelsError();
-    
+
     this.collections$ = this.sharedDataService.getCollections();
     this.collectionsLoading$ = this.sharedDataService.getCollectionsLoading();
     this.collectionsError$ = this.sharedDataService.getCollectionsError();
+
+    // Initialize classes observables
+    this.classes$ = this.store.select(selectAllClasses);
+    this.classesLoading$ = this.store.select(selectClassesLoading);
+    this.classesError$ = this.store.select(selectClassesError);
   }
 
   ngOnInit(): void {
     // Load data using smart loading (only if not already loaded)
     this.sharedDataService.loadCollectionsIfNeeded();
     this.sharedDataService.loadModelsIfNeeded();
+    
+    // Load all classes
+    this.store.dispatch(ModelsActions.loadAllClasses());
     
     // Subscribe to errors for user feedback
     this.collectionsError$
@@ -164,7 +169,19 @@ export class ClasseComponent implements OnInit, OnDestroy {
       confirmButtonText: 'Yes, delete it!'
     }).then((result) => {
       if (result.isConfirmed) {
-        // TODO: Implement class deletion through NgRx
+        // Dispatch delete action through NgRx
+        this.store.dispatch(ModelsActions.deleteClass({ classId: classe.id }));
+        
+        // Listen for success/failure
+        this.classesError$
+          .pipe(takeUntil(this.destroy$))
+          .subscribe(error => {
+            if (error) {
+              Swal.fire('Error', `Failed to delete class: ${error}`, 'error');
+            }
+          });
+        
+        // Show success message (the UI will update automatically via NgRx)
         Swal.fire('Deleted!', 'Class has been deleted.', 'success');
       }
     });
@@ -280,18 +297,9 @@ export class ClasseComponent implements OnInit, OnDestroy {
       this.isAscending = true;
     }
 
-    this.Classes.sort((a, b) => {
-      let aValue = this.getFieldValue(a, field);
-      let bValue = this.getFieldValue(b, field);
-
-      let comparison = 0;
-      if (typeof aValue === 'string' && typeof bValue === 'string') {
-        comparison = aValue.localeCompare(bValue);
-      } else {
-        comparison = aValue - bValue;
-      }
-      return this.isAscending ? comparison : -comparison;
-    });
+    // TODO: Implement sorting with observables
+    // For now, sorting is handled by the template
+    console.log('Sorting by:', field, 'ascending:', this.isAscending);
     
     console.log('Sorted classes by:', field, 'ascending:', this.isAscending);
   }

@@ -49,13 +49,13 @@
           <div>
             <select class="formbold-form-input" name="class" id="class" [(ngModel)]="classesAnnotation[0]">
               <option value="" selected>Choose a class</option>
-              <option *ngFor="let classe of classes" [value]=classe.id>{{classe.name}}</option>
+              <option *ngFor="let classe of (classes$ | async)" [value]=classe.id>{{classe.name}}</option>
             </select>
           </div>
           <div *ngFor="let classSelect of additionalClassSelects; let i = index">
             <select class="formbold-form-input" name="additionalClass{{i}}" id="additionalClass{{i}}" style="margin-top: 5px;" [(ngModel)]="classesAnnotation[i + 1]">
               <option value="" selected>Choose a class</option>
-              <option *ngFor="let classe of classes" [value]=classe.id>{{classe.name}}</option>
+              <option *ngFor="let classe of (classes$ | async)" [value]=classe.id>{{classe.name}}</option>
             </select>
             <button type="button" class="btn btn-green" (click)="removeClass(i)" style="margin-top: 5px;">-</button>
           </div>

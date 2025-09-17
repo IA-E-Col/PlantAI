@@ -65,6 +65,11 @@ public class ModelController {
         return modelService.getAllClasses(idModele);
     }
 
+    @PostMapping("/{idModele}/classes")
+    public ClasseAnnotation createModelClass(@PathVariable Long idModele, @RequestBody ClasseAnnotation classeAnnotation) {
+        return modelService.createModelClass(idModele, classeAnnotation);
+    }
+
     @GetMapping("/predict/{idDataset}/{idSpecimen}/{idModele}")
     public AnnClassification predict(@PathVariable Long idDataset,@PathVariable Long idSpecimen, @PathVariable String idModele) {
        // System.out.println(idSpecimen);

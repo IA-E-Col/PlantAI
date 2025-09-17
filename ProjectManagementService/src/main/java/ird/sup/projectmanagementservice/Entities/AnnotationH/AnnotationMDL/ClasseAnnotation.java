@@ -15,7 +15,7 @@ public class ClasseAnnotation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
-    String identifier;
+    Integer identifier;
     String name;
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnore

@@ -135,6 +135,51 @@ export const deleteModelClassFailure = createAction(
   props<{ error: string }>()
 );
 
+// All Classes Management (not model-specific)
+export const loadAllClasses = createAction(
+  '[Models] Load All Classes'
+);
+
+export const loadAllClassesSuccess = createAction(
+  '[Models] Load All Classes Success',
+  props<{ classes: ModelClass[] }>()
+);
+
+export const loadAllClassesFailure = createAction(
+  '[Models] Load All Classes Failure',
+  props<{ error: string }>()
+);
+
+export const createClass = createAction(
+  '[Models] Create Class',
+  props<{ class: Omit<ModelClass, 'id'> }>()
+);
+
+export const createClassSuccess = createAction(
+  '[Models] Create Class Success',
+  props<{ class: ModelClass }>()
+);
+
+export const createClassFailure = createAction(
+  '[Models] Create Class Failure',
+  props<{ error: string }>()
+);
+
+export const deleteClass = createAction(
+  '[Models] Delete Class',
+  props<{ classId: number }>()
+);
+
+export const deleteClassSuccess = createAction(
+  '[Models] Delete Class Success',
+  props<{ classId: number }>()
+);
+
+export const deleteClassFailure = createAction(
+  '[Models] Delete Class Failure',
+  props<{ error: string }>()
+);
+
 // Training Actions
 export const startTraining = createAction(
   '[Models] Start Training',

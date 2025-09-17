@@ -5,6 +5,7 @@ import ird.sup.projectmanagementservice.DAO.ProjetRepository;
 import ird.sup.projectmanagementservice.DAO.UserRepository;
 import ird.sup.projectmanagementservice.DAO.VoteRepository;
 import ird.sup.projectmanagementservice.DTO.Evaluation;
+import ird.sup.projectmanagementservice.DTO.ClasseAnnotationDTO;
 import ird.sup.projectmanagementservice.DTO.Message;
 import ird.sup.projectmanagementservice.Entities.AnnotationH.Annotation;
 import ird.sup.projectmanagementservice.Entities.AnnotationH.AnnotationMDL.AnnotationModele;
@@ -43,7 +44,7 @@ public class AnnotationModeleController {
     }
 
     @GetMapping("/getAllClasse")
-    public List<ClasseAnnotation> getAllclasses() {
+    public List<ClasseAnnotationDTO> getAllclasses() {
         return annotationModeleService.getAllClasses();
     }
 
@@ -56,6 +57,20 @@ public class AnnotationModeleController {
     @PostMapping("/addClasse")
     public ClasseAnnotation createClasse(@RequestBody ClasseAnnotation classeAnnotation) {
         return annotationModeleService.createClasseAnnotation(classeAnnotation);
+    }
+
+    @DeleteMapping("/deleteClasse/{id}")
+    public ResponseEntity<?> deleteClasse(@PathVariable Long id) {
+        try {
+            boolean deleted = annotationModeleService.deleteClasse(id);
+            if (deleted) {
+                return ResponseEntity.ok().build();
+            } else {
+                return ResponseEntity.notFound().build();
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Error deleting class: " + e.getMessage());
+        }
     }
     @GetMapping("/{idannotation}/comments")
     public List<Commentaire> getComments(@PathVariable Long idannotation) {

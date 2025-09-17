@@ -239,10 +239,37 @@ public class ModelService {
         return m.getAnnotation().getClasseAnnotationS();
     }
 
+    public ClasseAnnotation createModelClass(Long idModele, ClasseAnnotation classeAnnotation) {
+        // First, save the class annotation
+        ClasseAnnotation savedClass = classeAnnotationRepository.save(classeAnnotation);
+        
+        // Get the model
+        Modele model = modelRepository.findById(idModele).orElse(null);
+        if (model == null) {
+            throw new RuntimeException("Model not found with id: " + idModele);
+        }
+        
+        // If model doesn't have an annotation, create one
+        if (model.getAnnotation() == null) {
+            AnnotationModele annotationModele = new AnnotationModele();
+            annotationModele.setLibelle("Annotation for " + model.getName());
+            annotationModele = annotationModeleRepository.save(annotationModele);
+            model.setAnnotation(annotationModele);
+            modelRepository.save(model);
+        }
+        
+        // Add the class to the model's annotation
+        model.getAnnotation().getClasseAnnotationS().add(savedClass);
+        savedClass.setAnnotationModele(model.getAnnotation());
+        
+        // Save the updated class with the annotation reference
+        return classeAnnotationRepository.save(savedClass);
+    }
+
    /* public Annotation predicttest(Long modeleId, String urlImage) {
         //Optional<Modele> modeleOptional = modelRepository.findById(modeleId);
         System.out.println(urlImage);
-        if (modeleOptional.isPresent() true) {
+        if (modeleOptional.isPresent()) {
             // Modele modele = modeleOptional.get();
             String url = "http://127.0.0.1:8000/predict/";
             HttpHeaders headers = new HttpHeaders();

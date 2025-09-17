@@ -149,6 +149,58 @@ export class ModelsEffects {
     )
   );
 
+  // All Classes Effects
+  loadAllClasses$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(ModelsActions.loadAllClasses),
+      switchMap(() =>
+        this.http.get<any[]>(`${this.apiUrl}/models/forFiltre`).pipe(
+          map(modelResponses => {
+            // Extract all classes from all models
+            const allClasses: ModelClass[] = [];
+            modelResponses.forEach(modelResponse => {
+              if (modelResponse.classes) {
+                allClasses.push(...modelResponse.classes);
+              }
+            });
+            return ModelsActions.loadAllClassesSuccess({ classes: allClasses });
+          }),
+          catchError(error => of(ModelsActions.loadAllClassesFailure({ 
+            error: error.message || 'Failed to load all classes' 
+          })))
+        )
+      )
+    )
+  );
+
+  createClass$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(ModelsActions.createClass),
+      switchMap(action =>
+        this.http.post<ModelClass>(`${this.apiUrl}/annotationModele/addClasse`, action.class).pipe(
+          map(modelClass => ModelsActions.createClassSuccess({ class: modelClass })),
+          catchError(error => of(ModelsActions.createClassFailure({ 
+            error: error.message || 'Failed to create class' 
+          })))
+        )
+      )
+    )
+  );
+
+  deleteClass$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(ModelsActions.deleteClass),
+      switchMap(action =>
+        this.http.delete(`${this.apiUrl}/annotationModele/deleteClasse/${action.classId}`).pipe(
+          map(() => ModelsActions.deleteClassSuccess({ classId: action.classId })),
+          catchError(error => of(ModelsActions.deleteClassFailure({ 
+            error: error.message || 'Failed to delete class' 
+          })))
+        )
+      )
+    )
+  );
+
   // Training Effects
   startTraining$ = createEffect(() =>
     this.actions$.pipe(

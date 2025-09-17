@@ -14,7 +14,10 @@ import { ModelsActions } from '../../store';
 import { 
   selectAllModels,
   selectModelsLoading,
-  selectModelsError 
+  selectModelsError,
+  selectAllClasses,
+  selectClassesLoading,
+  selectClassesError
 } from '../../store/models/models.selectors';
 
 @Component({
@@ -52,13 +55,10 @@ export class CreeModeleComponent implements OnInit, OnDestroy {
   isLoading$: Observable<boolean>;
   error$: Observable<string | null>;
   
-  // Mock classes data (will be replaced with NgRx later)
-  classes: any[] = [
-    { id: 1, nom: 'Leaf Shape', description: 'Classification of leaf shapes' },
-    { id: 2, nom: 'Flower Type', description: 'Classification of flower types' },
-    { id: 3, nom: 'Plant Height', description: 'Classification of plant heights' },
-    { id: 4, nom: 'Bark Texture', description: 'Classification of bark textures' }
-  ];
+  // NgRx Observables for classes
+  classes$: Observable<any[]>;
+  classesLoading$: Observable<boolean>;
+  classesError$: Observable<string | null>;
   
   private destroy$ = new Subject<void>();
 
@@ -73,10 +73,17 @@ export class CreeModeleComponent implements OnInit, OnDestroy {
     this.models$ = this.store.select(selectAllModels);
     this.isLoading$ = this.store.select(selectModelsLoading);
     this.error$ = this.store.select(selectModelsError);
+    
+    // Initialize classes observables
+    this.classes$ = this.store.select(selectAllClasses);
+    this.classesLoading$ = this.store.select(selectClassesLoading);
+    this.classesError$ = this.store.select(selectClassesError);
   }
 
   ngOnInit(): void {
-    this.loadClasses();
+    // Load models and classes if not already loaded
+    this.store.dispatch(ModelsActions.loadModels());
+    this.store.dispatch(ModelsActions.loadAllClasses());
     
     // Subscribe to errors
     this.error$
@@ -93,11 +100,6 @@ export class CreeModeleComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
-  loadClasses(): void {
-    // For now, we're using mock data. 
-    // TODO: Implement classes NgRx store and load from there
-    console.log('Classes loaded:', this.classes);
-  }
 
   nextStep(): void {
     console.log('Moving to step:', this.currentStep + 1);
@@ -132,9 +134,10 @@ export class CreeModeleComponent implements OnInit, OnDestroy {
           recall: 0,
           trainingProgress: 0,
           // Map additional data to classes or annotation
-          classes: this.classesAnnotation.filter(c => c && c.trim()).map(className => ({
+          classes: this.classesAnnotation.filter(c => c && c.trim()).map((className, index) => ({
             id: 0, // Will be assigned by backend
-            nom: className,
+            identifier: index + 1,
+            name: className,
             description: `Class for ${className}`,
             couleur: '#' + Math.floor(Math.random()*16777215).toString(16) // Random color
           }))

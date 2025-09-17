@@ -49,7 +49,7 @@ export class NewclasseComponent implements OnDestroy {
     // Create reactive form
     this.classeForm = this.fb.group({
       name: ['', [Validators.required, Validators.minLength(3)]],
-      identifier: ['', [Validators.required, Validators.pattern(/^[a-z_][a-z0-9_]*$/)]]
+      identifier: ['', [Validators.required, Validators.pattern(/^[a-zA-Z0-9_]+$/)]]
     });
     
     // Subscribe to errors
@@ -75,16 +75,12 @@ export class NewclasseComponent implements OnDestroy {
       
       // Create model class through the models store
       const classData = {
-        nom: formValues.name,
-        description: `Class for ${formValues.name}`,
-        couleur: '#' + Math.floor(Math.random()*16777215).toString(16) // Random color
+        identifier: parseInt(formValues.identifier),
+        name: formValues.name
       };
       
-      // Use a mock modelId for demonstration (in real app, this would come from context)
-      const mockModelId = 1;
-      
-      this.store.dispatch(ModelsActions.createModelClass({ 
-        modelId: mockModelId, 
+      // Create a standalone class (not tied to a specific model)
+      this.store.dispatch(ModelsActions.createClass({ 
         class: classData 
       }));
       

@@ -44,8 +44,8 @@ public class AnnClassification extends AnnotationSpecimen {
         for (ClasseAnnotation c : this.modelInference.getAnnotation().getClasseAnnotationS())
         {   System.out.println(c.getIdentifier());
             System.out.println(this.valeurPredite);
-            System.out.println(c.getIdentifier().compareTo(this.valeurPredite));
-            if(c.getIdentifier().compareTo(this.valeurPredite)==0)
+            System.out.println(c.getIdentifier().toString().compareTo(this.valeurPredite));
+            if(c.getIdentifier().toString().compareTo(this.valeurPredite)==0)
                 return c.getName();
         }
         return null;
